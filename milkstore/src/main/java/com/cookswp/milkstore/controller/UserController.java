@@ -6,7 +6,6 @@ import com.cookswp.milkstore.response.ResponseData;
 import com.cookswp.milkstore.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,7 +20,7 @@ public class UserController {
 
     @GetMapping("/{username}")
     public UserDTO getUser(@PathVariable String username){
-        return userService.getUser(username);
+        return userService.getUserByUsername(username);
     }
 
     @PostMapping("/register")

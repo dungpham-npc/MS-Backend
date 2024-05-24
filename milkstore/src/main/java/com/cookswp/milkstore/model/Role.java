@@ -1,9 +1,13 @@
 package com.cookswp.milkstore.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "role")
+@Getter
+@Setter
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -11,21 +15,5 @@ public class Role {
     private int roleId;
 
     @Column(name = "role_name", nullable = false)
-    private String role;
-
-    public int getRoleId() {
-        return roleId;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    @Override
-    public String toString() {
-        return "RoleDTO{" +
-                "roleId=" + roleId +
-                ", role=" + role +
-                '}';
-    }
+    private String roleName;
 }
