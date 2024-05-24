@@ -1,6 +1,6 @@
 package com.cookswp.milkstore.repository;
 
-import com.cookswp.milkstore.model.RoleDTO;
+import com.cookswp.milkstore.dtos.RoleDTO;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import org.springframework.beans.factory.annotation.Autowired;

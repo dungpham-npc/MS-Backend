@@ -1,10 +1,11 @@
-package com.cookswp.milkstore.model;
+package com.cookswp.milkstore.dtos;
 
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "user")
 public class UserDTO {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id", nullable = false)

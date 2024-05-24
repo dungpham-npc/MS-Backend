@@ -1,4 +1,4 @@
-package com.cookswp.milkstore.model;
+package com.cookswp.milkstore.dtos;
 
 import jakarta.persistence.*;
 
