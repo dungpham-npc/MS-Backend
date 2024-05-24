@@ -1,28 +1,22 @@
 package com.cookswp.milkstore.controller;
 
-import com.cookswp.milkstore.model.Role;
+import com.cookswp.milkstore.model.UserRegistrationDTO;
 import com.cookswp.milkstore.model.UserDTO;
-import com.cookswp.milkstore.service.RoleService;
+import com.cookswp.milkstore.response.ResponseData;
 import com.cookswp.milkstore.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user")
 public class UserController {
     private final UserService userService;
 
-    private final RoleService roleService; //TODO Delete this field
-
     @Autowired
-    public UserController(UserService userService, RoleService roleService){
+    public UserController(UserService userService){
         this.userService = userService;
-        this.roleService = roleService;
     }
 
     @GetMapping("/{username}")
@@ -30,9 +24,15 @@ public class UserController {
         return userService.getUser(username);
     }
 
-    //testing purpose   TODO: Delete this method
-    @GetMapping("/roles")
-    public List<Role> getRoles(){
-        return roleService.getRoles();
+    @PostMapping("/register")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseData<UserRegistrationDTO> register(@RequestBody UserRegistrationDTO userRegistrationDTO){
+        userService.registerUser(userRegistrationDTO);
+        return new ResponseData<>(HttpStatus.CREATED.value(), "Registration successfully!", userRegistrationDTO);
+    }
+
+    @PostMapping("/login")
+    public String login(@RequestBody UserRegistrationDTO userRegistrationDTO){
+        return userService.loginUser(userRegistrationDTO) ? "true" : "false";
     }
 }

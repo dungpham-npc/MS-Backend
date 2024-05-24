@@ -9,23 +9,21 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
-    @NonNull
     private int userId;
 
-    @Column(name = "role_id", nullable = false)
-    @NonNull
+    @Column(name = "role_id")
     private int roleId;
 
-    @Column(name = "email_address", nullable = false)
+    @Column(name = "email_address")
     private String emailAddress;
 
-    @Column(name = "phone_Number", nullable = false)
+    @Column(name = "phone_Number")
     private String phoneNumber;
 
-    @Column(name = "password", nullable = false)
+    @Column(name = "password")
     private String password;
 
-    @Column(name = "username", nullable = false)
+    @Column(name = "username")
     private String username;
 
     public User(){}
