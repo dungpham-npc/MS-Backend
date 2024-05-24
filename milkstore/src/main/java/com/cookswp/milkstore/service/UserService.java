@@ -8,6 +8,7 @@ import com.cookswp.milkstore.repository.RoleRepository;
 import com.cookswp.milkstore.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -54,15 +55,21 @@ public class UserService {
         if (password != null)
             userRegistrationDTO.setPassword(passwordEncoder.encode(password));
 
-        userRegistrationDTO.setRoleName("CUSTOMER");
+        try {
+            if (userRepository.findByEmailAddress(userRegistrationDTO.getEmailAddress()) != null)
+                throw new DataIntegrityViolationException("Email already exists!");
 
-        User user = mapper.map(userRegistrationDTO, User.class);
+            userRegistrationDTO.setRoleName("CUSTOMER");
 
-        Role role = roleService.getRoleByRoleName(userRegistrationDTO.getRoleName());
+            User user = mapper.map(userRegistrationDTO, User.class);
 
-        user.setRole(role);
+            Role role = roleService.getRoleByRoleName(userRegistrationDTO.getRoleName());
 
-        userRepository.save(user);
+            user.setRole(role);
+            userRepository.save(user);
+        } catch (DataIntegrityViolationException e){
+            e.getMessage();
+        }
     }
 
     public boolean loginUser(UserRegistrationDTO userRegistrationDTO){
