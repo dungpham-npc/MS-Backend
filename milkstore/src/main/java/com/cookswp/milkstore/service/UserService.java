@@ -11,10 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 @Service
+@Transactional
 public class UserService {
 
     private final ModelMapper mapper;
@@ -55,21 +57,14 @@ public class UserService {
         if (password != null)
             userRegistrationDTO.setPassword(passwordEncoder.encode(password));
 
-        try {
-            if (userRepository.findByEmailAddress(userRegistrationDTO.getEmailAddress()) != null)
-                throw new DataIntegrityViolationException("Email already exists!");
+        userRegistrationDTO.setRoleName("CUSTOMER");
 
-            userRegistrationDTO.setRoleName("CUSTOMER");
+        User user = mapper.map(userRegistrationDTO, User.class);
 
-            User user = mapper.map(userRegistrationDTO, User.class);
+        Role role = roleService.getRoleByRoleName(userRegistrationDTO.getRoleName());
 
-            Role role = roleService.getRoleByRoleName(userRegistrationDTO.getRoleName());
-
-            user.setRole(role);
-            userRepository.save(user);
-        } catch (DataIntegrityViolationException e){
-            e.getMessage();
-        }
+        user.setRole(role);
+        userRepository.save(user);
     }
 
     public boolean loginUser(UserRegistrationDTO userRegistrationDTO){
@@ -78,6 +73,10 @@ public class UserService {
         if (user == null) return false;
 
         return passwordEncoder.matches(userRegistrationDTO.getPassword(), user.getPassword());
+    }
+
+    public boolean checkEmailExistence(String email){
+        return userRepository.findByEmailAddress(email) != null;
     }
 
 

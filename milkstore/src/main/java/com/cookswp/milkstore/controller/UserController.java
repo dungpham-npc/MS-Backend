@@ -23,15 +23,4 @@ public class UserController {
         return userService.getUserByUsername(username);
     }
 
-    @PostMapping("/register")
-    @ResponseStatus(HttpStatus.CREATED)
-    public ResponseData<UserRegistrationDTO> register(@RequestBody UserRegistrationDTO userRegistrationDTO){
-        userService.registerUser(userRegistrationDTO);
-        return new ResponseData<>(HttpStatus.CREATED.value(), "Registration successfully!", userRegistrationDTO);
-    }
-
-    @PostMapping("/login")
-    public String login(@RequestBody UserRegistrationDTO userRegistrationDTO){
-        return userService.loginUser(userRegistrationDTO) ? "true" : "false";
-    }
 }
