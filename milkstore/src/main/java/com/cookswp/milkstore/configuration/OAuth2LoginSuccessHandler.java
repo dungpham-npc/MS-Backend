@@ -27,7 +27,6 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException {
 
         OAuth2AuthenticationToken token = (OAuth2AuthenticationToken) authentication;
-        if("google".equals(token.getAuthorizedClientRegistrationId())){
 
             DefaultOAuth2User principal = (DefaultOAuth2User) authentication.getPrincipal();
             Map<String, Object> attributes = principal.getAttributes();
@@ -64,10 +63,10 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
                 SecurityContextHolder.getContext().setAuthentication(securityAuth);
             }
 
-        }
+
 
         this.setAlwaysUseDefaultTargetUrl(true);
-        this.setDefaultTargetUrl("http://localhost:8080/user/customer");
+        this.setDefaultTargetUrl("http://localhost:8080/users/customer");
         super.onAuthenticationSuccess(request, response, authentication);
     }
 }

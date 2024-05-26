@@ -39,9 +39,9 @@ public class SecurityConfig {
                     cors.configurationSource(corsConfigurationSource());
                 })
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/register", "/login", "/oauth2/**").permitAll();
+                    auth.requestMatchers("/register", "/login").permitAll();
                     auth.anyRequest().authenticated();
-        })
+                })
                 .formLogin(form -> {
                     form.successHandler(customFormLoginSuccessHandler); // Use custom form login success handler
                 })

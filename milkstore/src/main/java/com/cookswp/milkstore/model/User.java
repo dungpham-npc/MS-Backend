@@ -30,6 +30,9 @@ public class User {
     @Column(name = "username")
     private String username;
 
+    @Column(name = "visibility_status")
+    private boolean visibilityStatus;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id")
     private Role role;
