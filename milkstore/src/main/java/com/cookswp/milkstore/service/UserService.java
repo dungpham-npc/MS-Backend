@@ -13,6 +13,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -57,26 +60,47 @@ public class UserService {
         if (password != null)
             userRegistrationDTO.setPassword(passwordEncoder.encode(password));
 
-        userRegistrationDTO.setRoleName("CUSTOMER");
-
         User user = mapper.map(userRegistrationDTO, User.class);
 
-        Role role = roleService.getRoleByRoleName(userRegistrationDTO.getRoleName());
-
-        user.setRole(role);
+        user.setRole(roleService.getRoleByRoleName("CUSTOMER"));
+        user.setVisibilityStatus(true);
         userRepository.save(user);
     }
 
-    public boolean loginUser(UserRegistrationDTO userRegistrationDTO){
-        User user = userRepository.findByEmailAddress(userRegistrationDTO.getEmailAddress());
+    public void registerStaff(UserRegistrationDTO userRegistrationDTO){
+        User user = mapper.map(userRegistrationDTO, User.class);
 
-        if (user == null) return false;
-
-        return passwordEncoder.matches(userRegistrationDTO.getPassword(), user.getPassword());
+        user.setRole(roleService.getRoleByRoleName(userRegistrationDTO.getRoleName()));
+        user.setVisibilityStatus(true);
+        userRepository.save(user);
     }
 
     public boolean checkEmailExistence(String email){
         return userRepository.findByEmailAddress(email) != null;
+    }
+
+    public List<UserRegistrationDTO> getInternalUserList(){
+        List<User> userEntitiesList = userRepository.findAllStaffs();
+        List<UserRegistrationDTO> userList = new ArrayList<>();
+        if (userEntitiesList.isEmpty()) return Collections.emptyList();
+
+        for (User user : userEntitiesList) {
+            userList.add(mapper.map(user, UserRegistrationDTO.class));
+        }
+
+        return userList;
+    }
+
+    public List<UserRegistrationDTO> getMemberUserList(){
+        List<User> userEntitiesList = userRepository.findAllMembers();
+        List<UserRegistrationDTO> userList = new ArrayList<>();
+        if (userEntitiesList.isEmpty()) return Collections.emptyList();
+
+        for (User user : userEntitiesList) {
+            userList.add(mapper.map(user, UserRegistrationDTO.class));
+        }
+
+        return userList;
     }
 
 
