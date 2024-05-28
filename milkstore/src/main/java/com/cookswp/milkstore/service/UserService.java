@@ -1,8 +1,8 @@
 package com.cookswp.milkstore.service;
 
-import com.cookswp.milkstore.model.UserRegistrationDTO;
-import com.cookswp.milkstore.model.User;
-import com.cookswp.milkstore.model.UserDTO;
+import com.cookswp.milkstore.pojo.dtos.UserModel.UserRegistrationDTO;
+import com.cookswp.milkstore.pojo.dtos.UserModel.User;
+import com.cookswp.milkstore.pojo.dtos.UserModel.UserDTO;
 import com.cookswp.milkstore.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
