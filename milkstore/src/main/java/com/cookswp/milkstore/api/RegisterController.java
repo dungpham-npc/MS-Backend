@@ -1,17 +1,14 @@
-package com.cookswp.milkstore.controller;
+package com.cookswp.milkstore.api;
 
 import com.cookswp.milkstore.exception.MissingRequiredFieldException;
-import com.cookswp.milkstore.exception.RoleNotFoundException;
-import com.cookswp.milkstore.model.UserDTO;
-import com.cookswp.milkstore.model.UserRegistrationDTO;
+import com.cookswp.milkstore.pojo.dtos.UserDTO;
+import com.cookswp.milkstore.pojo.dtos.UserRegistrationDTO;
 import com.cookswp.milkstore.response.ResponseData;
 import com.cookswp.milkstore.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Set;
 
 @RestController
 @RequestMapping("/register")

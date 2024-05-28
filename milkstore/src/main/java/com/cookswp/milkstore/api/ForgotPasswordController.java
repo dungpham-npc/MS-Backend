@@ -1,9 +1,6 @@
-package com.cookswp.milkstore.controller;
+package com.cookswp.milkstore.api;
 
-import com.cookswp.milkstore.model.UserDTO;
-import com.cookswp.milkstore.response.ResponseData;
 import com.cookswp.milkstore.service.UserService;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

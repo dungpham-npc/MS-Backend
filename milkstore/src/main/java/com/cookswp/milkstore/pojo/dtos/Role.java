@@ -1,4 +1,4 @@
-package com.cookswp.milkstore.model;
+package com.cookswp.milkstore.pojo.dtos;
 
 import jakarta.persistence.*;
 import lombok.Getter;
