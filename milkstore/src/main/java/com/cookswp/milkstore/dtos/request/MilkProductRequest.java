@@ -5,10 +5,8 @@ import java.math.BigDecimal;
 
 public class MilkProductRequest implements Serializable {
 
-
-
     private int productID;
-    private int categoryID;
+    private int categoryASdID;
     private int postID;
     private String productName;
     private String productDescription;
