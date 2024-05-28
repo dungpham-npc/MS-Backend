@@ -61,12 +61,16 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
                         List.of(new SimpleGrantedAuthority(userRegistrationDTO.getRoleName())),
                         "sub");
                 SecurityContextHolder.getContext().setAuthentication(securityAuth);
+
+                String additionalInfoUrl = "http://localhost:8080/register/complete-registration?email=" + email;
+                response.sendRedirect(additionalInfoUrl);
+                return;
             }
 
 
 
         this.setAlwaysUseDefaultTargetUrl(true);
-        this.setDefaultTargetUrl("http://localhost:8080/users/customer");
+        this.setDefaultTargetUrl("http://localhost:8080/test");
         super.onAuthenticationSuccess(request, response, authentication);
     }
 }

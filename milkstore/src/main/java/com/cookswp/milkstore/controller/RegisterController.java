@@ -26,7 +26,7 @@ public class RegisterController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseData<UserDTO> register(UserRegistrationDTO userRegistrationDTO){
+    public ResponseData<UserDTO> register(@RequestBody UserRegistrationDTO userRegistrationDTO){
         if (userService.checkEmailExistence(userRegistrationDTO.getEmailAddress()))
             throw new DataIntegrityViolationException("Email existed, please try with another email");
 
@@ -36,16 +36,40 @@ public class RegisterController {
             throw new MissingRequiredFieldException("Fields with asterisk");
 
         userService.registerUser(userRegistrationDTO);
-        UserDTO userDTO = new UserDTO();
-        userDTO.setUsername(userRegistrationDTO.getUsername());
-        userDTO.setEmailAddress(userRegistrationDTO.getEmailAddress());
-        userDTO.setPhoneNumber(userRegistrationDTO.getPhoneNumber());
-        return new ResponseData<>(HttpStatus.CREATED.value(), "Registration successfully!", userDTO);
+        return new ResponseData<>(HttpStatus.CREATED.value(),
+                "Registration successfully!",
+                new UserDTO(userRegistrationDTO.getEmailAddress(),
+                        userRegistrationDTO.getPhoneNumber(),
+                        userRegistrationDTO.getUsername()));
+    }
+
+    @PostMapping("/complete-registration")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseData<UserDTO> completeRegister(@RequestParam String email, @RequestBody UserRegistrationDTO userRegistrationDTO) throws Exception {
+        UserRegistrationDTO user = userService.getUserByEmail(email);
+        if (user == null)
+            throw new Exception("Error processing the request");
+
+        user.setUsername(userRegistrationDTO.getUsername());
+        user.setPassword(userRegistrationDTO.getPassword());
+        user.setPhoneNumber(userRegistrationDTO.getPhoneNumber());
+        userService.updateUser(user.getUserId(), user);
+
+        return new ResponseData<>(HttpStatus.CREATED.value(),
+                "Registration completed!",
+                new UserDTO(user.getEmailAddress(),
+                        user.getPhoneNumber(),
+                        user.getUsername()));
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ResponseData<UserRegistrationDTO> handleEmailDuplicationException(DataIntegrityViolationException e){
         return new ResponseData<>(HttpStatus.CONFLICT.value(), e.getMessage(), null);
+    }
+    @ExceptionHandler(MissingRequiredFieldException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseData<UserRegistrationDTO> handleNullFieldsException(MissingRequiredFieldException e){
+        return new ResponseData<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
     }
 }

@@ -6,6 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UserRegistrationDTO {
+    private int userId;
     private String roleName;
     private String emailAddress;
     private String phoneNumber;

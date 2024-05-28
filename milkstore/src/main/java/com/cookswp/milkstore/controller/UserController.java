@@ -30,18 +30,18 @@ public class UserController {
     }
 
     @GetMapping("/staffs")
-    public List<UserRegistrationDTO> getInternalUserList(){
+    public List<UserRegistrationDTO> getStaffList(){
         return userService.getInternalUserList();
     }
 
     @GetMapping("/members")
-    public List<UserRegistrationDTO> getMemberUserList(){
+    public List<UserDTO> getMemberList(){
         return userService.getMemberUserList();
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseData<UserDTO> createUser(@RequestBody UserRegistrationDTO userRegistrationDTO){
+    public ResponseData<UserDTO> createStaff(@RequestBody UserRegistrationDTO userRegistrationDTO){
         if (userService.checkEmailExistence(userRegistrationDTO.getEmailAddress()))
             throw new DataIntegrityViolationException("Email existed, please try with another email");
 
@@ -62,6 +62,34 @@ public class UserController {
         userDTO.setPhoneNumber(userRegistrationDTO.getPhoneNumber());
         return new ResponseData<>(HttpStatus.CREATED.value(), "User created successfully!", userDTO);
 
+    }
+
+    @PutMapping("/staffs/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseData<UserDTO> updateStaff(@PathVariable int id, @RequestBody UserRegistrationDTO userRegistrationDTO){
+        if (userRegistrationDTO.getEmailAddress() == null ||
+                userRegistrationDTO.getPassword() == null ||
+                userRegistrationDTO.getUsername() == null)
+            throw new MissingRequiredFieldException("Fields with asterisk");
+
+        Set<String> allowedRoles = Set.of("MANAGER", "POST STAFF", "PRODUCT STAFF", "SELLER");
+        if (!allowedRoles.contains(userRegistrationDTO.getRoleName())) {
+            throw new RoleNotFoundException();
+        }
+
+        userService.updateUser(id, userRegistrationDTO);
+        UserDTO userDTO = new UserDTO();
+        userDTO.setUsername(userRegistrationDTO.getUsername());
+        userDTO.setEmailAddress(userRegistrationDTO.getEmailAddress());
+        userDTO.setPhoneNumber(userRegistrationDTO.getPhoneNumber());
+        return new ResponseData<>(HttpStatus.OK.value(), "User updated successfully!", userDTO);
+    }
+
+    @DeleteMapping("/staffs/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseData<UserDTO> deleteStaff(@PathVariable int id){
+        userService.deleteUser(id);
+        return new ResponseData<>(HttpStatus.OK.value(), "Staff deleted successfully!", null);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)

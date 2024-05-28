@@ -1,14 +1,11 @@
 package com.cookswp.milkstore.service;
 
-import com.cookswp.milkstore.model.Role;
 import com.cookswp.milkstore.model.UserRegistrationDTO;
 import com.cookswp.milkstore.model.User;
 import com.cookswp.milkstore.model.UserDTO;
-import com.cookswp.milkstore.repository.RoleRepository;
 import com.cookswp.milkstore.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -68,6 +64,7 @@ public class UserService {
     }
 
     public void registerStaff(UserRegistrationDTO userRegistrationDTO){
+        userRegistrationDTO.setPassword(passwordEncoder.encode(userRegistrationDTO.getPassword()));
         User user = mapper.map(userRegistrationDTO, User.class);
 
         user.setRole(roleService.getRoleByRoleName(userRegistrationDTO.getRoleName()));
@@ -77,6 +74,10 @@ public class UserService {
 
     public boolean checkEmailExistence(String email){
         return userRepository.findByEmailAddress(email) != null;
+    }
+
+    public boolean checkPhoneNumberExistence(String phone){
+        return userRepository.findByPhoneNumber(phone) != null;
     }
 
     public List<UserRegistrationDTO> getInternalUserList(){
@@ -91,16 +92,28 @@ public class UserService {
         return userList;
     }
 
-    public List<UserRegistrationDTO> getMemberUserList(){
+    public List<UserDTO> getMemberUserList(){
         List<User> userEntitiesList = userRepository.findAllMembers();
-        List<UserRegistrationDTO> userList = new ArrayList<>();
+        List<UserDTO> userList = new ArrayList<>();
         if (userEntitiesList.isEmpty()) return Collections.emptyList();
 
         for (User user : userEntitiesList) {
-            userList.add(mapper.map(user, UserRegistrationDTO.class));
+            userList.add(mapper.map(user, UserDTO.class));
         }
 
         return userList;
+    }
+
+    public void updateUser(int id, UserRegistrationDTO userRegistrationDTO){
+        userRepository.updateUser(id,
+                userRegistrationDTO.getEmailAddress(),
+                userRegistrationDTO.getPhoneNumber(),
+                passwordEncoder.encode(userRegistrationDTO.getPassword()),
+                userRegistrationDTO.getUsername());
+    }
+    @Transactional
+    public void deleteUser(int id){
+        userRepository.deleteUser(id);
     }
 
 

@@ -28,7 +28,7 @@ public class CustomFormLoginSuccessHandler extends SimpleUrlAuthenticationSucces
                                         Authentication authentication) throws IOException, ServletException {
 
         this.setAlwaysUseDefaultTargetUrl(true);
-        this.setDefaultTargetUrl("http://localhost:8080/users/customer");
+        this.setDefaultTargetUrl("http://localhost:8080/test");
         super.onAuthenticationSuccess(request, response, authentication);
     }
 
