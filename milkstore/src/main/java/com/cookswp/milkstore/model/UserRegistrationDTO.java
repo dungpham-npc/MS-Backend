@@ -1,16 +1,15 @@
 package com.cookswp.milkstore.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class UserDTO {
+public class UserRegistrationDTO {
+    private int userId;
+    private String roleName;
     private String emailAddress;
     private String phoneNumber;
+    private String password;
     private String username;
 }
