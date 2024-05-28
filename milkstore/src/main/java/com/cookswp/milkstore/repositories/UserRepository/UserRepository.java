@@ -1,6 +1,6 @@
-package com.cookswp.milkstore.repository;
+package com.cookswp.milkstore.repositories.UserRepository;
 
-import com.cookswp.milkstore.pojo.dtos.User;
+import com.cookswp.milkstore.pojo.dtos.UserModel.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

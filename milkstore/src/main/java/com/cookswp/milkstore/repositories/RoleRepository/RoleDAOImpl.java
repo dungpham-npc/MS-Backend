@@ -1,12 +1,8 @@
-package com.cookswp.milkstore.repository;
+package com.cookswp.milkstore.repositories.RoleRepository;
 
-import com.cookswp.milkstore.pojo.dtos.RoleDTO;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Repository
 public class RoleDAOImpl implements RoleDAO{

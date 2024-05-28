@@ -1,4 +1,4 @@
-package com.cookswp.milkstore.pojo.dtos;
+package com.cookswp.milkstore.pojo.dtos.UserModel;
 
 import jakarta.persistence.*;
 

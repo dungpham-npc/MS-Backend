@@ -1,8 +1,8 @@
 package com.cookswp.milkstore.api;
 
 import com.cookswp.milkstore.exception.MissingRequiredFieldException;
-import com.cookswp.milkstore.pojo.dtos.UserDTO;
-import com.cookswp.milkstore.pojo.dtos.UserRegistrationDTO;
+import com.cookswp.milkstore.pojo.dtos.UserModel.UserDTO;
+import com.cookswp.milkstore.pojo.dtos.UserModel.UserRegistrationDTO;
 import com.cookswp.milkstore.response.ResponseData;
 import com.cookswp.milkstore.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
