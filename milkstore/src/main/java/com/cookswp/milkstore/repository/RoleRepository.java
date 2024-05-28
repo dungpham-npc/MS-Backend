@@ -1,6 +1,6 @@
 package com.cookswp.milkstore.repository;
 
-import com.cookswp.milkstore.pojo.dtos.Role;
+import com.cookswp.milkstore.pojo.dtos.RoleModel.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface RoleRepository extends JpaRepository<Role, Integer> {
