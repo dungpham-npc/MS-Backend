@@ -1,6 +1,6 @@
 package com.cookswp.milkstore.configuration;
 
-import com.cookswp.milkstore.model.UserRegistrationDTO;
+import com.cookswp.milkstore.pojo.dtos.UserRegistrationDTO;
 import com.cookswp.milkstore.service.UserService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -62,9 +62,6 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
                         "sub");
                 SecurityContextHolder.getContext().setAuthentication(securityAuth);
 
-                String additionalInfoUrl = "http://localhost:8080/register/complete-registration?email=" + email;
-                response.sendRedirect(additionalInfoUrl);
-                return;
             }
 
 
