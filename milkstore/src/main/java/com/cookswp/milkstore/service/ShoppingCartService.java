@@ -3,7 +3,7 @@ package com.cookswp.milkstore.service;
 
 import com.cookswp.milkstore.pojo.entities.ShoppingCart;
 import com.cookswp.milkstore.pojo.entities.ShoppingCartItem;
-import com.cookswp.milkstore.repositories.ShoppingCartRepository.ShoppingCartRepository;
+import com.cookswp.milkstore.repository.ShoppingCartRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -50,14 +50,13 @@ public class ShoppingCartService {
         shoppingCartRepository.save(cart);
     }
 
-    //Calculate total price of item from cart
-    //Lỗi con cặc gì đéo biết fix :))))
+//    //Calculate total price of item from cart
+//    //Lỗi con cặc gì đéo biết fix :))))
 //    public double calculateTotalPrice (ShoppingCart cart) {
 //        double totalPrice = 0;
 //        List<ShoppingCartItem> items = cart.getItems();
 //        for(ShoppingCartItem item : items) {
-//            totalPrice += item.getMilkProduct().getPrice() * item.getMilkProduct().getPrice();
-//
+//            totalPrice += item.getShoppingCart().getItems().get;
 //        }
 //        return totalPrice;
 //    }
