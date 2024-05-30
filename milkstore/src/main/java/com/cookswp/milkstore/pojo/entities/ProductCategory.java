@@ -1,4 +1,4 @@
-package com.cookswp.milkstore.model.ProductCategoryModel;
+package com.cookswp.milkstore.pojo.entities;
 
 import jakarta.persistence.*;
 

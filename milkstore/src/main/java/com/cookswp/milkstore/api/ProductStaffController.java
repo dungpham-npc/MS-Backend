@@ -1,12 +1,12 @@
-package com.cookswp.milkstore.controller;
+package com.cookswp.milkstore.api;
 
-import com.cookswp.milkstore.model.ProductCategoryModel.ProductCategory;
-import com.cookswp.milkstore.model.ProductModel.MilkProduct;
-import com.cookswp.milkstore.service.MilkProductService.MilkProductService;
-import com.cookswp.milkstore.service.ProductCategoryService.ProductCategoryService;
+import com.cookswp.milkstore.pojo.entities.ProductCategory;
+import com.cookswp.milkstore.pojo.entities.Product;
+import com.cookswp.milkstore.response.ResponseData;
+import com.cookswp.milkstore.service.product.ProductService;
+import com.cookswp.milkstore.service.productCategory.ProductCategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,28 +16,32 @@ import java.util.List;
 public class ProductStaffController {
 
     @Autowired
-    private MilkProductService milkProductService;
+    private ProductService milkProductService;
 
     @Autowired
     private ProductCategoryService productCategoryService;
 
 
     @PostMapping("/create-category")
-    public ResponseEntity<ProductCategory> createProductCategory(@RequestBody ProductCategory productCategory) {
-        return new ResponseEntity<>(productCategoryService.createProductCategory(productCategory), HttpStatus.CREATED);
+    public ResponseData<ProductCategory> createProductCategory(@RequestBody ProductCategory productCategory) {
+        return new ResponseData<>(HttpStatus.CREATED.value(),
+                "New product category create successfully",
+                productCategoryService.createProductCategory(productCategory));
     }
 
     //Create Product
     @PostMapping("/create-product")
-    public ResponseEntity<MilkProduct> createMilkProduct(@RequestBody MilkProduct milkProduct) {
-        return new ResponseEntity<>(milkProductService.createMilkProduct(milkProduct), HttpStatus.CREATED);
+    public ResponseData<Product> createMilkProduct(@RequestBody Product product) {
+        return new ResponseData<>(HttpStatus.CREATED.value(),
+                "New Milk Product create successfully",
+                milkProductService.createProduct(product));
     }
 
 
     //Delete Product
     @DeleteMapping("/delete-product/{userID}")
     public void deleteMilkProduct(@RequestParam int userID) {
-        milkProductService.deleteMilkProduct(userID);
+        milkProductService.deleteProduct(userID);
     }
 
     //Update Product
@@ -45,8 +49,12 @@ public class ProductStaffController {
 
     //Get all
     @GetMapping("/get-product")
-    public ResponseEntity<List<MilkProduct>> getMilkProduct() {
-        return new ResponseEntity<>(milkProductService.getAllMilkProducts(), HttpStatus.ACCEPTED);
+    public ResponseData<List<Product>> getMilkProduct() {
+        return new ResponseData<>(
+                HttpStatus.OK.value(),
+                "List Product",
+                milkProductService.getAllProducts()
+        );
     }
 
 

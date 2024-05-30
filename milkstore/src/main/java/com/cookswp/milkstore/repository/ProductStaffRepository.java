@@ -1,6 +1,6 @@
-package com.cookswp.milkstore.repository.ProductStaffRepository;
+package com.cookswp.milkstore.repository;
 
-import com.cookswp.milkstore.model.ProductCategoryModel.ProductCategory;
+import com.cookswp.milkstore.pojo.entities.ProductCategory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
