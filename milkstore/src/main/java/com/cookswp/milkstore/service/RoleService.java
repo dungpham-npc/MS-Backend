@@ -1,7 +1,7 @@
 package com.cookswp.milkstore.service;
 
-import com.cookswp.milkstore.pojo.dtos.UserModel.Role;
-import com.cookswp.milkstore.repositories.RoleRepository.RoleRepository;
+import com.cookswp.milkstore.pojo.dtos.RoleModel.Role;
+import com.cookswp.milkstore.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
