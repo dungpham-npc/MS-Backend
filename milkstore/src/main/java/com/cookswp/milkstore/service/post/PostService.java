@@ -16,13 +16,12 @@ public class PostService implements IPostService {
 
     @Override
     public List<Post> getAllPosts() {
-        return postRepository.findAll();
+        return postRepository.findAllVisibility();
     }
 
     @Override
-    public Post getPostByID(int id) {
-        return postRepository.findById(id).orElseThrow(
-                () -> new RuntimeException("Not found post with the ID: " + id));
+    public Optional<Post> getPostByID(int id) {
+        return postRepository.findByIDAndVisibility(id);
     }
 
     @Override
@@ -44,5 +43,15 @@ public class PostService implements IPostService {
     @Override
     public Post createPost(Post post) {
         return postRepository.save(post);
+    }
+
+    @Override
+    public void deletePost(int id) {
+        Optional<Post> optionalPost = postRepository.findById(id);
+        if(optionalPost.isPresent()){
+            Post post = optionalPost.get();
+            post.setVisibility(false);
+            postRepository.save(post);
+        }
     }
 }

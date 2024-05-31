@@ -15,7 +15,7 @@ public class Post {
 
     @Id
     @Getter
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @Column(name = "user_id", nullable = false)
@@ -34,6 +34,9 @@ public class Post {
 
     @Column(name = "user_comment")
     private String userComment;
+
+    @Column(name = "visibility_status")
+    private boolean visibility = true;
 
     public Post(){}
 

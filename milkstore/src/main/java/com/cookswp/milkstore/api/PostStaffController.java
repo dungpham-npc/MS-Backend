@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/post-staff")
@@ -36,8 +37,15 @@ public class PostStaffController {
     }
 
     @GetMapping("/get-post/{ID}")
-    public ResponseData<Post> getPostById(@PathVariable int ID) {
+    public ResponseData<Optional<Post>> getPostById(@PathVariable int ID) {
         return new ResponseData<>(HttpStatus.OK.value(), "Get post with ID: " + ID, postService.getPostByID(ID));
+    }
+
+    //Delete Post
+    @PatchMapping("/delete-post/{ID}")
+    public ResponseData<Post> deletePost(@PathVariable int ID){
+        postService.deletePost(ID);
+        return new ResponseData<>(HttpStatus.NO_CONTENT.value(), "Delete post with ID: " + ID);
     }
 
 }
