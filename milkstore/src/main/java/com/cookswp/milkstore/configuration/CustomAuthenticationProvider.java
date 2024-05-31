@@ -1,5 +1,6 @@
 package com.cookswp.milkstore.configuration;
 
+import com.cookswp.milkstore.pojo.dtos.UserModel.CustomUserDetails;
 import com.cookswp.milkstore.pojo.dtos.UserModel.UserRegistrationDTO;
 import com.cookswp.milkstore.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -34,9 +36,14 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         UserRegistrationDTO user = userService.getUserByEmail(email);
 
         if (user != null && passwordEncoder.matches(password, user.getPassword())){
-            //User found, create new Authentication object with user details
-            //and granted authorities
-            return new UsernamePasswordAuthenticationToken(email, password, List.of(new SimpleGrantedAuthority(user.getRoleName())));
+            CustomUserDetails userDetail = new CustomUserDetails(
+                    user.getUsername(),
+                    email,
+                    password,
+                    List.of(new SimpleGrantedAuthority(user.getRoleName())),
+                    null
+            );
+            return new UsernamePasswordAuthenticationToken(userDetail, password, userDetail.getAuthorities());
         } else {
             throw new BadCredentialsException("Invalid username or password");
         }
