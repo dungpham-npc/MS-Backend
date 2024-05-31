@@ -37,6 +37,11 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
         UserRegistrationDTO user = userService.getUserByEmail(email);
 
         if (user != null) {
+
+            if (!userService.checkVisibilityStatusByEmail(email)) {
+                response.sendRedirect("http://localhost:3000/login-error");
+                return;
+            }
             SecurityContextHolder.getContext().setAuthentication(getAuthentication(user, attributes));
 
         } else {

@@ -118,5 +118,9 @@ public class UserService {
         userRepository.deleteUser(id);
     }
 
+    public boolean checkVisibilityStatusByEmail(String email){
+        return userRepository.isVisible(email);
+    }
+
 
 }

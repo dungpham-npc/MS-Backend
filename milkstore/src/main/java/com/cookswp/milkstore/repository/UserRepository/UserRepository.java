@@ -25,4 +25,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Modifying
     @Query("UPDATE User u SET u.visibilityStatus = false WHERE u.userId = :id")
     void deleteUser(@Param("id") int id);
+
+    @Query("SELECT u.visibilityStatus FROM User u WHERE u.emailAddress = :email")
+    boolean isVisible(@Param("email") String email);
 }
