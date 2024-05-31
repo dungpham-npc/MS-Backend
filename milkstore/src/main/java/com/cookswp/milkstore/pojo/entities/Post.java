@@ -5,13 +5,14 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @Setter
 @Getter
 @Entity
 @Table(name = "post")
-public class Post {
+public class Post implements Serializable {
 
     @Id
     @Getter
@@ -26,7 +27,6 @@ public class Post {
 
     @Column(name = "content", nullable = false)
     private String content;
-
 
     @Column(name = "date_created")
     @JsonFormat(pattern = "dd-MM-yyyy")

@@ -1,16 +1,15 @@
 package com.cookswp.milkstore.pojo.dtos.PostModel;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.Date;
 
-@Getter
 @Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostDTO {
@@ -29,4 +28,7 @@ public class PostDTO {
     private Date dateCreated;
 
     private String userComment;
+
+
+
 }
