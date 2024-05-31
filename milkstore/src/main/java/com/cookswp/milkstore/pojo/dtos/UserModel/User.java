@@ -1,5 +1,6 @@
 package com.cookswp.milkstore.pojo.dtos.UserModel;
 
+import com.cookswp.milkstore.pojo.dtos.RoleModel.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

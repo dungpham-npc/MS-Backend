@@ -42,12 +42,11 @@ public class RegisterController {
 
     @PostMapping("/complete-registration")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseData<UserDTO> completeRegister(@RequestParam String email, @RequestBody UserRegistrationDTO userRegistrationDTO) throws Exception {
-        UserRegistrationDTO user = userService.getUserByEmail(email);
+    public ResponseData<UserDTO> completeRegister(@RequestBody UserRegistrationDTO userRegistrationDTO) throws Exception {
+        UserRegistrationDTO user = userService.getUserByEmail(userRegistrationDTO.getEmailAddress());
         if (user == null)
             throw new Exception("Error processing the request");
 
-        user.setUsername(userRegistrationDTO.getUsername());
         user.setPassword(userRegistrationDTO.getPassword());
         user.setPhoneNumber(userRegistrationDTO.getPhoneNumber());
         userService.updateUser(user.getUserId(), user);
