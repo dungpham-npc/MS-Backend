@@ -17,6 +17,4 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
 
     @Query("SELECT p FROM Post p WHERE p.id = :id AND p.visibility = true")
     Optional<Post> findByIDAndVisibility(@Param("id") int id);
-
-
 }

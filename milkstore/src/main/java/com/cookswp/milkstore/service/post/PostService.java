@@ -1,5 +1,7 @@
 package com.cookswp.milkstore.service.post;
 
+import com.cookswp.milkstore.mapper.PostMapper;
+import com.cookswp.milkstore.pojo.dtos.PostModel.PostDTO;
 import com.cookswp.milkstore.pojo.entities.Post;
 import com.cookswp.milkstore.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,8 @@ public class PostService implements IPostService {
     @Autowired
     private PostRepository postRepository;
 
+    private final PostMapper postMapper = PostMapper.INSTANCE;
+
     @Override
     public List<Post> getAllPosts() {
         return postRepository.findAllVisibility();
@@ -25,7 +29,7 @@ public class PostService implements IPostService {
     }
 
     @Override
-    public Post updatePost(int id, Post post) {
+    public Post updatePost(int id, PostDTO post) {
         Optional<Post> postOptional = postRepository.findById(id);
         if(postOptional.isPresent()) {
             Post updatePost = postOptional.get();
@@ -39,10 +43,19 @@ public class PostService implements IPostService {
             throw new RuntimeException("Not found post with the ID: " + id);
         }
     }
-
+    /*
+    *  Post postEntity = new Post();
+        postEntity.setUserID(postRequest.getUserID());
+        postEntity.setTitle(postRequest.getTitle());
+        postEntity.setContent(postRequest.getContent());
+        postEntity.setDateCreated(postRequest.getDateCreated());
+        postEntity.setUserComment(postRequest.getUserComment());
+        return postRepository.save(postEntity);
+    * */
     @Override
-    public Post createPost(Post post) {
-        return postRepository.save(post);
+    public Post createPost(PostDTO postRequest) {
+        Post postEntity = postMapper.toEntity(postRequest);
+        return postRepository.save(postEntity);
     }
 
     @Override

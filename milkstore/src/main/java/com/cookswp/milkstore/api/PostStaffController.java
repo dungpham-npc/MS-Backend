@@ -1,5 +1,6 @@
 package com.cookswp.milkstore.api;
 
+import com.cookswp.milkstore.pojo.dtos.PostModel.PostDTO;
 import com.cookswp.milkstore.pojo.entities.Post;
 import com.cookswp.milkstore.response.ResponseData;
 import com.cookswp.milkstore.service.post.PostService;
@@ -17,17 +18,16 @@ public class PostStaffController {
     @Autowired
     private PostService postService;
 
-    //CRUD post
     //create
     @PostMapping("/create-post")
-    public ResponseData<Post> createPost(@RequestBody Post post) {
-        return new ResponseData<>(HttpStatus.CREATED.value(), "Post created successfully", postService.createPost(post));
+    public ResponseData<Post> createPost(@RequestBody PostDTO postRequest) {
+        return new ResponseData<>(HttpStatus.CREATED.value(), "Post created successfully", postService.createPost(postRequest));
     }
 
     //update
     @PatchMapping("/update-post/{ID}")
-    public ResponseData<Post> updatePost(@PathVariable int ID, @RequestBody Post post) {
-        return new ResponseData<>(HttpStatus.ACCEPTED.value(), "Post updated successfully", postService.updatePost(ID, post));
+    public ResponseData<Post> updatePost(@PathVariable int ID, @RequestBody PostDTO postRequest) {
+        return new ResponseData<>(HttpStatus.ACCEPTED.value(), "Post updated successfully", postService.updatePost(ID, postRequest));
     }
 
     //retrieve
