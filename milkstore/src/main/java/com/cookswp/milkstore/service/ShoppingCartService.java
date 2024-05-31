@@ -3,11 +3,9 @@ package com.cookswp.milkstore.service;
 
 import com.cookswp.milkstore.pojo.entities.ShoppingCart;
 import com.cookswp.milkstore.pojo.entities.ShoppingCartItem;
-import com.cookswp.milkstore.repositories.ShoppingCartRepository.ShoppingCartRepository;
+import com.cookswp.milkstore.repository.ShoppingCartRepository.ShoppingCartRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
