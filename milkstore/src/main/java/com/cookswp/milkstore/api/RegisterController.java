@@ -42,7 +42,7 @@ public class RegisterController {
 
     @PostMapping("/complete-registration")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseData<UserDTO> completeRegister(@RequestBody UserRegistrationDTO userRegistrationDTO) throws Exception {
+    public ResponseData<UserDTO> completeRegister(UserRegistrationDTO userRegistrationDTO) throws Exception {
         UserRegistrationDTO user = userService.getUserByEmail(userRegistrationDTO.getEmailAddress());
         if (user == null)
             throw new Exception("Error processing the request");
