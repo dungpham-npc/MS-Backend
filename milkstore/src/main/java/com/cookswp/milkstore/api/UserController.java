@@ -9,6 +9,9 @@ import com.cookswp.milkstore.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,6 +19,7 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/users")
+@EnableWebSecurity
 public class UserController {
     private final UserService userService;
 
@@ -40,6 +44,7 @@ public class UserController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseData<UserDTO> createStaff(@RequestBody UserRegistrationDTO userRegistrationDTO){
         if (userService.checkEmailExistence(userRegistrationDTO.getEmailAddress()))
@@ -86,6 +91,7 @@ public class UserController {
     }
 
     @DeleteMapping("/staffs/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @ResponseStatus(HttpStatus.OK)
     public ResponseData<UserDTO> deleteStaff(@PathVariable int id){
         userService.deleteUser(id);
