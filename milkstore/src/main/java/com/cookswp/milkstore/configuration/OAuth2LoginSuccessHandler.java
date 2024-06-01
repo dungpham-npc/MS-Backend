@@ -2,11 +2,15 @@ package com.cookswp.milkstore.configuration;
 
 import com.cookswp.milkstore.pojo.dtos.UserModel.CustomUserDetails;
 import com.cookswp.milkstore.pojo.dtos.UserModel.UserRegistrationDTO;
+import com.cookswp.milkstore.pojo.entities.User;
+import com.cookswp.milkstore.service.RoleService;
 import com.cookswp.milkstore.service.UserService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -24,8 +28,10 @@ import java.util.Map;
 @Component
 @RequiredArgsConstructor
 public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
-
+    @Autowired
     private final UserService userService;
+    @Autowired
+    private final RoleService roleService;
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException {
 
@@ -34,11 +40,11 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
         String email = attributes.getOrDefault("email", "").toString();
         String name = attributes.getOrDefault("name", "").toString();
 
-        UserRegistrationDTO user = userService.getUserByEmail(email);
+        User user = userService.getUserByEmail(email);
 
         if (user != null) {
 
-            if (!userService.checkVisibilityStatusByEmail(email)) {
+            if (userService.checkVisibilityStatusByEmail(email)) {
                 response.sendRedirect("http://localhost:3000/login-error");
                 return;
             }
@@ -46,13 +52,13 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
 
         } else {
 
-            UserRegistrationDTO userRegistrationDTO = new UserRegistrationDTO();
-            userRegistrationDTO.setEmailAddress(email);
-            userRegistrationDTO.setUsername(name);
-            userRegistrationDTO.setRoleName("CUSTOMER");
-            userService.registerUser(userRegistrationDTO);
+            User newUser = new User();
+            newUser.setEmailAddress(email);
+            newUser.setUsername(name);
+            newUser.setRole(roleService.getRoleByRoleName("CUSTOMER"));
+            userService.registerUser(newUser);
 
-            SecurityContextHolder.getContext().setAuthentication(getAuthentication(userRegistrationDTO, attributes));
+            SecurityContextHolder.getContext().setAuthentication(getAuthentication(newUser, attributes));
             String redirectUrl = "http://localhost:3000/?email="
                     + URLEncoder.encode(email, StandardCharsets.UTF_8) + "&username="
                     + URLEncoder.encode(name, StandardCharsets.UTF_8);
@@ -67,7 +73,7 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
         super.onAuthenticationSuccess(request, response, authentication);
     }
 
-    private static Authentication getAuthentication(UserRegistrationDTO user, Map<String, Object> attributes) {
+    private static Authentication getAuthentication(User user, Map<String, Object> attributes) {
         CustomUserDetails userDetail = new CustomUserDetails(
                 user.getUsername(),
                 user.getEmailAddress(),

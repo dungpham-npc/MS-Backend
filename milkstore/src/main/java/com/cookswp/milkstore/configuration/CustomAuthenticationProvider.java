@@ -2,7 +2,7 @@ package com.cookswp.milkstore.configuration;
 
 import com.cookswp.milkstore.exception.UserInvisibilityException;
 import com.cookswp.milkstore.pojo.dtos.UserModel.CustomUserDetails;
-import com.cookswp.milkstore.pojo.dtos.UserModel.UserRegistrationDTO;
+import com.cookswp.milkstore.pojo.entities.User;
 import com.cookswp.milkstore.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -11,13 +11,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 @Component
 public class CustomAuthenticationProvider implements AuthenticationProvider {
@@ -36,7 +34,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         String email = authentication.getName();
         String password = authentication.getCredentials().toString();
 
-        UserRegistrationDTO user = userService.getUserByEmail(email);
+        User user = userService.getUserByEmail(email);
 
         try {
             if (user == null)

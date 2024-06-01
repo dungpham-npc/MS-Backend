@@ -17,11 +17,11 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     List<User> findAllStaffs();
     @Query("SELECT u FROM User u WHERE u.visibilityStatus = true AND u.role.roleId = 1")
     List<User> findAllMembers();
-    @Modifying  // Required for update queries (modifying database)
+    @Modifying
     @Query("UPDATE User u SET u.emailAddress = :email, u.phoneNumber = :phone, u.password = :password, u.username = :username WHERE u.userId = :id")
-    void updateUser(@Param("id") int id, @Param("email") String email,
+    int updateUser(@Param("id") int id, @Param("email") String email,
                     @Param("phone") String phone, @Param("password") String password,
-                    @Param("username") String username);
+                    @Param("username") String username);    //return number of rows affected
     @Modifying
     @Query("UPDATE User u SET u.visibilityStatus = false WHERE u.userId = :id")
     void deleteUser(@Param("id") int id);
