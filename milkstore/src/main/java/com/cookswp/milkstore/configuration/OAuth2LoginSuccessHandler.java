@@ -1,7 +1,6 @@
 package com.cookswp.milkstore.configuration;
 
 import com.cookswp.milkstore.pojo.dtos.UserModel.CustomUserDetails;
-import com.cookswp.milkstore.pojo.dtos.UserModel.UserRegistrationDTO;
 import com.cookswp.milkstore.pojo.entities.User;
 import com.cookswp.milkstore.service.RoleService;
 import com.cookswp.milkstore.service.UserService;
@@ -9,7 +8,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -44,7 +42,7 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
 
         if (user != null) {
 
-            if (userService.checkVisibilityStatusByEmail(email)) {
+            if (!userService.checkVisibilityStatusByEmail(email)) {
                 response.sendRedirect("http://localhost:3000/login-error");
                 return;
             }

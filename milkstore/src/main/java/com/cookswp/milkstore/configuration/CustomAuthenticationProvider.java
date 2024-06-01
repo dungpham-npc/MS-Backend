@@ -43,7 +43,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
             if (!passwordEncoder.matches(password, user.getPassword()))
                 throw new BadCredentialsException("Invalid password!");
 
-            if (userService.checkVisibilityStatusByEmail(email))
+            if (!userService.checkVisibilityStatusByEmail(email))
                 throw new UserInvisibilityException("User might be prohibited or deleted from the system, please contact the administrator for further information!");
 
         } catch (UsernameNotFoundException | BadCredentialsException | UserInvisibilityException e) {
