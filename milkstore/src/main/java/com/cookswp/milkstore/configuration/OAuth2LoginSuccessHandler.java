@@ -73,6 +73,7 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
 
     private static Authentication getAuthentication(User user, Map<String, Object> attributes) {
         CustomUserDetails userDetail = new CustomUserDetails(
+                user.getPhoneNumber(),
                 user.getUsername(),
                 user.getEmailAddress(),
                 user.getPassword(),

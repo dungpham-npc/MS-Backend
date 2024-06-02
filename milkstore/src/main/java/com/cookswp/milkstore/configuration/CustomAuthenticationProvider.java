@@ -52,6 +52,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         }
 
         CustomUserDetails userDetail = new CustomUserDetails(
+                user.getPhoneNumber(),
                 user.getUsername(),
                 email,
                 password,

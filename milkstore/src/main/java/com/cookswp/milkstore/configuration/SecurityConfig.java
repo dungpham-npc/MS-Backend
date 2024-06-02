@@ -36,10 +36,10 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception{
         return httpSecurity
-                .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/register", "/login").permitAll();
+                    auth.requestMatchers("/register", "/login", "/account").anonymous();
                     auth.anyRequest().authenticated();
                 })
                 .formLogin(form -> {
