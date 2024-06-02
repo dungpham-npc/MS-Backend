@@ -1,4 +1,8 @@
+<<<<<<< HEAD:milkstore/src/main/java/com/cookswp/milkstore/pojo/dtos/RoleModel/Role.java
 package com.cookswp.milkstore.pojo.dtos.RoleModel;
+=======
+package com.cookswp.milkstore.pojo.entities;
+>>>>>>> main:milkstore/src/main/java/com/cookswp/milkstore/pojo/entities/Role.java
 
 import jakarta.persistence.*;
 import lombok.Getter;
