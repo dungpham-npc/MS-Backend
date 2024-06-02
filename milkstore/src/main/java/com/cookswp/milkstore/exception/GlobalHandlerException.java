@@ -17,11 +17,6 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalHandlerException extends RuntimeException {
 
-    private final View error;
-
-    public GlobalHandlerException(View error) {
-        this.error = error;
-    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ResponseError> methodArgumentNotValidException(MethodArgumentNotValidException exception) {
@@ -37,15 +32,6 @@ public class GlobalHandlerException extends RuntimeException {
         return new ResponseEntity<>(responseError, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(AppException.class)
-    public ResponseEntity<ResponseData> appExceptionHanlder(AppException e) {
-        System.out.println(" App Exception ");
-        ResponseData responseData = new ResponseData();
-        ErrorCodeException errorCodeException = e.getErrorCodeException();
-        responseData.setMessage(errorCodeException.getMessage());
-        responseData.setCode(errorCodeException.getCode());
-        return ResponseEntity.badRequest().body(responseData);
-    }
 
     //phương thức để ánh xạ lỗi thành  ErrorCodeException
     private ErrorCodeException mapToErrorCodeException(Map<String, String> errors) {

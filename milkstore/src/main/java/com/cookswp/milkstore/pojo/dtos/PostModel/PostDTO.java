@@ -15,9 +15,6 @@ import java.util.Date;
 @AllArgsConstructor
 public class PostDTO {
 
-    @NotNull(message = "User ID can not be null")
-    private Integer userID;
-
     @NotNull(message = "Title can not be null")
     private String title;
 

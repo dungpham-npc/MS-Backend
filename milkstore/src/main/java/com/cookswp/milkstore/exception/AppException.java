@@ -1,5 +1,8 @@
 package com.cookswp.milkstore.exception;
 
+import lombok.Getter;
+
+@Getter
 public class AppException extends RuntimeException {
 
     private final ErrorCodeException errorCodeException;
@@ -9,7 +12,4 @@ public class AppException extends RuntimeException {
         this.errorCodeException = errorCodeException;
     }
 
-    public ErrorCodeException getErrorCodeException() {
-        return errorCodeException;
-    }
 }
