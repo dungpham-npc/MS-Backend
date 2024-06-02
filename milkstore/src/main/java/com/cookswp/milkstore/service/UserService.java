@@ -8,6 +8,7 @@ import com.cookswp.milkstore.repository.UserRepository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -48,7 +50,8 @@ public class UserService {
     }
 
     public User registerUser(User user){
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        if (user.getPassword() != null)
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole(roleService.getRoleByRoleName("CUSTOMER"));
         user.setVisibilityStatus(true);
         return userRepository.save(user);
@@ -93,15 +96,15 @@ public class UserService {
         return userRepository.isVisible(email);
     }
 
-    public User getCurrentUser(){
-        return userRepository.findByEmailAddress(
-                ((CustomUserDetails) SecurityContextHolder
-                        .getContext()
-                        .getAuthentication()
-                        .getPrincipal()
-                )
-                        .getName());
+    public Optional<User> getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !(authentication.getPrincipal() instanceof CustomUserDetails userDetails)) {
+            return Optional.empty();
+        }
+
+        return Optional.ofNullable(userRepository.findByEmailAddress(userDetails.getName()));
     }
+
 
 
 

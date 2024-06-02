@@ -40,9 +40,13 @@ public class PersonalAccountController {
     @GetMapping
     @PreAuthorize("hasAuthority('CUSTOMER')")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseData<CustomUserDetails> getUserProfile(){
-        CustomUserDetails user = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return new ResponseData<>(HttpStatus.OK.value(), "User profile retrieved", user);
+    public ResponseData<UserRegistrationDTO> getUserProfile(){
+        return new ResponseData<>(HttpStatus.OK.value(),
+                mapper.map(userService.getCurrentUser(),
+                        UserRegistrationDTO.class) == null ?
+                        "User has not logged in" :
+                        "User profile retrieved",
+                mapper.map(userService.getCurrentUser(), UserRegistrationDTO.class));
     }
 
     @PutMapping

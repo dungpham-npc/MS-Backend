@@ -20,7 +20,6 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/users")
-@EnableWebSecurity
 public class UserController {
     private final UserService userService;
     private final ModelMapper mapper;

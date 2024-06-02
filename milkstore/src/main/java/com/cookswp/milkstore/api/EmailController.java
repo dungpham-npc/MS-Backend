@@ -20,7 +20,7 @@ public class EmailController {
         String subject = "Test Email from Spring Boot App";
         String text = "This is a test email sent from your Spring Boot application.";
 
-        emailService.sendSimpleMessage(to, subject, text);
+        emailService.sendMessage(to, subject, text);
 
         return ResponseEntity.ok("Test email sent successfully!");
     }
