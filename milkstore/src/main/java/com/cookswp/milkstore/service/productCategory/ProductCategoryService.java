@@ -1,5 +1,6 @@
 package com.cookswp.milkstore.service.productCategory;
 
+import com.cookswp.milkstore.pojo.dtos.ProductCategoryModel.ProductCategoryDTO;
 import com.cookswp.milkstore.pojo.entities.ProductCategory;
 import com.cookswp.milkstore.repository.ProductCategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,9 @@ public class ProductCategoryService implements IProductCategoryService{
     private ProductCategoryRepository productCategoryRepository;
 
     @Override
-    public ProductCategory createProductCategory(ProductCategory productCategory) {
-        return productCategoryRepository.save(productCategory);
+    public ProductCategory createProductCategory(ProductCategoryDTO productCategoryRequest) {
+        ProductCategory productCategoryEntity = new ProductCategory();
+        productCategoryEntity.setCategoryName(productCategoryRequest.getCategoryName());
+        return productCategoryRepository.save(productCategoryEntity);
     }
 }

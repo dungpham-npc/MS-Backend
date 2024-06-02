@@ -4,6 +4,7 @@ import com.cookswp.milkstore.pojo.dtos.PostModel.PostDTO;
 import com.cookswp.milkstore.pojo.entities.Post;
 import com.cookswp.milkstore.response.ResponseData;
 import com.cookswp.milkstore.service.post.PostService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,7 @@ public class PostStaffController {
 
     //create
     @PostMapping("/create-post")
-    public ResponseData<Post> createPost(@RequestBody PostDTO postRequest) {
+    public ResponseData<Post> createPost(@RequestBody @Valid PostDTO postRequest) {
         return new ResponseData<>(HttpStatus.CREATED.value(), "Post created successfully", postService.createPost(postRequest));
     }
 
@@ -31,7 +32,7 @@ public class PostStaffController {
     }
 
     //retrieve
-    @GetMapping("/post")
+    @GetMapping("/get-all-post")
     public ResponseData<List<Post>> getAllPost() {
         return new ResponseData<>(HttpStatus.OK.value(), "Post list", postService.getAllPosts());
     }

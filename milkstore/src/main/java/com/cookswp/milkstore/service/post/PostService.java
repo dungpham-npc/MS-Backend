@@ -1,5 +1,7 @@
 package com.cookswp.milkstore.service.post;
 
+import com.cookswp.milkstore.exception.AppException;
+import com.cookswp.milkstore.exception.ErrorCodeException;
 import com.cookswp.milkstore.pojo.dtos.PostModel.PostDTO;
 import com.cookswp.milkstore.pojo.entities.Post;
 import com.cookswp.milkstore.repository.PostRepository;
@@ -45,6 +47,9 @@ public class PostService implements IPostService {
     @Override
     public Post createPost(PostDTO postRequest) {
         Post postEntity = new Post();
+        if(postRequest.getUserID() == null){
+           throw new RuntimeException();
+        }
         postEntity.setUserID(postRequest.getUserID());
         postEntity.setTitle(postRequest.getTitle());
         postEntity.setContent(postRequest.getContent());

@@ -1,60 +1,56 @@
 package com.cookswp.milkstore.pojo.entities;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "milk_product")
 public class Product implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "product_id")
+    @Column(name = "product_id") @Getter
     private int productID;
 
-    @Setter
+    @Setter@Getter
     @Column(name ="category_id", nullable = false)
     private int categoryID;
 
-    @Setter
+    @Getter@Setter
     @Column(name = "post_id")
     private int postID;
 
-    @Setter
+    @Setter@Getter
     @Column(name = "product_name", nullable = false, unique = true)
     private String productName;
 
-    @Setter
+    @Setter@Getter
     @Column(name = "product_description", nullable = false)
     private String productDescription;
 
-    @Setter
+    @Setter@Getter
     @Column(name = "product_image", nullable = false)
     private String productImage;
 
-    @Setter
+    @Setter@Getter
     @Column(name = "quantity_in_stock", nullable = false)
     private int quantity;
 
-    @Setter
+    @Setter@Getter
     @Column(name = "price", nullable = false)
     private BigDecimal price;
 
+    @Setter@Getter
+    @Column(name = "status")
+    private boolean status = true;
 
-    public Product() {}
 
-    public Product(int categoryID, int postID, String productName, String productDescription, String productImage, int quantity, BigDecimal price) {
-        this.categoryID = categoryID;
-        this.postID = postID;
-        this.productName = productName;
-        this.productDescription = productDescription;
-        this.productImage = productImage;
-        this.quantity = quantity;
-        this.price = price;
-    }
 }

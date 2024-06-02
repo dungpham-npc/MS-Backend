@@ -3,6 +3,7 @@ package com.cookswp.milkstore.pojo.dtos.PostModel;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
@@ -15,7 +16,7 @@ import java.util.Date;
 public class PostDTO {
 
     @NotNull(message = "User ID can not be null")
-    private int userID;
+    private Integer userID;
 
     @NotNull(message = "Title can not be null")
     private String title;
