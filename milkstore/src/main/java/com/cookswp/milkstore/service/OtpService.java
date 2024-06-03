@@ -18,17 +18,16 @@ import java.time.format.DateTimeFormatter;
 @Transactional
 public class OtpService {
     private final TemporaryUserRepository temporaryUserRepository;
-    private final UserService userService;
-    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private final UserRepository userRepository;
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public OtpService(UserService userService,
+    public OtpService(UserRepository userRepository,
                       TemporaryUserRepository temporaryUserRepository,
                       EmailService emailService,
                       PasswordEncoder passwordEncoder){
-        this.userService = userService;
+        this.userRepository = userRepository;
         this.temporaryUserRepository =temporaryUserRepository;
         this.emailService = emailService;
         this.passwordEncoder = passwordEncoder;
@@ -38,31 +37,46 @@ public class OtpService {
         return String.format("%06d", random.nextInt(1000000));
     }
 
-//    public void sendForgotPasswordOtpByEmail(String email){
-//        User user = userService.getUserByEmail(email);
-//        user.setOtpCode(generateOtp());
-//        user.setOtpCreatedAt(LocalDateTime.now().format(dateTimeFormatter));
-//    }
+    public void sendForgotPasswordOtpByEmail(String email){
+        String otp = generateOtp();
+
+        User user = userRepository.findByEmailAddress(email);
+        user.setOtpCode(passwordEncoder.encode(otp));
+        user.setOtpCreatedAt(LocalDateTime.now());
+        user.setOtpExpiredAt(LocalDateTime.now().plusMinutes(10));
+        userRepository.save(user);
+        emailService.sendMessage(email,
+                "Mã xác nhận để thiết lập lại mật khẩu",
+                "Mã của bạn là: " + otp);
+    }
 
     public void sendRegistrationOtpByEmail(String email) {
         if (temporaryUserRepository.findByEmailAddress(email) != null)
             temporaryUserRepository.deleteByEmailAddress(email);
         TemporaryUser newTempUser = new TemporaryUser();
         newTempUser.setEmailAddress(email);
-        newTempUser.setOtpCode(passwordEncoder.encode(generateOtp()));
+        String otp = generateOtp();
+        newTempUser.setOtpCode(passwordEncoder.encode(otp));
         newTempUser.setOtpCreatedAt(LocalDateTime.now());
         newTempUser.setOtpExpiredAt(LocalDateTime.now().plusMinutes(10));
         temporaryUserRepository.save(newTempUser);
         emailService.sendMessage(email,
-                "OTP Verification for Milk Store",
-                "Your OTP code is: " + newTempUser.getOtpCode());
+                "Mã xác nhận đăng kí email mới",
+                "Mã của bạn là: " + otp);
     }
 
-    public boolean isOtpValid(String email, String inputOtpCode){
-        TemporaryUser user = temporaryUserRepository.findByEmailAddress(email);
-        return user != null &&
-                passwordEncoder.matches(inputOtpCode, user.getOtpCode()) &&
-                !LocalDateTime.now().isAfter(user.getOtpExpiredAt());
+    public boolean isOtpValid(String email, String inputOtpCode, boolean isRegister){
+        if (isRegister) {
+            TemporaryUser user = temporaryUserRepository.findByEmailAddress(email);
+            return user != null &&
+                    passwordEncoder.matches(inputOtpCode, user.getOtpCode()) &&
+                    !LocalDateTime.now().isAfter(user.getOtpExpiredAt());
+        } else {
+            User user = userRepository.findByEmailAddress(email);
+            return user != null &&
+                    passwordEncoder.matches(inputOtpCode, user.getOtpCode()) &&
+                    !LocalDateTime.now().isAfter(user.getOtpExpiredAt());
+        }
     }
 
     public void deleteTempUser(String email){

@@ -56,7 +56,7 @@ public class RegisterController {
 
         user.setPassword(userRegistrationDTO.getPassword());
         user.setPhoneNumber(userRegistrationDTO.getPhoneNumber());
-        userService.updateUser(user.getUserId(), user);
+        userService.updateUserBasicInformation(user.getUserId(), user);
 
         return new ResponseData<>(HttpStatus.CREATED.value(),
                 "Registration completed!",

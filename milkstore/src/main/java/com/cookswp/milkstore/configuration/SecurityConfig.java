@@ -39,7 +39,7 @@ public class SecurityConfig {
         return httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/register", "/login", "/users/staffs", "/register/**", "/otp", "/otp/**").permitAll();
+                    auth.requestMatchers("/register", "/login", "/users/staffs", "/register/**", "/otp", "/otp/**", "/account", "/account/**").permitAll();
                     auth.anyRequest().authenticated();
                 })
                 .formLogin(form -> {

@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -43,7 +44,10 @@ public class User {
     private String otpCode;
 
     @Column(name = "otp_created_at")
-    private String otpCreatedAt;
+    private LocalDateTime otpCreatedAt;
+
+    @Column(name = "otp_expired_at")
+    private LocalDateTime otpExpiredAt;
 
     @Transient
     public String getRoleName() {

@@ -18,10 +18,14 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query("SELECT u FROM User u WHERE u.visibilityStatus = true AND u.role.roleId = 1")
     List<User> findAllMembers();
     @Modifying
-    @Query("UPDATE User u SET u.emailAddress = :email, u.phoneNumber = :phone, u.password = :password, u.username = :username WHERE u.userId = :id")
-    int updateUser(@Param("id") int id, @Param("email") String email,
-                    @Param("phone") String phone, @Param("password") String password,
+    @Query("UPDATE User u SET u.phoneNumber = :phone, u.username = :username WHERE u.userId = :id")
+    int updateUser(@Param("id") int id,
+                    @Param("phone") String phone,
                     @Param("username") String username);    //return number of rows affected
+    @Modifying
+    @Query("UPDATE User u SET u.password = :password WHERE u.userId = :id")
+    int updateUserPassword(@Param("id") int id,
+                   @Param("password") String password);
     @Modifying
     @Query("UPDATE User u SET u.visibilityStatus = false WHERE u.userId = :id")
     void deleteUser(@Param("id") int id);

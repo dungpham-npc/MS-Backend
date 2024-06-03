@@ -24,7 +24,7 @@ public class OtpController {
         this.userService = userService;
     }
 
-    @PostMapping("/registration")
+    @PostMapping("/register")
     @ResponseStatus(HttpStatus.OK)
     public ResponseData<String> sendRegistrationOtp(String email){
         if (email == null || email.isEmpty())
@@ -35,19 +35,42 @@ public class OtpController {
         return new ResponseData<>(HttpStatus.OK.value(), "OTP initialized successfully!", null);
     }
 
-    @PostMapping
+    @PostMapping("/register-validation")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseData<String> verifyOtpCode(TemporaryUserDTO temporaryUserDTO){
-        if (!otpService.isOtpValid(temporaryUserDTO.getEmailAddress(), temporaryUserDTO.getOtpCode()))
+    public ResponseData<String> verifyRegisterOtpCode(TemporaryUserDTO temporaryUserDTO){
+        if (!otpService.isOtpValid(temporaryUserDTO.getEmailAddress(), temporaryUserDTO.getOtpCode(), true))
             throw new IllegalArgumentException("OTP is incorrect");
 
         otpService.deleteTempUser(temporaryUserDTO.getEmailAddress());
         return new ResponseData<>(HttpStatus.OK.value(), "OTP validated successfully!", null);
     }
 
+    @PostMapping("/forgot")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseData<String> sendForgotPasswordOtp(String email){
+        if (email == null || email.isEmpty())
+            throw new IllegalArgumentException("Email address cannot be null or empty.");
+        if (userService.getUserByEmail(email) == null)
+            throw new DataIntegrityViolationException("Account with this email can't be found!");
+        otpService.sendForgotPasswordOtpByEmail(email);
+        return new ResponseData<>(HttpStatus.OK.value(), "OTP initialized successfully!", null);
+    }
+
+    @PostMapping("/forgot-validation")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseData<String> verifyForgotPasswordOtpCode(TemporaryUserDTO temporaryUserDTO){
+        if (!otpService.isOtpValid(temporaryUserDTO.getEmailAddress(), temporaryUserDTO.getOtpCode(), false))
+            throw new IllegalArgumentException("OTP is incorrect");
+
+        userService.clearOtpInformationByEmail(temporaryUserDTO.getEmailAddress());
+        return new ResponseData<>(HttpStatus.OK.value(), "OTP validated successfully!", null);
+    }
+
+
+
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ResponseData<String> handleRoleNotFoundException(IllegalArgumentException e){
+    public ResponseData<String> handleIllegalArgumentException(IllegalArgumentException e){
         return new ResponseData<>(HttpStatus.CONFLICT.value(), e.getMessage(), null);
     }
 
