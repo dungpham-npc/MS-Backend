@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/register")
+@CrossOrigin(maxAge = 3600)
 @ControllerAdvice
 public class RegisterController {
     private final UserService userService;
@@ -46,6 +47,7 @@ public class RegisterController {
 
     @PostMapping("/complete-registration")
     @PreAuthorize("hasAuthority('CUSTOMER')")
+    @CrossOrigin(maxAge = 3600)
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseData<UserDTO> completeRegister(UserRegistrationDTO userRegistrationDTO) throws Exception {
         User user = userService.getUserByEmail(userRegistrationDTO.getEmailAddress());
@@ -54,7 +56,7 @@ public class RegisterController {
 
         user.setPassword(userRegistrationDTO.getPassword());
         user.setPhoneNumber(userRegistrationDTO.getPhoneNumber());
-        userService.updateUser(user.getUserId(), user);
+        userService.updateUserBasicInformation(user.getUserId(), user);
 
         return new ResponseData<>(HttpStatus.CREATED.value(),
                 "Registration completed!",

@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,7 +19,6 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/users")
-@EnableWebSecurity
 public class UserController {
     private final UserService userService;
     private final ModelMapper mapper;
@@ -92,7 +90,7 @@ public class UserController {
             throw new RoleNotFoundException();
         }
 
-        userService.updateUser(id, mapper.map(userRegistrationDTO, User.class));
+        userService.updateUserBasicInformation(id, mapper.map(userRegistrationDTO, User.class));
         return new ResponseData<>(HttpStatus.OK.value(),
                 "User updated successfully!",
                 mapper.map(userRegistrationDTO, UserDTO.class));

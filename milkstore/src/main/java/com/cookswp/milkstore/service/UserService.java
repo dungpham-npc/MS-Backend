@@ -1,21 +1,19 @@
 package com.cookswp.milkstore.service;
 
 import com.cookswp.milkstore.pojo.dtos.UserModel.CustomUserDetails;
-import com.cookswp.milkstore.pojo.dtos.UserModel.UserRegistrationDTO;
 import com.cookswp.milkstore.pojo.entities.User;
-import com.cookswp.milkstore.pojo.dtos.UserModel.UserDTO;
 import com.cookswp.milkstore.repository.UserRepository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -48,7 +46,8 @@ public class UserService {
     }
 
     public User registerUser(User user){
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        if (user.getPassword() != null)
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole(roleService.getRoleByRoleName("CUSTOMER"));
         user.setVisibilityStatus(true);
         return userRepository.save(user);
@@ -77,14 +76,16 @@ public class UserService {
         return userRepository.findAllMembers();
     }
 
-    public int updateUser(int id, User user){
+    public int updateUserBasicInformation(int id, User user){
         return userRepository.updateUser(id,
-                user.getEmailAddress(),
                 user.getPhoneNumber(),
-                passwordEncoder.encode(user.getPassword()),
                 user.getUsername());
     }
-    @Transactional
+
+    public int updateUserPassword(int id, String newPassword){
+        return userRepository.updateUserPassword(id, passwordEncoder.encode(newPassword));
+    }
+
     public void deleteUser(int id){
         userRepository.deleteUser(id);
     }
@@ -93,17 +94,21 @@ public class UserService {
         return userRepository.isVisible(email);
     }
 
-    public User getCurrentUser(){
-        return userRepository.findByEmailAddress(
-                ((CustomUserDetails) SecurityContextHolder
-                        .getContext()
-                        .getAuthentication()
-                        .getPrincipal()
-                )
-                        .getName());
+    public Optional<User> getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !(authentication.getPrincipal() instanceof CustomUserDetails userDetails)) {
+            return Optional.empty();
+        }
+
+        return Optional.ofNullable(userRepository.findByEmailAddress(userDetails.getName()));
     }
 
-
+    public void clearOtpInformationByEmail(String email){
+        User user = userRepository.findByEmailAddress(email);
+        user.setOtpCode(null);
+        user.setOtpCreatedAt(null);
+        user.setOtpExpiredAt(null);
+    }
 
 
 }
