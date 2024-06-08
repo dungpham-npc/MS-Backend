@@ -45,7 +45,7 @@ public class UserController {
         return new ResponseData<>(HttpStatus.OK.value(), "List retrieved successfully!", userService.getMemberUserList().stream().map(user -> mapper.map(user, UserDTO.class)).toList());
     }
 
-    @PostMapping
+    @PostMapping("/")
     @PreAuthorize("hasAuthority('ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseData<UserDTO> createStaff(UserRegistrationDTO userRegistrationDTO) {

@@ -1,44 +1,21 @@
 package com.cookswp.milkstore.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ResponseData<T> {
 
-    @Getter @Setter
-    private int code;
+    int code;
 
-    @Getter @Setter
-    private String message;
+    String message;
 
-    @Setter
-    private T data;
-
-    public ResponseData() {}
-
-    public ResponseData(int code, String message) {
-        this.code = code;
-        this.message = message;
-    }
-
-    public ResponseData(int code, String message, T data) {
-        this.code = code;
-        this.message = message;
-        this.data = data;
-    }
-
-    public int getCode() {
-        return code;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public T getData() {
-        return data;
-    }
+    T data;
 
 }

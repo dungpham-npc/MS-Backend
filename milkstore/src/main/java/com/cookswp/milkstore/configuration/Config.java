@@ -14,15 +14,14 @@ import java.util.Properties;
 @Configuration
 public class Config {
     @Bean
-    public ModelMapper modelMapper(){
+    public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();
-        modelMapper.getConfiguration()
-                .setMatchingStrategy(MatchingStrategies.STRICT);
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         return modelMapper;
     }
+
     @Bean
-    public PasswordEncoder passwordEncoder()
-    {
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 

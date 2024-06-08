@@ -58,7 +58,7 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
             userService.registerUser(newUser);
 
             SecurityContextHolder.getContext().setAuthentication(getAuthentication(newUser, attributes));
-            String redirectUrl = "http://localhost:3000/?email=" + URLEncoder.encode(email, StandardCharsets.UTF_8) + "&username=" + URLEncoder.encode(name, StandardCharsets.UTF_8);
+            String redirectUrl = "http://localhost:8080/test" + URLEncoder.encode(email, StandardCharsets.UTF_8) + "&username=" + URLEncoder.encode(name, StandardCharsets.UTF_8);
             response.sendRedirect(redirectUrl);
             return;
         }

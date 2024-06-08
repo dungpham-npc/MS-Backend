@@ -1,26 +1,27 @@
 package com.cookswp.milkstore.service.post;
 
 import com.cookswp.milkstore.exception.AppException;
-import com.cookswp.milkstore.exception.ErrorCodeException;
+import com.cookswp.milkstore.exception.ErrorCode;
 import com.cookswp.milkstore.pojo.dtos.PostModel.PostDTO;
 import com.cookswp.milkstore.pojo.entities.Post;
 import com.cookswp.milkstore.pojo.entities.User;
 import com.cookswp.milkstore.repository.PostRepository;
 import com.cookswp.milkstore.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class PostService implements IPostService {
 
-    @Autowired
-    private PostRepository postRepository;
 
-    @Autowired
-    private UserService userService;
+    private final PostRepository postRepository;
+
+    private final UserService userService;
 
     @Override
     public List<Post> getAllPosts() {
@@ -28,22 +29,27 @@ public class PostService implements IPostService {
     }
 
     @Override
-    public Optional<Post> getPostByID(int id) {
-        return postRepository.findByIDAndVisibility(id);
+    public Post getPostByID(int id) {
+        Post post = postRepository.findByIDAndVisibility(id);
+        if(post != null){
+            return post;
+        } else {
+            throw new AppException(ErrorCode.POST_ID_NOT_FOUND);
+        }
     }
 
     @Override
-    public Post updatePost(int id, PostDTO post) {
-        Optional<Post> postOptional = postRepository.findById(id);
-        if(postOptional.isPresent()) {
-            Post updatePost = postOptional.get();
-            updatePost.setTitle(post.getTitle());
-            updatePost.setContent(post.getContent());
-            updatePost.setDateCreated(post.getDateCreated());
-            updatePost.setUserComment(post.getUserComment());
-            return postRepository.save(updatePost);
+    public Post updatePost(int id, PostDTO postRequest) {
+        Post postEntity = postRepository.findByIDAndVisibility(id);
+        if(postEntity != null) {
+            User currentUser = userService.getCurrentUser();
+            postEntity.setUserID(currentUser.getUserId());
+            postEntity.setContent(postRequest.getContent());
+            postEntity.setTitle(postRequest.getTitle());
+            postEntity.setDateCreated(new Date());
+            return postRepository.save(postEntity);
         } else {
-            throw new RuntimeException("Not found post with the ID: " + id);
+            throw new AppException(ErrorCode.POST_ID_NOT_FOUND);
         }
     }
 
@@ -54,18 +60,19 @@ public class PostService implements IPostService {
         postEntity.setUserID(currentUser.getUserId());
         postEntity.setTitle(postRequest.getTitle());
         postEntity.setContent(postRequest.getContent());
-        postEntity.setDateCreated(postRequest.getDateCreated());
-        postEntity.setUserComment(postRequest.getUserComment());
+        postEntity.setDateCreated(new Date());
+        postEntity.setUserComment("");
         return postRepository.save(postEntity);
     }
 
     @Override
     public void deletePost(int id) {
-        Optional<Post> optionalPost = postRepository.findById(id);
-        if(optionalPost.isPresent()){
-            Post post = optionalPost.get();
-            post.setVisibility(false);
-            postRepository.save(post);
+        Post postEntity = postRepository.findByIDAndVisibility(id);
+        if(postEntity != null){
+            postEntity.setVisibility(false);
+            postRepository.save(postEntity);
+        } else {
+            throw new AppException(ErrorCode.POST_ID_NOT_FOUND);
         }
     }
 }

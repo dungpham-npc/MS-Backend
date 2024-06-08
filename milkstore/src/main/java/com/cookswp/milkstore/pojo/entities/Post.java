@@ -3,9 +3,11 @@ package com.cookswp.milkstore.pojo.entities;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Setter
@@ -40,12 +42,5 @@ public class Post implements Serializable {
 
     public Post(){}
 
-    public Post(int userID, String title, String content, String userComment) {
-        this.userID = userID;
-        this.title = title;
-        this.content = content;
-        this.dateCreated = new Date();
-        this.userComment = userComment;
-    }
 
 }

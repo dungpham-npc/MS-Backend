@@ -6,6 +6,8 @@ import com.cookswp.milkstore.repository.ProductCategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class ProductCategoryService implements IProductCategoryService{
 
@@ -13,9 +15,31 @@ public class ProductCategoryService implements IProductCategoryService{
     private ProductCategoryRepository productCategoryRepository;
 
     @Override
-    public ProductCategory createProductCategory(ProductCategoryDTO productCategoryRequest) {
+    public ProductCategory createProductCategory(ProductCategoryDTO requestCategory) {
         ProductCategory productCategoryEntity = new ProductCategory();
-        productCategoryEntity.setCategoryName(productCategoryRequest.getCategoryName());
+        productCategoryEntity.setCategoryName(requestCategory.getCategoryName());
         return productCategoryRepository.save(productCategoryEntity);
+    }
+
+    @Override
+    public ProductCategory updateProductCategory(int id, ProductCategoryDTO requestCategory) {
+        Optional<ProductCategory> findProduct = productCategoryRepository.findById(id);
+        if(findProduct.isPresent()){
+            ProductCategory productCategoryEntity = findProduct.get();
+            productCategoryEntity.setCategoryName(requestCategory.getCategoryName());
+            return productCategoryRepository.save(productCategoryEntity);
+        } else {
+            throw new RuntimeException("Not found category with ID " + id);
+        }
+    }
+
+    @Override
+    public ProductCategory deleteProductCategory(ProductCategoryDTO requestCategory) {
+        return null;
+    }
+
+    @Override
+    public ProductCategory findProductCategory(ProductCategoryDTO requestCategory) {
+        return null;
     }
 }

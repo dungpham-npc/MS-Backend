@@ -12,7 +12,7 @@ public interface IPostService {
    public List<Post> getAllPosts();
 
    //Get post by ID
-   public Optional<Post> getPostByID(int id);
+   public Post getPostByID(int id);
 
    //Put post
     public Post updatePost(int id, PostDTO post);
