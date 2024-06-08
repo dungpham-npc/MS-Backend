@@ -40,8 +40,8 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
             if (user == null)
                 throw new UsernameNotFoundException("User not found!");
 
-            if (!passwordEncoder.matches(password, user.getPassword()))
-                throw new BadCredentialsException("Invalid password!");
+            if (!passwordEncoder.matches(password, user.getPassword()) && !email.equals(user.getEmailAddress()))
+                throw new BadCredentialsException("Invalid credentials!");
 
             if (!userService.checkVisibilityStatusByEmail(email))
                 throw new UserInvisibilityException("User might be prohibited or deleted from the system, please contact the administrator for further information!");

@@ -54,9 +54,10 @@ public class RegisterController {
         if (user == null)
             throw new Exception("Error processing the request");
 
-        user.setPassword(userRegistrationDTO.getPassword());
         user.setPhoneNumber(userRegistrationDTO.getPhoneNumber());
+        user.setUsername(userRegistrationDTO.getUsername());
         userService.updateUserBasicInformation(user.getUserId(), user);
+        userService.updateUserPassword(user.getUserId(), userRegistrationDTO.getPassword());
 
         return new ResponseData<>(HttpStatus.CREATED.value(),
                 "Registration completed!",

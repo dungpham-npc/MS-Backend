@@ -52,7 +52,6 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
 
             User newUser = new User();
             newUser.setEmailAddress(email);
-            newUser.setUsername(name);
             newUser.setRole(roleService.getRoleByRoleName("CUSTOMER"));
             userService.registerUser(newUser);
 
