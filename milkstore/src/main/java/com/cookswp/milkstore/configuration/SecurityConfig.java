@@ -43,11 +43,14 @@ public class SecurityConfig {
                     auth.anyRequest().authenticated();
                 })
                 .formLogin(form -> {
-                    form.successHandler(customFormLoginSuccessHandler); // Use custom form login success handler
+                    form
+                            .loginPage("/login").permitAll()
+                            .successHandler(customFormLoginSuccessHandler); // Use custom form login success handler
                 })
                 .oauth2Login(oauth2 ->{
                     oauth2.successHandler(oAuth2LoginSuccessHandler);
                 })
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .build();
     }
 

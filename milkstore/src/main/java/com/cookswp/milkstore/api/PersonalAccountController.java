@@ -17,6 +17,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/account")
 public class PersonalAccountController {
@@ -34,15 +36,14 @@ public class PersonalAccountController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('CUSTOMER')")
     @ResponseStatus(HttpStatus.OK)
     public ResponseData<UserRegistrationDTO> getUserProfile(){
+        Optional<User> user = userService.getCurrentUser();
         return new ResponseData<>(HttpStatus.OK.value(),
-                mapper.map(userService.getCurrentUser(),
-                        UserRegistrationDTO.class) == null ?
-                        "User has not logged in" :
-                        "User profile retrieved",
-                mapper.map(userService.getCurrentUser(), UserRegistrationDTO.class));
+                user.isPresent() ?
+                        "User profile retrieved" :
+                        "User has not logged in",
+                mapper.map(user, UserRegistrationDTO.class));
     }
 
     @PutMapping
