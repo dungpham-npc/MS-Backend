@@ -1,6 +1,5 @@
 package com.cookswp.milkstore.configuration;
 
-import com.cookswp.milkstore.pojo.dtos.UserModel.CustomUserDetails;
 import com.cookswp.milkstore.pojo.entities.User;
 import com.cookswp.milkstore.service.RoleService;
 import com.cookswp.milkstore.service.UserService;
@@ -11,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
@@ -20,7 +18,6 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.Map;
 
 @Component
@@ -42,7 +39,7 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
 
         if (user != null) {
 
-            if (!userService.checkVisibilityStatusByEmail(email)) {
+            if (!user.isEnabled() || !user.isAccountNonLocked()) {
                 response.sendRedirect("http://localhost:3000/login-error");
                 return;
             }
@@ -53,6 +50,7 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
             User newUser = new User();
             newUser.setEmailAddress(email);
             newUser.setRole(roleService.getRoleByRoleName("CUSTOMER"));
+            newUser.setPassword("test");    //delete this
             userService.registerUser(newUser);
 
             SecurityContextHolder.getContext().setAuthentication(getAuthentication(newUser, attributes));
@@ -71,18 +69,11 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
     }
 
     private static Authentication getAuthentication(User user, Map<String, Object> attributes) {
-        CustomUserDetails userDetail = new CustomUserDetails(
-                user.getPhoneNumber(),
-                user.getUsername(),
-                user.getEmailAddress(),
-                user.getPassword(),
-                List.of(new SimpleGrantedAuthority(user.getRoleName())),
-                attributes);
-
+        user.setAttributes(attributes);
         return new UsernamePasswordAuthenticationToken(
-                userDetail,
-                user.getPassword(),
-                List.of(new SimpleGrantedAuthority(user.getRoleName()))
+                user,
+                user.getPassword() == null ? null : user.getPassword(),
+                user.getAuthorities()
         );
     }
 

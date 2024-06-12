@@ -2,7 +2,6 @@ package com.cookswp.milkstore.api;
 
 
 import com.cookswp.milkstore.exception.MissingRequiredFieldException;
-import com.cookswp.milkstore.pojo.dtos.UserModel.CustomUserDetails;
 import com.cookswp.milkstore.pojo.dtos.UserModel.PasswordUpdateDTO;
 import com.cookswp.milkstore.pojo.dtos.UserModel.UserDTO;
 import com.cookswp.milkstore.pojo.dtos.UserModel.UserRegistrationDTO;
@@ -38,12 +37,12 @@ public class PersonalAccountController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public ResponseData<UserRegistrationDTO> getUserProfile(){
-        Optional<User> user = userService.getCurrentUser();
+        User user = userService.getCurrentUser();
         return new ResponseData<>(HttpStatus.OK.value(),
-                user.isPresent() ?
+                user != null ?
                         "User profile retrieved" :
                         "User has not logged in",
-                mapper.map(user, UserRegistrationDTO.class));
+                user != null ? mapper.map(user, UserRegistrationDTO.class) : null);
     }
 
     @PutMapping
@@ -61,7 +60,7 @@ public class PersonalAccountController {
     @PreAuthorize("hasAuthority('CUSTOMER')")
     @ResponseStatus(HttpStatus.OK)
     public ResponseData<String> updateUserPassword(PasswordUpdateDTO passwordUpdateDTO){
-        CustomUserDetails user = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userService.getCurrentUser();
         if (!passwordEncoder.matches(passwordUpdateDTO.getOldPassword(), user.getPassword()))
             throw new IllegalArgumentException("Old password is wrong");
 

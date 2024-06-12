@@ -5,9 +5,16 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.sql.Date;
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 @Entity
 @Getter
@@ -15,7 +22,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "user")
-public class User {
+public class User implements UserDetails, OAuth2User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
@@ -36,6 +43,9 @@ public class User {
     @Column(name = "visibility_status")
     private boolean visibilityStatus;
 
+    @Column(name = "prohibit_status")
+    private boolean prohibitStatus;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id")
     private Role role;
@@ -50,15 +60,42 @@ public class User {
     private LocalDateTime otpExpiredAt;
 
     @Transient
+    private Collection<? extends GrantedAuthority> authorities;
+
+    @Transient
+    private Map<String, Object> attributes;
+
+    @Transient
     public String getRoleName() {
         return role != null ? role.getRoleName() : null;
     }
 
-    public User(int userId, String emailAddress, String phoneNumber, String password, String username) {
-        this.userId = userId;
-        this.emailAddress = emailAddress;
-        this.phoneNumber = phoneNumber;
-        this.password = password;
-        this.username = username;
+    @Override
+    public Map<String, Object> getAttributes() {
+        return attributes;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return authorities != null ? authorities : mapRolesToAuthorities(this.role);
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return !this.prohibitStatus;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return this.visibilityStatus;
+    }
+
+    @Override
+    public String getName() {
+        return null;
+    }
+
+    private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Role role) {
+        return List.of(new SimpleGrantedAuthority(role.getRoleName()));
     }
 }

@@ -1,6 +1,5 @@
 package com.cookswp.milkstore.service;
 
-import com.cookswp.milkstore.pojo.dtos.UserModel.CustomUserDetails;
 import com.cookswp.milkstore.pojo.entities.User;
 import com.cookswp.milkstore.repository.UserRepository.UserRepository;
 import org.modelmapper.ModelMapper;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -37,12 +35,12 @@ public class UserService {
         this.mapper = mapper;
     }
 
-    public User getUserByUsername(String username){
-        return userRepository.findByUsername(username);
-    }
-
     public User getUserByEmail(String email){
         return userRepository.findByEmailAddress(email);
+    }
+
+    public User getUserById(int id){
+        return userRepository.findByUserId(id);
     }
 
     public User registerUser(User user){
@@ -76,31 +74,33 @@ public class UserService {
         return userRepository.findAllMembers();
     }
 
-    public int updateUserBasicInformation(int id, User user){
-        return userRepository.updateUser(id,
-                user.getPhoneNumber(),
-                user.getUsername());
+    public void updateUserBasicInformation(int id, User user){
+        User currentUser = userRepository.findByUserId(id);
+        currentUser.setUsername(user.getUsername());
+        currentUser.setPhoneNumber(user.getPhoneNumber());
+        userRepository.save(currentUser);
     }
 
-    public int updateUserPassword(int id, String newPassword){
-        return userRepository.updateUserPassword(id, passwordEncoder.encode(newPassword));
+    public void updateUserPassword(int id, String newPassword){
+        User user = userRepository.findByUserId(id);
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
     }
 
     public void deleteUser(int id){
-        userRepository.deleteUser(id);
+        User user = userRepository.findByUserId(id);
+        user.setVisibilityStatus(false);
+        userRepository.save(user);
     }
 
     public boolean checkVisibilityStatusByEmail(String email){
-        return userRepository.isVisible(email);
+        return userRepository.findByEmailAddress(email).isEnabled();
     }
 
-    public Optional<User> getCurrentUser() {
+    public User getCurrentUser(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !(authentication.getPrincipal() instanceof CustomUserDetails userDetails)) {
-            return Optional.empty();
-        }
-
-        return Optional.ofNullable(userRepository.findByEmailAddress(userDetails.getName()));
+        String emailAddress = ((User) authentication.getPrincipal()).getEmailAddress();
+        return userRepository.findByEmailAddress(emailAddress);
     }
 
     public void clearOtpInformationByEmail(String email){
@@ -108,6 +108,11 @@ public class UserService {
         user.setOtpCode(null);
         user.setOtpCreatedAt(null);
         user.setOtpExpiredAt(null);
+    }
+
+    public void banMemberUser(int id){
+        User user = userRepository.findByUserId(id);
+        user.setProhibitStatus(true);
     }
 
 
