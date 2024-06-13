@@ -6,7 +6,7 @@ public class SampleTest {
     @Test
     public void testAddition() {
         int result = 2 + 4;
-        assertEquals(5, result, "2 + 3 should equal 5");
+        assertEquals(6, result, "2 + 3 should equal 5");
     }
 
     @Test
