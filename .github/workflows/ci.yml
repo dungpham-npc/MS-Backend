@@ -42,7 +42,7 @@ jobs:
 
       - name: Create data.json for Jira Update
         run: |
-          echo '{ "transition": { "id": "11" }, "fields": { "10038": "Pass" } }' > data.json
+          echo '{ "transition": { "id": "11" }, "fields": { "customfield_10038": "Pass" } }' > data.json
 
       - name: Update Jira
         run: |
