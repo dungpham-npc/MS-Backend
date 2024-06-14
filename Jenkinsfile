@@ -9,7 +9,7 @@ pipeline {
 
           // Extract Jira issue key from the latest commit message
           def commitMessage = sh(script: 'git log -1 --pretty=%B', returnStdout: true).trim()
-          def jiraIssueKey = commitMessage.find(/PROJECT-\d+/) // Adjust the regex to match your Jira issue key pattern and replace PROJECT to PROJECT KEY
+          def jiraIssueKey = commitMessage.find(/NJM-\d+/) // Adjust the regex to match your Jira issue key pattern and replace PROJECT to PROJECT KEY
 
           if (!jiraIssueKey) {
             error "Jira issue key not found in the commit message."
@@ -49,14 +49,14 @@ pipeline {
               requestBody: """
               {
                 "fields": {
-                  "customfield_12345": "${status}" // Replace 'customfield_12345' with the ID of the 'Testcase Result' field
+                  "10038": "${status}"
                 }
               }
               """
           )
           // Attach test result file to Jira issue
           httpRequest(
-              url: "https://your-domain.atlassian.net/rest/api/2/issue/${jiraIssueKey}/attachments",
+              url: "https://cook-swp.atlassian.net/rest/api/2/issue/${jiraIssueKey}/attachments",
               httpMode: 'POST',
               customHeaders: [
                   [name: 'Authorization', value: jiraAuth],
