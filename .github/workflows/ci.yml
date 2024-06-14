@@ -25,6 +25,7 @@ jobs:
 
       - name: Build with Maven
         run: mvn clean test
+        working-directory: milkstore
 
       - name: Extract Jira Issue Key from Commit Message
         id: extract_issue_key
