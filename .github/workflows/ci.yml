@@ -34,7 +34,7 @@ jobs:
           echo "Commit message: $commit_message"
           if [[ "$commit_message" =~ ([A-Z]+-[0-9]+) ]]; then
             echo "Found Jira issue key: ${BASH_REMATCH[1]}"
-            echo "JIRA_ISSUE_KEY=${BASH_REMATCH[1]}" >> $GITHUB_ENV
+            echo "NJM=${BASH_REMATCH[1]}" >> $GITHUB_ENV
           else
             echo "No Jira issue key found in commit message"
             exit 1
