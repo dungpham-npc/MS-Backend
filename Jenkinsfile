@@ -40,7 +40,7 @@ pipeline {
           def attachment = "target/surefire-reports/testng-results.xml"
           // Update the custom field "Testcase Result" on Jira
           httpRequest(
-              url: "https://your-domain.atlassian.net/rest/api/2/issue/${jiraIssueKey}/transitions",
+              url: "https://cook-swp.atlassian.net/rest/api/2/issue/${jiraIssueKey}/transitions",
               httpMode: 'POST',
               customHeaders: [
                   [name: 'Authorization', value: jiraAuth],
