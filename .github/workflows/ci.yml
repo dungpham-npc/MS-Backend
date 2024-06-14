@@ -42,7 +42,7 @@ jobs:
 
     - name: Create data.json for Jira Update
       run: |
-        echo '{ "fields":{ "customfield_10038": {"self": "https://cook-swp.atlassian.net/rest/api/2/customFieldOption/10027", "id" : "10027", "value" : "Pass"} }}' > data.json
+        echo '{ "fields":{ "customfield_10038": {"self": "https://cook-swp.atlassian.net/rest/api/2/customFieldOption/10028", "id" : "10028", "value" : "Pass"} }}' > data.json
 
     - name: Update Jira
       run: |
