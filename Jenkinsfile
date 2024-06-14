@@ -35,9 +35,9 @@ pipeline {
         script {
           def testResults = junit 'target/surefire-reports/*.xml'
           def jiraIssueKey = env.JIRA_ISSUE_KEY
-          def jiraAuth = "Basic " + "username:api-token".bytes.encodeBase64().toString()
+          def jiraAuth = "Basic " + "dungpase183097@fpt.edu.vn:ATATT3xFfGF0DNDgpp_IPzbKc97CHbvM2wP5E--YPRqE5oHmoiOwzen-BHWHb2U1teQem555bHQ2FXlpT0FR6mSRFWUe8T1xwhf5YmsnGSR4_zdlV8SC51bBYA-VYeJJntX2Oas0OhjgI3mHnAWMYk3xpWArBAykHFTJbsiM5C5ndBgSxbmFHfI=5E9A53F9".bytes.encodeBase64().toString()
           def status = testResults.failCount == 0 ? "Pass" : "Fail"
-          def attachment = "target/surefire-reports/testng.xml"
+          def attachment = "target/surefire-reports/testng-results.xml"
           // Update the custom field "Testcase Result" on Jira
           httpRequest(
               url: "https://your-domain.atlassian.net/rest/api/2/issue/${jiraIssueKey}/transitions",
