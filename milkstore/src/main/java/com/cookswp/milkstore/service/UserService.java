@@ -90,7 +90,8 @@ public class UserService {
     }
 
     public User getCurrentUser() {
-        return userRepository.findByEmailAddress(((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getName());
+        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return userRepository.findByEmailAddress(userDetails.getName());
     }
 
 

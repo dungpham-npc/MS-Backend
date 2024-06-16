@@ -21,6 +21,7 @@ public class GlobalHandlerException extends RuntimeException {
         responseError.setMessage(errorCode.getMessage());
         return ResponseEntity.badRequest().body(responseError);
     }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ResponseError>handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         String enumKey = Objects.requireNonNull(e.getFieldError()).getDefaultMessage();

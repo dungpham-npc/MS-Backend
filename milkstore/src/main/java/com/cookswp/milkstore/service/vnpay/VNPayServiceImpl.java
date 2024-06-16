@@ -6,18 +6,23 @@ import com.cookswp.milkstore.pojo.entities.Payment;
 import com.cookswp.milkstore.repository.PaymentRepository;
 import com.cookswp.milkstore.utils.VNPayUtil;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
 @Service
-@RequiredArgsConstructor
 public class VNPayServiceImpl implements VNPayService {
 
     private final VNPayConfig vnPayConfig;
 
     private final PaymentRepository paymentRepository;
+
+    @Autowired
+    public VNPayServiceImpl(VNPayConfig vnPayConfig, PaymentRepository paymentRepository) {
+        this.vnPayConfig = vnPayConfig;
+        this.paymentRepository = paymentRepository;
+    }
 
     public PaymentDTO.VNPayResponse createVNPayPayment(HttpServletRequest request) {
         long amount = Integer.parseInt(request.getParameter("amount")) * 100L;
@@ -49,6 +54,4 @@ public class VNPayServiceImpl implements VNPayService {
         payment.setTransactionStatus(request.getParameter("vnp_TransactionStatus"));
         return paymentRepository.save(payment);
     }
-
-
 }

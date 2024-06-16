@@ -57,7 +57,6 @@ public class VNPayConfig {
         calendar.add(Calendar.MINUTE, 15);
         String vnp_ExpireDate = formatter.format(calendar.getTime());
         vnpParamsMap.put("vnp_ExpireDate", vnp_ExpireDate);
-
         return vnpParamsMap;
     }
 

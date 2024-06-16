@@ -10,8 +10,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-import static java.net.URLEncoder.encode;
-
 public class VNPayUtil {
 
     public static String hmacSHA512(final String key, final String data) {
@@ -68,19 +66,19 @@ public class VNPayUtil {
                 .collect(Collectors.joining("&"));
     }
 
-    //Kiểm tra xem giá trị không rỗng và không phải null
+    //Check if the value if null or empty
     private static boolean isNotEmpty(String value){
         return value != null && !value.isEmpty();
     }
 
-    //Tạo cặp key=value từ Map gọi phương thức encode để mã hóa khóa
+    //Create key and value mapping each other then code it
     private static String buildQueryParam(Map.Entry<String, String> entry, boolean encodeKey){
         String key = encodeKey ? encode(entry.getKey()) : entry.getKey();
         String value = encode(entry.getValue());
         return key + "=" + value;
     }
 
-    //Mã hóa một chuỗi sử dụng URLEncoder với bộ ký tự US_ASCII
+    //Encode a string
     private static String encode(String value){
         return URLEncoder.encode(value, StandardCharsets.US_ASCII);
     }
