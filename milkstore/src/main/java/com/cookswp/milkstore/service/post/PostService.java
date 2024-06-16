@@ -4,7 +4,7 @@ import com.cookswp.milkstore.exception.AppException;
 import com.cookswp.milkstore.exception.ErrorCode;
 import com.cookswp.milkstore.pojo.dtos.PostModel.PostDTO;
 import com.cookswp.milkstore.pojo.entities.Post;
-import com.cookswp.milkstore.repository.PostRepository;
+import com.cookswp.milkstore.repository.post.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

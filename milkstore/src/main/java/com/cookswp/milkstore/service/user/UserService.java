@@ -1,10 +1,9 @@
-package com.cookswp.milkstore.service;
+package com.cookswp.milkstore.service.user;
 
 import com.cookswp.milkstore.pojo.dtos.UserModel.CustomUserDetails;
-import com.cookswp.milkstore.pojo.dtos.UserModel.UserRegistrationDTO;
 import com.cookswp.milkstore.pojo.entities.User;
-import com.cookswp.milkstore.pojo.dtos.UserModel.UserDTO;
-import com.cookswp.milkstore.repository.UserRepository.UserRepository;
+import com.cookswp.milkstore.repository.user.UserRepository;
+import com.cookswp.milkstore.service.role.RoleService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -13,8 +12,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Service

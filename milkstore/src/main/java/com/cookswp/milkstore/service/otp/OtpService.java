@@ -1,12 +1,12 @@
-package com.cookswp.milkstore.service;
+package com.cookswp.milkstore.service.otp;
 
 import com.cookswp.milkstore.pojo.entities.User;
-import com.cookswp.milkstore.repository.UserRepository.UserRepository;
+import com.cookswp.milkstore.repository.user.UserRepository;
+import com.cookswp.milkstore.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
-import java.sql.Date;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 

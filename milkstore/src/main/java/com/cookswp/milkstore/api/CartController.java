@@ -3,7 +3,6 @@ package com.cookswp.milkstore.api;
 
 import com.cookswp.milkstore.pojo.entities.ShoppingCart;
 import com.cookswp.milkstore.pojo.entities.ShoppingCartItem;
-import com.cookswp.milkstore.service.ShoppingCartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -2,13 +2,11 @@ package com.cookswp.milkstore.service.product;
 
 import com.cookswp.milkstore.pojo.dtos.ProductModel.ProductDTO;
 import com.cookswp.milkstore.pojo.entities.Product;
-import com.cookswp.milkstore.repository.ProductRepository.ProductRepository;
+import com.cookswp.milkstore.repository.product.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ProductService implements IProductService {

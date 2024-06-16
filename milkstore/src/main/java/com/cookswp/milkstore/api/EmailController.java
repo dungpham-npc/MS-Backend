@@ -1,6 +1,6 @@
 package com.cookswp.milkstore.api;
 
-import com.cookswp.milkstore.service.EmailService;
+import com.cookswp.milkstore.service.email.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;

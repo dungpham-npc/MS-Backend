@@ -3,7 +3,7 @@ package com.cookswp.milkstore.service.vnpay;
 import com.cookswp.milkstore.configuration.VNPayConfig;
 import com.cookswp.milkstore.pojo.dtos.PaymentModel.PaymentDTO;
 import com.cookswp.milkstore.pojo.entities.Payment;
-import com.cookswp.milkstore.repository.PaymentRepository;
+import com.cookswp.milkstore.repository.payment.PaymentRepository;
 import com.cookswp.milkstore.utils.VNPayUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
