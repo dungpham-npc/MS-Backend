@@ -10,7 +10,6 @@ import lombok.Setter;
 @Table(name = "shopping_cart_item")
 @Getter
 @Setter
-
 public class ShoppingCartItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

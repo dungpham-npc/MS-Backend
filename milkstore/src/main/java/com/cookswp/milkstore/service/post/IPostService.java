@@ -1,9 +1,10 @@
 package com.cookswp.milkstore.service.post;
 
+import com.cookswp.milkstore.pojo.dtos.PostModel.PostDTO;
 import com.cookswp.milkstore.pojo.entities.Post;
 
 import java.util.List;
-
+import java.util.Optional;
 
 public interface IPostService {
 
@@ -14,8 +15,10 @@ public interface IPostService {
    public Post getPostByID(int id);
 
    //Put post
-    public Post updatePost(int id, Post post);
+    public Post updatePost(int id, PostDTO post);
 
     //Create post
-    public Post createPost(Post post);
+    public Post createPost(PostDTO post);
+
+    public void deletePost(int id);
 }
