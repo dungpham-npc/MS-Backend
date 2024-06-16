@@ -1,4 +1,4 @@
-package com.cookswp.milkstore.repository.ShoppingCartItemRepository;
+package com.cookswp.milkstore.repository.shoppingCartItem;
 
 import com.cookswp.milkstore.pojo.entities.ShoppingCartItem;
 import org.springframework.data.jpa.repository.JpaRepository;

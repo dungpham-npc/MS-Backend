@@ -1,4 +1,4 @@
-package com.cookswp.milkstore.service;
+package com.cookswp.milkstore.service.email;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;

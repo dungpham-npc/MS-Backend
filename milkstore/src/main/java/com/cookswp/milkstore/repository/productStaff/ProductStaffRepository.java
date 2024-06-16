@@ -1,4 +1,4 @@
-package com.cookswp.milkstore.repository;
+package com.cookswp.milkstore.repository.productStaff;
 
 import com.cookswp.milkstore.pojo.entities.ProductCategory;
 import org.springframework.data.jpa.repository.JpaRepository;

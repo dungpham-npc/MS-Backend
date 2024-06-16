@@ -1,4 +1,4 @@
-package com.cookswp.milkstore.repository.UserRepository;
+package com.cookswp.milkstore.repository.user;
 
 import com.cookswp.milkstore.pojo.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;

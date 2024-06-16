@@ -3,7 +3,7 @@ package com.cookswp.milkstore.configuration;
 import com.cookswp.milkstore.exception.UserInvisibilityException;
 import com.cookswp.milkstore.pojo.dtos.UserModel.CustomUserDetails;
 import com.cookswp.milkstore.pojo.entities.User;
-import com.cookswp.milkstore.service.UserService;
+import com.cookswp.milkstore.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;

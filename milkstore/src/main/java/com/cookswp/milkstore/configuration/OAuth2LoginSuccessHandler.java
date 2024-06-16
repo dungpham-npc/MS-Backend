@@ -2,8 +2,8 @@ package com.cookswp.milkstore.configuration;
 
 import com.cookswp.milkstore.pojo.dtos.UserModel.CustomUserDetails;
 import com.cookswp.milkstore.pojo.entities.User;
-import com.cookswp.milkstore.service.RoleService;
-import com.cookswp.milkstore.service.UserService;
+import com.cookswp.milkstore.service.role.RoleService;
+import com.cookswp.milkstore.service.user.UserService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

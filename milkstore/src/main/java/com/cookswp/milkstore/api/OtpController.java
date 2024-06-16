@@ -1,7 +1,7 @@
 package com.cookswp.milkstore.api;
 
 import com.cookswp.milkstore.response.ResponseData;
-import com.cookswp.milkstore.service.OtpService;
+import com.cookswp.milkstore.service.otp.OtpService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;

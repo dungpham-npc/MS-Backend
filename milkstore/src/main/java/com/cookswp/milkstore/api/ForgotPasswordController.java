@@ -1,6 +1,6 @@
 package com.cookswp.milkstore.api;
 
-import com.cookswp.milkstore.service.UserService;
+import com.cookswp.milkstore.service.user.UserService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

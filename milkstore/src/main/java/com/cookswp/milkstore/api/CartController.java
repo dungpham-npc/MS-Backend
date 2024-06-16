@@ -1,10 +1,8 @@
 package com.cookswp.milkstore.api;
 
-import com.cookswp.milkstore.pojo.dtos.CartModel.AddToCart;
-import com.cookswp.milkstore.pojo.dtos.CartModel.ShowCartModel;
-import com.cookswp.milkstore.pojo.dtos.CartModel.UpdateToCart;
+
 import com.cookswp.milkstore.pojo.entities.ShoppingCart;
-import com.cookswp.milkstore.service.shoppingcart.IShoppingCartService;
+import com.cookswp.milkstore.pojo.entities.ShoppingCartItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,32 +11,84 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/carts")
+
 public class CartController {
-
     @Autowired
-    private IShoppingCartService shoppingCartService;
+    private ShoppingCartService shoppingCartService;
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<List<ShowCartModel>> getCartByUserId(@PathVariable int userId) {
-        List<ShowCartModel> carts = shoppingCartService.getCartByUserId(userId);
-        return ResponseEntity.ok(carts);
+    @GetMapping
+    public List<ShoppingCart> getAllCarts() {
+        return shoppingCartService.getAllCarts();
     }
 
-    @PostMapping("/{userId}/items")
-    public ResponseEntity<ShoppingCart> addItemToCart(@PathVariable int userId, @RequestBody AddToCart addToCart) {
-        ShoppingCart cart = shoppingCartService.addToCart(addToCart, userId);
-        return ResponseEntity.ok(cart);
+    @GetMapping("/{id}")
+    public ResponseEntity<ShoppingCart> getCartById (@PathVariable int id) {
+        ShoppingCart cart = shoppingCartService.getCartById(id);
+        if (cart != null) {
+            return ResponseEntity.ok(cart);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    @DeleteMapping("/{userId}/carts/{cartId}")
-    public ResponseEntity<Void> deleteCart(@PathVariable int userId, @PathVariable int cartId) {
-        ShoppingCart cart = shoppingCartService.deleteToCart(cartId, userId);
-        return ResponseEntity.ok().build();
+    @PostMapping
+    public ResponseEntity<ShoppingCart> createCart(@RequestBody ShoppingCart cart) {
+        ShoppingCart saveCart = shoppingCartService.saveCart(cart);
+        return ResponseEntity.ok(saveCart);
     }
 
-    @PutMapping("/{userId}/carts/{cartId}/items")
-    public ResponseEntity<ShoppingCart> updateItemInCart(@PathVariable int userId, @PathVariable int cartId, @RequestBody UpdateToCart updateToCart) {
-        ShoppingCart cart = shoppingCartService.updateItem(updateToCart, cartId, userId);
-        return ResponseEntity.ok(cart);
+    @PutMapping("/{id}")
+    public ResponseEntity<ShoppingCart> updateCart(@PathVariable int id, @RequestBody ShoppingCart cartDetails) {
+        ShoppingCart cart = shoppingCartService.getCartById(id);
+        if (cart != null) {
+            cart.setUserId(cartDetails.getUserId());
+            cart.setItems(cartDetails.getItems());
+            ShoppingCart updatedCart = shoppingCartService.saveCart(cart);
+            return ResponseEntity.ok(updatedCart);
+
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
-}
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteCart(@PathVariable int id) {
+            ShoppingCart cart = shoppingCartService.getCartById(id);
+            if (cart != null) {
+                shoppingCartService.deleteCart(id);
+                return ResponseEntity.ok().build();
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        }
+
+    @PostMapping("/{cartId}/items")
+    public ResponseEntity<ShoppingCart> addItemToCart (@PathVariable int cartId, @RequestBody ShoppingCartItem item) {
+            ShoppingCart cart = shoppingCartService.getCartById(cartId);
+            if (cart != null) {
+                shoppingCartService.addItemToCart(cart, item);
+                return ResponseEntity.ok(cart);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+    }
+
+    @DeleteMapping("/{cartId}/items/{itemId}")
+    public ResponseEntity<ShoppingCart> removeItemFromCart(@PathVariable int cartId, @PathVariable int itemId) {
+            ShoppingCart cart = shoppingCartService.getCartById(cartId);
+            if (cart != null) {
+                ShoppingCartItem itemRemove = cart.getItems().stream().filter(item -> item.getId() == itemId).findFirst().orElse(null);
+                if (itemRemove != null) {
+                    shoppingCartService.removeItemFromCart(cart, itemRemove);
+                    return ResponseEntity.ok(cart);
+
+                } else {
+                    return ResponseEntity.notFound().build();
+                }
+            } else {
+                    return ResponseEntity.notFound().build();
+                }
+            }
+    }
+
+

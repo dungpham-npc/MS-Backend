@@ -3,20 +3,17 @@ package com.cookswp.milkstore.api;
 
 import com.cookswp.milkstore.exception.MissingRequiredFieldException;
 import com.cookswp.milkstore.pojo.dtos.UserModel.CustomUserDetails;
-import com.cookswp.milkstore.pojo.dtos.UserModel.PasswordUpdateDTO;
 import com.cookswp.milkstore.pojo.dtos.UserModel.UserDTO;
 import com.cookswp.milkstore.pojo.dtos.UserModel.UserRegistrationDTO;
 import com.cookswp.milkstore.pojo.entities.User;
 import com.cookswp.milkstore.response.ResponseData;
-import com.cookswp.milkstore.service.UserService;
+import com.cookswp.milkstore.service.user.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.parameters.P;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
