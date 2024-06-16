@@ -2,10 +2,11 @@ package com.cookswp.milkstore.service.product;
 
 import com.cookswp.milkstore.pojo.dtos.ProductModel.ProductDTO;
 import com.cookswp.milkstore.pojo.entities.Product;
-import com.cookswp.milkstore.repository.ProductRepository;
+import com.cookswp.milkstore.repository.ProductRepository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,21 +19,6 @@ public class ProductService implements IProductService {
     @Override
     public Product createProduct(ProductDTO productRequest) {
         Product productEntity = new Product();
-        return getProduct(productRequest, productEntity);
-    }
-
-    @Override
-    public Product updateProduct(int productID, ProductDTO productRequest) {
-        Optional<Product> existingProduct = productRepository.findById(productID);
-        if(existingProduct.isPresent()){
-            Product productEntity = existingProduct.get();
-            return getProduct(productRequest, productEntity);
-        } else {
-            throw new RuntimeException("Not found product with id: " + productID);
-        }
-    }
-
-    private Product getProduct(ProductDTO productRequest, Product productEntity) {
         productEntity.setCategoryID(productRequest.getCategoryID());
         productEntity.setPostID(productRequest.getPostID());
         productEntity.setProductName(productRequest.getProductName());
@@ -44,12 +30,29 @@ public class ProductService implements IProductService {
     }
 
     @Override
+    public Product updateProduct(int productID, ProductDTO productRequest) {
+        Product existingProduct = productRepository.getProductById(productID);
+        if(existingProduct != null){
+            existingProduct.setCategoryID(productRequest.getCategoryID());
+            existingProduct.setProductImage(productRequest.getProductImage());
+            existingProduct.setProductName(productRequest.getProductName());
+            existingProduct.setProductDescription(productRequest.getProductDescription());
+            existingProduct.setPostID(productRequest.getPostID());
+            existingProduct.setQuantity(productRequest.getQuantity());
+            existingProduct.setPrice(productRequest.getPrice());
+            return productRepository.save(existingProduct);
+        } else {
+            throw new RuntimeException("Not found product with id: " + productID);
+        }
+    }
+
+
+    @Override
     public void deleteProduct(int id) {
-        Optional<Product> productEntity = productRepository.findById(id);
-        if(productEntity.isPresent()){
-            Product product = productEntity.get();
-            product.setStatus(false);
-            productRepository.save(product);
+        Product productEntity = productRepository.getProductById(id);
+        if(productEntity != null){
+            productEntity.setStatus(false);
+            productRepository.save(productEntity);
         } else {
             throw new RuntimeException("Not found product with id: " + id);
         }
@@ -80,8 +83,8 @@ public class ProductService implements IProductService {
         List<Product> searchList = productRepository.searchProduct(value);
         if(searchList != null){
             return searchList;
-        } else {
-            throw new RuntimeException("Not found any product with value: " + value);
+        } else{
+            throw new RuntimeException("Not found any products");
         }
     }
 }

@@ -11,7 +11,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductCategoryDTO {
-
     @NotNull(message = "Category nam can not be null")
     private String categoryName;
 }

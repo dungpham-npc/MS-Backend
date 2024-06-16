@@ -1,4 +1,5 @@
-package com.cookswp.milkstore.pojo.dtos.RoleModel;
+
+package com.cookswp.milkstore.pojo.entities;
 
 import jakarta.persistence.*;
 import lombok.Getter;
