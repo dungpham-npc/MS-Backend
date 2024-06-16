@@ -35,8 +35,4 @@ public class VNPayController {
             return new ResponseData<>(HttpStatus.BAD_REQUEST.value(), "Failed", null);
         }
     }
-
-
-
-
 }

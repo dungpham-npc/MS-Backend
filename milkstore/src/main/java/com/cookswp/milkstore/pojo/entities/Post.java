@@ -2,9 +2,7 @@ package com.cookswp.milkstore.pojo.entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -13,11 +11,11 @@ import java.util.Date;
 @Setter
 @Getter
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "post")
 public class Post implements Serializable {
-
     @Id
-    @Getter
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
@@ -39,8 +37,4 @@ public class Post implements Serializable {
 
     @Column(name = "visibility_status")
     private boolean visibility = true;
-
-    public Post(){}
-
-
 }

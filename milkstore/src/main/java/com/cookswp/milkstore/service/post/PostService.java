@@ -4,10 +4,7 @@ import com.cookswp.milkstore.exception.AppException;
 import com.cookswp.milkstore.exception.ErrorCode;
 import com.cookswp.milkstore.pojo.dtos.PostModel.PostDTO;
 import com.cookswp.milkstore.pojo.entities.Post;
-import com.cookswp.milkstore.pojo.entities.User;
 import com.cookswp.milkstore.repository.PostRepository;
-import com.cookswp.milkstore.service.UserService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,23 +12,29 @@ import java.util.Date;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class PostService implements IPostService {
-
 
     private final PostRepository postRepository;
 
-    private final UserService userService;
+    @Autowired
+    public PostService(PostRepository postRepository) {
+        this.postRepository = postRepository;
+    }
 
     @Override
     public List<Post> getAllPosts() {
-        return postRepository.findAllVisibility();
+        List<Post> posts = postRepository.findAllVisibility();
+        if (!posts.isEmpty()) {
+            return posts;
+        } else {
+            throw new AppException(ErrorCode.ALL_POST_EMPTY);
+        }
     }
 
     @Override
     public Post getPostByID(int id) {
         Post post = postRepository.findByIDAndVisibility(id);
-        if(post != null){
+        if (post != null) {
             return post;
         } else {
             throw new AppException(ErrorCode.POST_ID_NOT_FOUND);
@@ -41,9 +44,14 @@ public class PostService implements IPostService {
     @Override
     public Post updatePost(int id, PostDTO postRequest) {
         Post postEntity = postRepository.findByIDAndVisibility(id);
-        if(postEntity != null) {
-            User currentUser = userService.getCurrentUser();
-            postEntity.setUserID(currentUser.getUserId());
+        if (postEntity != null) {
+            if (postRequest.getTitle() == null || postRequest.getTitle().isBlank() || postRequest.getTitle().isEmpty()) {
+                throw new AppException(ErrorCode.POST_TITLE_ERROR);
+            }
+            if (postRequest.getContent() == null || postRequest.getContent().isBlank() || postRequest.getContent().isEmpty()) {
+                throw new AppException(ErrorCode.POST_CONTENT_ERROR);
+            }
+            postEntity.setUserID(7);
             postEntity.setContent(postRequest.getContent());
             postEntity.setTitle(postRequest.getTitle());
             postEntity.setDateCreated(new Date());
@@ -53,11 +61,17 @@ public class PostService implements IPostService {
         }
     }
 
+
     @Override
     public Post createPost(PostDTO postRequest) {
         Post postEntity = new Post();
-        User currentUser = userService.getCurrentUser();
-        postEntity.setUserID(currentUser.getUserId());
+        if (postRequest.getTitle() == null || postRequest.getTitle().isBlank() || postRequest.getTitle().isEmpty()) {
+            throw new AppException(ErrorCode.POST_TITLE_ERROR);
+        }
+        if (postRequest.getContent() == null || postRequest.getContent().isBlank() || postRequest.getContent().isEmpty()) {
+            throw new AppException(ErrorCode.POST_CONTENT_ERROR);
+        }
+        postEntity.setUserID(7);
         postEntity.setTitle(postRequest.getTitle());
         postEntity.setContent(postRequest.getContent());
         postEntity.setDateCreated(new Date());
@@ -68,7 +82,7 @@ public class PostService implements IPostService {
     @Override
     public void deletePost(int id) {
         Post postEntity = postRepository.findByIDAndVisibility(id);
-        if(postEntity != null){
+        if (postEntity != null) {
             postEntity.setVisibility(false);
             postRepository.save(postEntity);
         } else {

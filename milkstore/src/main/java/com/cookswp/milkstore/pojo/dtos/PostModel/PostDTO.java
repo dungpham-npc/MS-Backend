@@ -27,5 +27,4 @@ public class PostDTO {
     @NotEmpty(message = "CONTENT_EMPTY")
     private String content;
 
-
 }

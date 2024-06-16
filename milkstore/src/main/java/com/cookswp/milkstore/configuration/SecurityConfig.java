@@ -38,16 +38,6 @@ public class SecurityConfig {
         return httpSecurity
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/register", "/login", "/account").anonymous();
-                    auth.anyRequest().authenticated();
-                })
-                .formLogin(form -> {
-                    form.successHandler(customFormLoginSuccessHandler); // Use custom form login success handler
-                })
-                .oauth2Login(oauth2 ->{
-                    oauth2.successHandler(oAuth2LoginSuccessHandler);
-                })
                 .build();
     }
 
