@@ -64,16 +64,25 @@ public class OrderService  implements IOrderService{
 
     @Override
     public OrderDTO updateOrder(int orderId, OrderDTO orderDTO) {
-        return null;
+        Order existingOrder = orderRepository.findById((long) orderId).orElseThrow(() -> new RuntimeException("Order not found"));
+        existingOrder.setUserId(existingOrder.getUserId());
+        existingOrder.setOrderStatus(orderDTO.getStatus());
+        existingOrder.setTotalPrice(orderDTO.getTotalPrice());
+        existingOrder.setShippingAddress(orderDTO.getShippingAddress());
+        existingOrder = orderRepository.save(existingOrder);
+        return (OrderDTO) toOrderDTO(existingOrder);
     }
 
     @Override
     public void deleteOrder(int orderId) {
-
+        orderRepository.deleteById((long) orderId);
     }
 
     @Override
     public OrderDTO updateOrderStatus(long orderId, Status status) {
-        return null;
+        Order order = orderRepository.findById((long) orderId).orElseThrow(() -> new RuntimeException("Order not found"));
+        order.setOrderStatus(status);
+        order = orderRepository.save(order);
+        return (OrderDTO) toOrderDTO(order);
     }
 }
