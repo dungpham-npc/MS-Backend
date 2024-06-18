@@ -66,4 +66,21 @@ class ProductServiceTest {
         assertEquals("Product description is required", exception.getMessage());
     }
 
+    @Test
+    void testCreateProduct_ProductImageMustBeAsTypeJPEG_JPG() {
+        AppException exception = assertThrows(AppException.class, () -> {
+            productService.createProduct(ProductDTO.builder()
+                    .productName("name")
+                    .productDescription("description")
+                    .productImage("image.exe")
+                    .categoryID(1)
+                    .postID(1)
+                    .quantity(10)
+                    .price(BigDecimal.valueOf(100))
+                    .build());
+        });
+
+        assertEquals("Invalid product image", exception.getMessage());
+    }
+
 }
