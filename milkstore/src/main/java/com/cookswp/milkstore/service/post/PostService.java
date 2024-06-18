@@ -72,7 +72,7 @@ public class PostService implements IPostService {
         if (postRequest.getContent() == null || postRequest.getContent().isBlank() || postRequest.getContent().isEmpty()) {
             throw new AppException(ErrorCode.POST_CONTENT_ERROR);
         }
-        if(postRepository.existsByTitle(postRequest.getTitle())){
+        if(postRepository.titleMustBeUnique(postRequest.getTitle())){
             throw new AppException(ErrorCode.POST_TITLE_EXISTS);
         }
         if(postRequest.getContent().equals("F*ck") || postRequest.getContent().equals("D*ck head")){

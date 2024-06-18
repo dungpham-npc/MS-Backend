@@ -272,7 +272,7 @@ class PostServiceTest {
                 .content("Entity content")
                 .build();
 
-        when(postRepository.existsByTitle("Entity title")).thenReturn(true);
+        when(postRepository.titleMustBeUnique("Entity title")).thenReturn(true);
 
         AppException exception = assertThrows(AppException.class, () -> {
             postService.createPost(entity);
@@ -311,5 +311,27 @@ class PostServiceTest {
         });
 
         assertEquals("Post must be existed in the system", exception.getMessage());
+    }
+
+    @Test
+    void testUpdatePostTitleMustBeUnique(){
+        PostDTO postDTO = PostDTO.builder()
+                .title("Old Title")
+                .content("Old Content")
+                .build();
+
+        Post post = Post.builder()
+                .title("Old Title")
+                .content("Old Content")
+                .build();
+
+        when(postRepository.findByIDAndVisibility(1)).thenReturn(post);
+        when(postRepository.titleMustBeUnique("Old Title")).thenReturn(true);
+
+        AppException exception = assertThrows(AppException.class, () -> {
+            postService.updatePost(1, postDTO);
+        });
+
+        assertEquals("Post title must be unique", exception.getMessage());
     }
 }
