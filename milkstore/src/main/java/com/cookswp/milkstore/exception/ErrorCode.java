@@ -15,6 +15,7 @@ public enum ErrorCode {
     POST_TITLE_ERROR(8, "Post title can not be empty"),
     POST_CONTENT_ERROR(9, "Post content can not be empty"),
     ALL_POST_EMPTY(10, "Haven't any posts yet"),
+    POST_EXISTS(11, "Post already exists"),
     ;
 
     private final int code;

@@ -7,9 +7,9 @@ import com.cookswp.milkstore.pojo.entities.Product;
 import com.cookswp.milkstore.pojo.entities.ShoppingCart;
 
 import com.cookswp.milkstore.pojo.entities.ShoppingCartItem;
-import com.cookswp.milkstore.repository.ProductRepository;
-import com.cookswp.milkstore.repository.ShoppingCartItemRepository;
-import com.cookswp.milkstore.repository.ShoppingCartRepository;
+import com.cookswp.milkstore.repository.shoppingCart.ShoppingCartRepository;
+import com.cookswp.milkstore.repository.product.ProductRepository;
+import com.cookswp.milkstore.repository.shoppingCartItem.ShoppingCartItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,20 +19,20 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class ShoppingCartService implements IShoppingCartService{
+public class ShoppingCartService implements IShoppingCartService {
 
     @Autowired
     private ShoppingCartRepository shoppingCartRepository;
     @Autowired
     private ProductRepository productRepository;
+
     @Autowired
     private ShoppingCartItemRepository shoppingCartItemRepository;
 
 
-
     @Override
     public List<ShowCartModel> getCartByUserId(int userId) {
-        Optional<ShoppingCart> cartOptional =shoppingCartRepository.findByUserId(userId);
+        Optional<ShoppingCart> cartOptional = shoppingCartRepository.findByUserId(userId);
         if (!cartOptional.isPresent()) {
             throw new RuntimeException("Shopping cart not found");
         }

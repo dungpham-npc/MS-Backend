@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
+
 @RestController
 @RequestMapping("/payment")
 @RequiredArgsConstructor
@@ -21,7 +23,7 @@ public class VNPayController {
     }
 
     @GetMapping("/vn-pay-callback")
-    public ResponseData<PaymentDTO.VNPayResponse> callback(HttpServletRequest request) {
+    public ResponseData<PaymentDTO.VNPayResponse> callback(HttpServletRequest request) throws ParseException {
         vnpayService.saveBillVNPayPayment(request);
         String status = request.getParameter("vnp_ResponseCode");
         if (status.equals("00")) {

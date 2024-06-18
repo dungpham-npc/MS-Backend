@@ -9,13 +9,13 @@ import java.util.Optional;
 public interface IPostService {
 
     //Get all post
-   public List<Post> getAllPosts();
+    public List<Post> getAllPosts();
 
-   //Get post by ID
-   public Post getPostByID(int id);
+    //Get post by ID
+    public Post getPostByID(int id);
 
-   //Put post
-    public Post updatePost(int id, PostDTO post);
+    //Put post
+    public Post updatePost(int ID, PostDTO post);
 
     //Create post
     public Post createPost(PostDTO post);

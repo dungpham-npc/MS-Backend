@@ -11,12 +11,12 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
+@Builder
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostDTO {
-
     @NotNull(message = "TITLE_NULL")
     @NotBlank(message = "TITLE_BLANK")
     @NotEmpty(message = "TITLE_EMPTY")

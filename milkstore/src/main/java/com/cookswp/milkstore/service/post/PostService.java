@@ -15,6 +15,7 @@ import java.util.List;
 public class PostService implements IPostService {
 
     private final PostRepository postRepository;
+    private Post postEntity = new Post();
 
     @Autowired
     public PostService(PostRepository postRepository) {
@@ -42,41 +43,35 @@ public class PostService implements IPostService {
     }
 
     @Override
-    public Post updatePost(int id, PostDTO postRequest) {
-        Post postEntity = postRepository.findByIDAndVisibility(id);
-        if (postEntity != null) {
-            if (postRequest.getTitle() == null || postRequest.getTitle().isBlank() || postRequest.getTitle().isEmpty()) {
-                throw new AppException(ErrorCode.POST_TITLE_ERROR);
-            }
-            if (postRequest.getContent() == null || postRequest.getContent().isBlank() || postRequest.getContent().isEmpty()) {
-                throw new AppException(ErrorCode.POST_CONTENT_ERROR);
-            }
-            postEntity.setUserID(7);
-            postEntity.setContent(postRequest.getContent());
-            postEntity.setTitle(postRequest.getTitle());
-            postEntity.setDateCreated(new Date());
-            return postRepository.save(postEntity);
-        } else {
-            throw new AppException(ErrorCode.POST_ID_NOT_FOUND);
-        }
+    public Post updatePost(int ID, PostDTO postRequest) {
+        postEntity = postRepository.findByIDAndVisibility(ID);                      //Find post with ID
+        if (postEntity == null) throw new AppException(ErrorCode.POST_ID_NOT_FOUND);//Throw exception
+        validateInputRequest(postRequest);                                          //Valid null empty blank
+        postEntity.setUserID(7);                                                    //setUserID is not complete
+        postEntity.setContent(postRequest.getContent());                            //set content from the request DTO
+        postEntity.setTitle(postRequest.getTitle());                                //set title from the request DTO
+        postEntity.setDateCreated(new Date());                                      //set new date when create
+        return postRepository.save(postEntity);                                     //Save into DB
     }
-
 
     @Override
     public Post createPost(PostDTO postRequest) {
-        Post postEntity = new Post();
+        validateInputRequest(postRequest);                  //Valid null empty blank
+        postEntity.setUserID(7);                            //setUserID is not complete
+        postEntity.setTitle(postRequest.getTitle());        //create new title
+        postEntity.setContent(postRequest.getContent());    //create new content
+        postEntity.setDateCreated(new Date());              //create when create post
+        postEntity.setUserComment("");                      //set user comment to empty for the user can comment in the post
+        return postRepository.save(postEntity);
+    }
+
+    private void validateInputRequest(PostDTO postRequest) {
         if (postRequest.getTitle() == null || postRequest.getTitle().isBlank() || postRequest.getTitle().isEmpty()) {
             throw new AppException(ErrorCode.POST_TITLE_ERROR);
         }
         if (postRequest.getContent() == null || postRequest.getContent().isBlank() || postRequest.getContent().isEmpty()) {
             throw new AppException(ErrorCode.POST_CONTENT_ERROR);
         }
-        postEntity.setUserID(7);
-        postEntity.setTitle(postRequest.getTitle());
-        postEntity.setContent(postRequest.getContent());
-        postEntity.setDateCreated(new Date());
-        postEntity.setUserComment("");
-        return postRepository.save(postEntity);
     }
 
     @Override

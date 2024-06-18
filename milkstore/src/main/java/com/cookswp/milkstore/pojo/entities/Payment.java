@@ -5,6 +5,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDate;
+import java.util.Date;
+
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -29,6 +32,8 @@ public class Payment {
     String orderInfo;
     @Column(name = "response_code")
     String responseCode;
+    @Column(name= "payDate")
+    String payDate;
     @Column(name = "transaction_no")
     String transactionNo;
     @Column(name = "transaction_status")
@@ -37,12 +42,14 @@ public class Payment {
     @Override
     public String toString() {
         return "Payment{" +
-                "amount=" + amount +
+                "id=" + id +
+                ", amount=" + amount +
                 ", bankCode='" + bankCode + '\'' +
                 ", bankTranNo='" + bankTranNo + '\'' +
                 ", cardType='" + cardType + '\'' +
-                ", responseCode='" + responseCode + '\'' +
                 ", orderInfo='" + orderInfo + '\'' +
+                ", responseCode='" + responseCode + '\'' +
+                ", payDate=" + payDate +
                 ", transactionNo='" + transactionNo + '\'' +
                 ", transactionStatus='" + transactionStatus + '\'' +
                 '}';
