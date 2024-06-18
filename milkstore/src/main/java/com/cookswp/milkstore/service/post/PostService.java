@@ -76,7 +76,7 @@ public class PostService implements IPostService {
             throw new AppException(ErrorCode.POST_TITLE_EXISTS);
         }
         if(postRequest.getContent().equals("F*ck") || postRequest.getContent().equals("D*ck head")){
-            throw new AppException(ErrorCode.POST_CONTENT_OFFENSIVE_WORD);
+            throw new AppException(ErrorCode.POST_CONTENT_OFFENSIVE_WORD);//Valid word
         }
     }
 

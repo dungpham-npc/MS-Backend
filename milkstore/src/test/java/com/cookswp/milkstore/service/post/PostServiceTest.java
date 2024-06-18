@@ -282,7 +282,7 @@ class PostServiceTest {
     }
         ///Jira test #3
 
-    //Jira test
+    //Jira test 2
     @Test
     void testCreatePostContentContainOffensiveWords(){
         PostDTO entity = PostDTO.builder()

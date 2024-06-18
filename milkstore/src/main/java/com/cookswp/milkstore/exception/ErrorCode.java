@@ -17,6 +17,7 @@ public enum ErrorCode {
     ALL_POST_EMPTY(10, "Haven't any posts yet"),
     POST_EXISTS(11, "Post already exists"),
     POST_TITLE_EXISTS(12, "Post title must be unique"),
+    POST_CONTENT_OFFENSIVE_WORD(13, "Post content contain offensive word"),
     ;
 
     private final int code;
