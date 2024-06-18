@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,7 +19,6 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/users")
-@EnableWebSecurity
 public class UserController {
     private final UserService userService;
     private final ModelMapper mapper;
@@ -34,11 +32,11 @@ public class UserController {
     @GetMapping("/staffs")
     @PreAuthorize("hasAuthority('ADMIN')")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseData<List<UserRegistrationDTO>> getStaffList(){
+    public ResponseData<List<UserDTO>> getStaffList(){
         return new ResponseData<>(HttpStatus.OK.value(),
                 "List retrieved successfully!",
                 userService.getInternalUserList().stream()
-                        .map(user -> mapper.map(user, UserRegistrationDTO.class))
+                        .map(user -> mapper.map(user, UserDTO.class))
                         .toList());
     }
 
@@ -51,6 +49,24 @@ public class UserController {
                 userService.getMemberUserList().stream()
                         .map(user -> mapper.map(user, UserDTO.class))
                         .toList());
+    }
+
+    @GetMapping("/staffs/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseData<UserRegistrationDTO> getStaff(@PathVariable int id){
+        return new ResponseData<>(HttpStatus.OK.value(),
+                "Staff retrieved successfully!",
+                mapper.map(userService.getUserById(id), UserRegistrationDTO.class));
+    }
+
+    @GetMapping("/member")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseData<UserDTO> getMember(String email){
+        return new ResponseData<>(HttpStatus.OK.value(),
+                "List retrieved successfully!",
+                mapper.map(userService.getUserByEmail(email), UserDTO.class));
     }
 
     @PostMapping
@@ -92,7 +108,12 @@ public class UserController {
             throw new RoleNotFoundException();
         }
 
-        userService.updateUser(id, mapper.map(userRegistrationDTO, User.class));
+        if (userRegistrationDTO.getPassword().matches(userService.getUserByEmail(userRegistrationDTO.getEmailAddress()).getPassword()))
+            userService.updateUserBasicInformation(id, mapper.map(userRegistrationDTO, User.class));
+        else {
+            userService.updateUserBasicInformation(id, mapper.map(userRegistrationDTO, User.class));
+            userService.updateUserPassword(id, userRegistrationDTO.getPassword());
+        }
         return new ResponseData<>(HttpStatus.OK.value(),
                 "User updated successfully!",
                 mapper.map(userRegistrationDTO, UserDTO.class));
@@ -104,6 +125,14 @@ public class UserController {
     public ResponseData<String> deleteStaff(@PathVariable int id){
         userService.deleteUser(id);
         return new ResponseData<>(HttpStatus.OK.value(), "Staff deleted successfully!", null);
+    }
+
+    @PutMapping("/members/ban")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseData<String> banMember(String email){
+        userService.banMemberUser(userService.getUserByEmail(email).getUserId());
+        return new ResponseData<>(HttpStatus.OK.value(), "Member banned successfully!", null);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)

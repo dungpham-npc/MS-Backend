@@ -1,4 +1,4 @@
 package com.cookswp.milkstore.api;
 
-public class StatisticsModel {
+public class StatisticsController {
 }
