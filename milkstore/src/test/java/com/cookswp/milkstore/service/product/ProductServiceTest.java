@@ -46,7 +46,7 @@ class ProductServiceTest {
                     .build());
         });
 
-        assertEquals("Product name already exists", exception.getMessage());
+        assertEquals("Product name must unique", exception.getMessage());
     }
 
     @Test
@@ -145,7 +145,7 @@ class ProductServiceTest {
             productService.createProduct(ProductDTO.builder()
                     .productName("name")
                     .productDescription("description")
-                    .productImage("image.jpg")
+                    .productImage("image.jpeg")
                     .categoryID(1)
                     .postID(1)
                     .quantity(-1)
@@ -154,6 +154,23 @@ class ProductServiceTest {
         });
 
         assertEquals("Quantity cannot be less than 0", exception.getMessage());
+    }
+
+    @Test
+    void testAddProductPriceCanNotBeLessThanZero(){
+        AppException exception = assertThrows(AppException.class, () -> {
+            productService.createProduct(ProductDTO.builder()
+                    .productName("name")
+                    .productDescription("description")
+                    .productImage("image.jpeg")
+                    .categoryID(1)
+                    .postID(1)
+                    .quantity(10)
+                    .price(BigDecimal.valueOf(-10))
+                    .build());
+        });
+
+        assertEquals("Price cannot be less than 0", exception.getMessage());
     }
 
 }
