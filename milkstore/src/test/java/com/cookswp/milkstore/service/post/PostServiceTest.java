@@ -265,5 +265,20 @@ class PostServiceTest {
         assertEquals(exception.getMessage(), "Haven't any posts yet");
     }
 
+    @Test
+    void testCreatePostTitleMustBeUnique() {
+        PostDTO entity = PostDTO.builder()
+                .title("Entity title")
+                .content("Entity content")
+                .build();
+
+        when(postRepository.existsByTitle("Entity title")).thenReturn(true);
+
+        AppException exception = assertThrows(AppException.class, () -> {
+            postService.createPost(entity);
+        });
+
+        assertEquals("Post title must be unique", exception.getMessage());
+    }
 
 }
