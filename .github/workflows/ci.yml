@@ -4,9 +4,13 @@ on:
   push:
     branches: 
       - main
+      - DungPham
+      - haihau
   pull_request:
     branches: 
       - main
+      - DungPham
+      - haihau
 
 jobs:
   build:
