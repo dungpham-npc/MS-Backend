@@ -280,5 +280,5 @@ class PostServiceTest {
 
         assertEquals("Post title must be unique", exception.getMessage());
     }
-        ///Jira test #2
+        ///Jira test #3
 }

@@ -68,6 +68,7 @@ public class ProductStaffController {
     public ResponseData<List<Product>> searchProduct(@RequestParam(value = "value") String value) {
         return new ResponseData<>(HttpStatus.OK.value(), "Search product: " + value, productService.searchProduct(value));
     }
+    //
 
 
 }

@@ -72,6 +72,9 @@ public class PostService implements IPostService {
         if (postRequest.getContent() == null || postRequest.getContent().isBlank() || postRequest.getContent().isEmpty()) {
             throw new AppException(ErrorCode.POST_CONTENT_ERROR);
         }
+        if(postRepository.existsByTitle(postRequest.getTitle())){
+            throw new AppException(ErrorCode.POST_TITLE_EXISTS);
+        }
     }
 
     @Override
