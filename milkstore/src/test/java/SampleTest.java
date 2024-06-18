@@ -8,11 +8,10 @@ public class SampleTest {
         int result = 2 + 4;
         assertEquals(6, result, "2 + 3 should equal 5");
     }
-
+    //TEST NG
     @Test
     public void testStringConcatenation() {
         String result = "Hello" + " " + "World";
         assertEquals("Hello World", result, "Concatenation failed");
     }
 }
-
