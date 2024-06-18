@@ -334,4 +334,18 @@ class PostServiceTest {
 
         assertEquals("Post title must be unique", exception.getMessage());
     }
+
+    @Test
+    void testUpdatePostContentContainOffensiveWords(){
+        PostDTO entity = PostDTO.builder()
+                .title("Test")
+                .content("F*ck")
+                .build();
+
+        AppException exception = assertThrows(AppException.class, () -> {
+            postService.createPost(entity);
+        });
+
+        assertEquals("Post content contain offensive word", exception.getMessage());
+    }
 }
