@@ -348,4 +348,15 @@ class PostServiceTest {
 
         assertEquals("Post content contain offensive word", exception.getMessage());
     }
+
+    @Test
+    void testDeletePostIDMustBeExistedInTheSystem(){
+        when(postRepository.findByIDAndVisibility(1)).thenReturn(null);
+
+        AppException exception = assertThrows(AppException.class, () -> {
+            postService.deletePost(1);
+        });
+
+        assertEquals("Post must be existed in the system", exception.getMessage()); 
+    }
 }
