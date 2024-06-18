@@ -18,5 +18,9 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     @Query("SELECT p FROM Product p WHERE p.status = TRUE AND p.productName =:value")
     List<Product> searchProduct(@Param("value") String value);
 
+    boolean existsByCategoryID(int categoryID);
+
+    boolean existsByName(String name);
+
 }
 
