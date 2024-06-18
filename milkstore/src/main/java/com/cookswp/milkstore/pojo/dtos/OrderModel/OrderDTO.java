@@ -7,8 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigDecimal;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
@@ -19,11 +19,11 @@ public class OrderDTO {
     private Long id;
     private int userId;
     private int customerPaymentMethodId;
-    private int shippingAddress;
+    private String shippingAddress;
     private Status status;
     private Integer voucherId;
     private Integer cartId;
-    private BigDecimal shippingFee;
+//    private BigDecimal shippingFee; // tam thoi ko co ship fee
     private BigDecimal totalPrice;
     private String shippingCode;
     private String receiverName;
@@ -31,6 +31,7 @@ public class OrderDTO {
     private LocalDateTime orderDate;
     private FailureReason failureReason;
     private String failureReasonNote;
+
 
 
 
