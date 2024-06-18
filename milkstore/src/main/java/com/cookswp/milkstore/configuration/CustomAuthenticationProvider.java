@@ -33,13 +33,15 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         User user = userService.getUserByEmail(email);
 
         try {
-            if (user == null)
-                throw new UsernameNotFoundException("User not found!");
 
-            if (!passwordEncoder.matches(password, user.getPassword()) && !email.equals(user.getEmailAddress()))
+            if (user == null){
+                throw new UsernameNotFoundException("User not found!");
+            }
+
+            else if (!passwordEncoder.matches(password, user.getPassword()))
                 throw new BadCredentialsException("Invalid credentials!");
 
-            if (!user.isEnabled() || !user.isAccountNonLocked())
+            else if (!user.isEnabled() || !user.isAccountNonLocked())
                 throw new UserInvisibilityException("User might be prohibited or deleted from the active list, please contact the administrator for further information!");
 
         } catch (UsernameNotFoundException | BadCredentialsException | UserInvisibilityException e) {
