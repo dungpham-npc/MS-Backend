@@ -366,7 +366,7 @@ class PostServiceTest {
     }
 
     @Test
-    void testUpdatePostTitleMustBeUnique() {
+    void testEditPostTitleMustBeUnique() {
         when(postRepository.findByIDAndVisibility(1)).thenReturn(Post.builder()
                 .title("Old Title")
                 .content("Old Content")
@@ -421,5 +421,25 @@ class PostServiceTest {
         });
 
         assertEquals("Post must be existed in the system", exception.getMessage());
+    }
+
+    @Test
+    void testUpdatePostTitleMustBeUnique(){
+        when(postRepository.findByIDAndVisibility(1)).thenReturn(Post.builder()
+                .title("Old Title")
+                .content("Old Content")
+                .build()
+        );
+        when(postRepository.titleMustBeUnique("Old Title")).thenReturn(true);
+
+        AppException exception = assertThrows(AppException.class, () -> {
+            postService.updatePost(1, PostDTO.builder()
+                    .title("Old Title")
+                    .content("Old Content")
+                    .build()
+            );
+        });
+
+        assertEquals("Post title must be unique", exception.getMessage());
     }
 }
