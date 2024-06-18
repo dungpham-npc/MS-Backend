@@ -27,165 +27,216 @@ class PostServiceTest {
     @InjectMocks
     private PostService postService;
 
-    private PostDTO dto;
-    private Post post;
-
-    @BeforeEach
-    void setUp() {
-        post = new Post();
-        post.setTitle("Entity title");
-        post.setContent("Entity content");
-        //======================//
-        dto = new PostDTO();
-        dto.setTitle("DTO Title");
-        dto.setContent("DTO Content");
-    }
 
     @Test
     void testCreatePostSuccess() {
-        Post postEntity = new Post();
-        postEntity.setContent("DTO Content");
-        postEntity.setTitle("DTO Title");
+        Post postEntity = Post.builder()
+                .title("Title")
+                .content("Content")
+                .build();
+        PostDTO postDTO = PostDTO.builder()
+                .title("Title")
+                .content("Content")
+                .build();
         when(postRepository.save(any(Post.class))).thenReturn(postEntity);
-        Post createdPost = postService.createPost(dto);
+        Post createdPost = postService.createPost(postDTO);
         assertNotNull(createdPost);
-        assertEquals(dto.getTitle(), createdPost.getTitle());
-        assertEquals(dto.getContent(), createdPost.getContent());
+        assertEquals(postDTO.getTitle(), createdPost.getTitle());
+        assertEquals(postDTO.getContent(), createdPost.getContent());
     }
 
     @Test
     void testCreatePostFailCaseNullTitleShouldThrowException() {
-        dto.setTitle(null);
         AppException exception = assertThrows(AppException.class, () -> {
-            postService.createPost(dto);
+            postService.createPost(PostDTO.builder()
+                    .title(null)
+                    .content("Content")
+                    .build());
         });
         assertEquals(exception.getMessage(), "Post title can not be empty");
     }
 
     @Test
     void testCreatePostFailCaseEmptyTitleShouldThrowException() {
-        dto.setTitle("");
         AppException exception = assertThrows(AppException.class, () -> {
-            postService.createPost(dto);
+            postService.createPost(PostDTO.builder()
+                    .title("")
+                    .content("Content")
+                    .build()
+            );
         });
         assertEquals(exception.getMessage(), "Post title can not be empty");
     }
 
     @Test
     void testCreatePostFailCaseBlankTitleShouldThrowException() {
-        dto.setTitle(" ");
         AppException exception = assertThrows(AppException.class, () -> {
-            postService.createPost(dto);
+            postService.createPost(PostDTO.builder()
+                    .title(" ")
+                    .content("Content")
+                    .build());
         });
         assertEquals(exception.getMessage(), "Post title can not be empty");
     }
 
     @Test
     void testCreatePostFailCaseEmptyContentShouldThrowException() {
-        dto.setContent("");
         AppException exception = assertThrows(AppException.class, () -> {
-            postService.createPost(dto);
+            postService.createPost(PostDTO.builder()
+                    .title("Title")
+                    .content("")
+                    .build());
         });
         assertEquals(exception.getMessage(), "Post content can not be empty");
     }
 
     @Test
     void testCreatePostFailCaseNullContentShouldThrowException() {
-        dto.setContent(null);
         AppException exception = assertThrows(AppException.class, () -> {
-            postService.createPost(dto);
+            postService.createPost(PostDTO.builder()
+                    .title("Title")
+                    .content(null)
+                    .build());
         });
         assertEquals(exception.getMessage(), "Post content can not be empty");
     }
 
     @Test
     void testCreatePostFailCaseBlankContentShouldThrowException() {
-        dto.setContent(" ");
         AppException exception = assertThrows(AppException.class, () -> {
-            postService.createPost(dto);
+            postService.createPost(PostDTO.builder()
+                    .title("Title")
+                    .content(" ")
+                    .build());
         });
         assertEquals(exception.getMessage(), "Post content can not be empty");
     }
 
     @Test
     void testUpdatePostSuccess() {
+        Post post = Post.builder()
+                .title("Entity Title")
+                .content("Entity Content")
+                .build();
+
         when(postRepository.findByIDAndVisibility(1)).thenReturn(post);
         when(postRepository.save(any(Post.class))).thenReturn(post);
 
-        Post updateDTO = postService.updatePost(1, dto);
+        Post updateDTO = postService.updatePost(1, PostDTO.builder()
+                .title("DTO Title")
+                .content("DTO Content")
+                .build()
+        );
 
         assertNotNull(updateDTO);
-        assertEquals(dto.getTitle(), updateDTO.getTitle());
-        assertEquals(dto.getContent(), updateDTO.getContent());
+        assertEquals("DTO Title", updateDTO.getTitle());
+        assertEquals("DTO Content", updateDTO.getContent());
     }
 
     @Test
     void testUpdatePostFailCaseBlankContentShouldThrowException() {
-        when(postRepository.findByIDAndVisibility(1)).thenReturn(post);
+        when(postRepository.findByIDAndVisibility(1)).thenReturn(Post.builder()
+                .title("Title")
+                .content("Content")
+                .build()
+        );
 
-        dto.setContent(" ");
         AppException exception = assertThrows(AppException.class, () -> {
-            postService.updatePost(1, dto);
+            postService.updatePost(1, PostDTO.builder()
+                    .title("Title")
+                    .content(" ")
+                    .build()
+            );
         });
         assertEquals(exception.getMessage(), "Post content can not be empty");
     }
 
     @Test
     void testUpdatePostFailCaseNullContentShouldThrowException() {
-        when(postRepository.findByIDAndVisibility(1)).thenReturn(post);
-
-        dto.setContent(null);
+        when(postRepository.findByIDAndVisibility(1)).thenReturn(Post.builder()
+                .title("Title")
+                .content("Content")
+                .build()
+        );
 
         AppException exception = assertThrows(AppException.class, () -> {
-            postService.updatePost(1, dto);
+            postService.updatePost(1, PostDTO.builder()
+                    .title("Title")
+                    .content(null)
+                    .build()
+            );
         });
         assertEquals(exception.getMessage(), "Post content can not be empty");
     }
 
     @Test
     void testUpdatePostFailCaseEmptyContentShouldThrowException() {
-        when(postRepository.findByIDAndVisibility(1)).thenReturn(post);
-
-        dto.setContent("");
+        when(postRepository.findByIDAndVisibility(1)).thenReturn(Post.builder()
+                .title("Title")
+                .content("Content")
+                .build()
+        );
 
         AppException exception = assertThrows(AppException.class, () -> {
-            postService.updatePost(1, dto);
+            postService.updatePost(1, PostDTO.builder()
+                    .title("Title")
+                    .content("")
+                    .build()
+            );
         });
         assertEquals(exception.getMessage(), "Post content can not be empty");
     }
 
     @Test
     void testUpdatePostFailCaseBlankTitleShouldThrowException() {
-        when(postRepository.findByIDAndVisibility(1)).thenReturn(post);
-
-        dto.setTitle(" ");
+        when(postRepository.findByIDAndVisibility(1)).thenReturn(Post.builder()
+                .title("Title")
+                .content("Content")
+                .build()
+        );
 
         AppException exception = assertThrows(AppException.class, () -> {
-            postService.updatePost(1, dto);
+            postService.updatePost(1, PostDTO.builder()
+                    .title(" ")
+                    .content("Content")
+                    .build()
+            );
         });
         assertEquals(exception.getMessage(), "Post title can not be empty");
     }
 
     @Test
     void testUpdatePostFailCaseNullTitleShouldThrowException() {
-        when(postRepository.findByIDAndVisibility(1)).thenReturn(post);
-
-        dto.setTitle(null);
+        when(postRepository.findByIDAndVisibility(1)).thenReturn(Post.builder()
+                .title("Title")
+                .content("Content")
+                .build()
+        );
 
         AppException exception = assertThrows(AppException.class, () -> {
-            postService.updatePost(1, dto);
+            postService.updatePost(1, PostDTO.builder()
+                    .title(null)
+                    .content("Content")
+                    .build()
+            );
         });
         assertEquals(exception.getMessage(), "Post title can not be empty");
     }
 
     @Test
     void testUpdatePostFailCaseEmptyTitleShouldThrowException() {
-        when(postRepository.findByIDAndVisibility(1)).thenReturn(post);
-
-        dto.setTitle("");
+        when(postRepository.findByIDAndVisibility(1)).thenReturn(Post.builder()
+                .title("Title")
+                .content("Content")
+                .build()
+        );
 
         AppException exception = assertThrows(AppException.class, () -> {
-            postService.updatePost(1, dto);
+            postService.updatePost(1, PostDTO.builder()
+                    .title("")
+                    .content("Content")
+                    .build()
+            );
         });
         assertEquals(exception.getMessage(), "Post title can not be empty");
     }
@@ -193,8 +244,11 @@ class PostServiceTest {
 
     @Test
     void testDeletePostSuccess() {
-        when(postRepository.findByIDAndVisibility(1)).thenReturn(post);
-
+        when(postRepository.findByIDAndVisibility(1)).thenReturn(Post.builder()
+                .title("Title")
+                .content("Content")
+                .build()
+        );
         assertAll(() -> {//To handle void method in service we are using assertAll
             postService.deletePost(1);
         });
@@ -211,7 +265,11 @@ class PostServiceTest {
 
     @Test
     void testGetPostByIDSuccess() {
-        when(postRepository.findByIDAndVisibility(1)).thenReturn(post);
+        when(postRepository.findByIDAndVisibility(1)).thenReturn(Post.builder()
+                .title("Title")
+                .content("Content")
+                .build()
+        );
         assertNotNull(postService.getPostByID(1));
     }
 
@@ -228,19 +286,16 @@ class PostServiceTest {
     @Test
     void testGetAllPostSuccess() {
         List<Post> list = new ArrayList<>();
-
-        Post post = Post.builder()
+        list.add(Post.builder()
                 .title("LIST TITLE 1")
                 .content("LIST CONTENT 1")
-                .build();
-        Post post2 = Post.builder()
+                .build()
+        );
+        list.add(Post.builder()
                 .title("LIST TITLE 2")
                 .content("LIST CONTENT 2")
-                .build();
-
-        list.add(post);
-        list.add(post2);
-
+                .build()
+        );
 
         when(postRepository.findAllVisibility()).thenReturn(list);
 
@@ -248,8 +303,8 @@ class PostServiceTest {
 
         assertNotNull(posts);
         assertEquals(2, posts.size());
-        assertEquals(post.getTitle(), posts.get(0).getTitle());
-        assertEquals(post.getContent(), posts.get(0).getContent());
+        assertEquals(list.get(0).getTitle(), posts.get(0).getTitle());
+        assertEquals(list.get(0).getContent(), posts.get(0).getContent());
     }
 
     @Test
@@ -267,96 +322,104 @@ class PostServiceTest {
 
     @Test
     void testCreatePostTitleMustBeUnique() {
-        PostDTO entity = PostDTO.builder()
-                .title("Entity title")
-                .content("Entity content")
-                .build();
-
         when(postRepository.titleMustBeUnique("Entity title")).thenReturn(true);
 
         AppException exception = assertThrows(AppException.class, () -> {
-            postService.createPost(entity);
+            postService.createPost(PostDTO.builder()
+                    .title("Entity title")
+                    .content("Entity content")
+                    .build());
         });
 
         assertEquals("Post title must be unique", exception.getMessage());
     }
-        ///Jira test #3
+    ///Jira test #3
 
     //Jira test 2
     @Test
-    void testCreatePostContentContainOffensiveWords(){
-        PostDTO entity = PostDTO.builder()
-                .title("Test")
-                .content("F*ck")
-                .build();
+    void testCreatePostContentContainOffensiveWords() {
 
         AppException exception = assertThrows(AppException.class, () -> {
-            postService.createPost(entity);
+            postService.createPost(PostDTO.builder()
+                    .title("Test")
+                    .content("F*ck")
+                    .build()
+            );
         });
 
         assertEquals("Post content contain offensive word", exception.getMessage());
     }
 
     @Test
-    void testUpdatePost_PostMustExistedInTheSystem(){
-        PostDTO postDTO = PostDTO.builder()
-                .title("Test")
-                .content("Test")
-                .build();
-
+    void testUpdatePost_PostMustExistedInTheSystem() {
         when(postRepository.findByIDAndVisibility(1)).thenReturn(null);
 
         AppException exception = assertThrows(AppException.class, () -> {
-            postService.updatePost(1, postDTO);
+            postService.updatePost(1, PostDTO.builder()
+                    .title("Test")
+                    .content("Test")
+                    .build()
+            );
         });
 
         assertEquals("Post must be existed in the system", exception.getMessage());
     }
 
     @Test
-    void testUpdatePostTitleMustBeUnique(){
-        PostDTO postDTO = PostDTO.builder()
+    void testUpdatePostTitleMustBeUnique() {
+        when(postRepository.findByIDAndVisibility(1)).thenReturn(Post.builder()
                 .title("Old Title")
                 .content("Old Content")
-                .build();
-
-        Post post = Post.builder()
-                .title("Old Title")
-                .content("Old Content")
-                .build();
-
-        when(postRepository.findByIDAndVisibility(1)).thenReturn(post);
+                .build()
+        );
         when(postRepository.titleMustBeUnique("Old Title")).thenReturn(true);
 
         AppException exception = assertThrows(AppException.class, () -> {
-            postService.updatePost(1, postDTO);
+            postService.updatePost(1, PostDTO.builder()
+                    .title("Old Title")
+                    .content("Old Content")
+                    .build()
+            );
         });
 
         assertEquals("Post title must be unique", exception.getMessage());
     }
 
     @Test
-    void testUpdatePostContentContainOffensiveWords(){
-        PostDTO entity = PostDTO.builder()
-                .title("Test")
-                .content("F*ck")
-                .build();
-
+    void testUpdatePostContentContainOffensiveWords() {
         AppException exception = assertThrows(AppException.class, () -> {
-            postService.createPost(entity);
+            postService.createPost(PostDTO.builder()
+                    .title("Test")
+                    .content("F*ck")
+                    .build());
         });
 
         assertEquals("Post content contain offensive word", exception.getMessage());
     }
 
     @Test
-    void testDeletePostIDMustBeExistedInTheSystem(){
+    void testDeletePostIDMustBeExistedInTheSystem() {
         when(postRepository.findByIDAndVisibility(1)).thenReturn(null);
 
         AppException exception = assertThrows(AppException.class, () -> {
             postService.deletePost(1);
         });
 
-        assertEquals("Post must be existed in the system", exception.getMessage()); 
+        assertEquals("Post must be existed in the system", exception.getMessage());
+    }
+
+    @Test
+    void testUpdatePost_PostIDMustBeExistedInTheSystem() {
+        when(postRepository.findByIDAndVisibility(1)).thenReturn(null);
+
+        AppException exception = assertThrows(AppException.class, () -> {
+            postService.updatePost(1, PostDTO.builder()
+                    .title("Test")
+                    .content("Test")
+                    .build()
+            );
+        });
+
+        assertEquals("Post must be existed in the system", exception.getMessage());
     }
 }
