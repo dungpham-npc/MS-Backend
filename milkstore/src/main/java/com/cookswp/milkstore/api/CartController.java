@@ -1,8 +1,8 @@
 package com.cookswp.milkstore.api;
 
-import com.cookswp.milkstore.pojo.dtos.CartModel.AddToCart;
-import com.cookswp.milkstore.pojo.dtos.CartModel.ShowCartModel;
-import com.cookswp.milkstore.pojo.dtos.CartModel.UpdateToCart;
+import com.cookswp.milkstore.pojo.dtos.CartModel.AddToCartDTO;
+import com.cookswp.milkstore.pojo.dtos.CartModel.ShowCartModelDTO;
+import com.cookswp.milkstore.pojo.dtos.CartModel.UpdateToCartDTO;
 import com.cookswp.milkstore.pojo.entities.ShoppingCart;
 import com.cookswp.milkstore.service.shoppingcart.IShoppingCartService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,14 +19,14 @@ public class CartController {
     private IShoppingCartService shoppingCartService;
 
     @GetMapping("/{userId}")
-    public ResponseEntity<List<ShowCartModel>> getCartByUserId(@PathVariable int userId) {
-        List<ShowCartModel> carts = shoppingCartService.getCartByUserId(userId);
+    public ResponseEntity<List<ShowCartModelDTO>> getCartByUserId(@PathVariable int userId) {
+        List<ShowCartModelDTO> carts = shoppingCartService.getCartByUserId(userId);
         return ResponseEntity.ok(carts);
     }
 
     @PostMapping("/{userId}/items")
-    public ResponseEntity<ShoppingCart> addItemToCart(@PathVariable int userId, @RequestBody AddToCart addToCart) {
-        ShoppingCart cart = shoppingCartService.addToCart(addToCart, userId);
+    public ResponseEntity<ShoppingCart> addItemToCart(@PathVariable int userId, @RequestBody AddToCartDTO addToCartDTO) {
+        ShoppingCart cart = shoppingCartService.addToCart(addToCartDTO, userId);
         return ResponseEntity.ok(cart);
     }
 
@@ -37,8 +37,8 @@ public class CartController {
     }
 
     @PutMapping("/{userId}/carts/{cartId}/items")
-    public ResponseEntity<ShoppingCart> updateItemInCart(@PathVariable int userId, @PathVariable int cartId, @RequestBody UpdateToCart updateToCart) {
-        ShoppingCart cart = shoppingCartService.updateItem(updateToCart, cartId, userId);
+    public ResponseEntity<ShoppingCart> updateItemInCart(@PathVariable int userId, @PathVariable int cartId, @RequestBody UpdateToCartDTO updateToCartDTO) {
+        ShoppingCart cart = shoppingCartService.updateItem(updateToCartDTO, cartId, userId);
         return ResponseEntity.ok(cart);
     }
 }

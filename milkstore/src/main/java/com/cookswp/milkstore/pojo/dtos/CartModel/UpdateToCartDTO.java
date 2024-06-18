@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UpdateToCart {
+public class UpdateToCartDTO {
 
     private int product_id;
     private int quantity;
