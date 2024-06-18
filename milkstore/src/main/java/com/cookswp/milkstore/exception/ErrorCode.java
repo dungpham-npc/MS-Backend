@@ -11,7 +11,7 @@ public enum ErrorCode {
     CONTENT_NULL(4, "Content cannot be null"),
     CONTENT_BLANK(5, "Content cannot be blank"),
     CONTENT_EMPTY(6, "Content cannot be empty"),
-    POST_ID_NOT_FOUND(7, "Post id not found"),
+    POST_ID_NOT_FOUND(7, "Post must be existed in the system"),
     POST_TITLE_ERROR(8, "Post title can not be empty"),
     POST_CONTENT_ERROR(9, "Post content can not be empty"),
     ALL_POST_EMPTY(10, "Haven't any posts yet"),

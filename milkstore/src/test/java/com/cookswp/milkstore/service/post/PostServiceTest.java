@@ -206,7 +206,7 @@ class PostServiceTest {
             postService.deletePost(1);
         });
 
-        assertEquals(exception.getMessage(), "Post id not found");
+        assertEquals(exception.getMessage(), "Post must be existed in the system");
     }
 
     @Test
@@ -222,7 +222,7 @@ class PostServiceTest {
             postService.getPostByID(1);
         });
 
-        assertEquals(exception.getMessage(), "Post id not found");
+        assertEquals(exception.getMessage(), "Post must be existed in the system");
     }
 
     @Test
@@ -295,5 +295,21 @@ class PostServiceTest {
         });
 
         assertEquals("Post content contain offensive word", exception.getMessage());
+    }
+
+    @Test
+    void testUpdatePost_PostMustExistedInTheSystem(){
+        PostDTO postDTO = PostDTO.builder()
+                .title("Test")
+                .content("Test")
+                .build();
+
+        when(postRepository.findByIDAndVisibility(1)).thenReturn(null);
+
+        AppException exception = assertThrows(AppException.class, () -> {
+            postService.updatePost(1, postDTO);
+        });
+
+        assertEquals("Post must be existed in the system", exception.getMessage());
     }
 }
