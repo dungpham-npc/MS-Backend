@@ -1,9 +1,8 @@
 package com.cookswp.milkstore.configuration;
 
-import com.cookswp.milkstore.pojo.dtos.UserModel.CustomUserDetails;
 import com.cookswp.milkstore.pojo.entities.User;
-import com.cookswp.milkstore.service.role.RoleService;
-import com.cookswp.milkstore.service.user.UserService;
+import com.cookswp.milkstore.service.RoleService;
+import com.cookswp.milkstore.service.UserService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -11,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
@@ -20,7 +18,6 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.Map;
 
 @Component
@@ -30,7 +27,6 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
     private final UserService userService;
     @Autowired
     private final RoleService roleService;
-
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException {
 
@@ -43,7 +39,7 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
 
         if (user != null) {
 
-            if (!userService.checkVisibilityStatusByEmail(email)) {
+            if (!user.isEnabled() || !user.isAccountNonLocked()) {
                 response.sendRedirect("http://localhost:3000/login-error");
                 return;
             }
@@ -53,15 +49,18 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
 
             User newUser = new User();
             newUser.setEmailAddress(email);
-            newUser.setUsername(name);
             newUser.setRole(roleService.getRoleByRoleName("CUSTOMER"));
+            newUser.setPassword("test");    //delete this
             userService.registerUser(newUser);
 
             SecurityContextHolder.getContext().setAuthentication(getAuthentication(newUser, attributes));
-            String redirectUrl = "http://localhost:8080/test" + URLEncoder.encode(email, StandardCharsets.UTF_8) + "&username=" + URLEncoder.encode(name, StandardCharsets.UTF_8);
+            String redirectUrl = "http://localhost:3000/?email="
+                    + URLEncoder.encode(email, StandardCharsets.UTF_8) + "&username="
+                    + URLEncoder.encode(name, StandardCharsets.UTF_8);
             response.sendRedirect(redirectUrl);
             return;
         }
+
 
 
         this.setAlwaysUseDefaultTargetUrl(true);
@@ -70,9 +69,12 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
     }
 
     private static Authentication getAuthentication(User user, Map<String, Object> attributes) {
-        CustomUserDetails userDetail = new CustomUserDetails(user.getPhoneNumber(), user.getUsername(), user.getEmailAddress(), user.getPassword(), List.of(new SimpleGrantedAuthority(user.getRoleName())), attributes);
-
-        return new UsernamePasswordAuthenticationToken(userDetail, user.getPassword(), List.of(new SimpleGrantedAuthority(user.getRoleName())));
+        user.setAttributes(attributes);
+        return new UsernamePasswordAuthenticationToken(
+                user,
+                user.getPassword() == null ? null : user.getPassword(),
+                user.getAuthorities()
+        );
     }
 
 }
