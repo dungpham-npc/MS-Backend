@@ -83,4 +83,32 @@ class ProductServiceTest {
         assertEquals("Invalid product image", exception.getMessage());
     }
 
+    @Test
+    void testEditProduct_ProductNameMustBeUnique() {
+        when(productRepository.getProductById(1)).thenReturn(Product.builder()
+                .productName("name")
+                .productDescription("description")
+                .productImage("image.png")
+                .categoryID(1)
+                .postID(1)
+                .quantity(10)
+                .price(BigDecimal.valueOf(100))
+                .build());
+        when(productRepository.existsByProductName("name")).thenReturn(true);
+        
+        AppException exception = assertThrows(AppException.class, () -> {
+            productService.updateProduct(1, ProductDTO.builder()
+                    .productName("name")
+                    .productDescription("description")
+                    .productImage("image.png")
+                    .categoryID(1)
+                    .postID(1)
+                    .quantity(10)
+                    .price(BigDecimal.valueOf(100))
+                    .build());
+        });
+
+        assertEquals("Product name must unique", exception.getMessage());
+    }
+
 }
