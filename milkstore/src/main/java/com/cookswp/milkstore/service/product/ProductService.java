@@ -25,26 +25,28 @@ public class ProductService implements IProductService {
     }
 
     private void validProductRequest(ProductDTO productRequest) {
-        if(!productRepository.existsByCategoryID(productRequest.getCategoryID())){
+        if (productRepository.existsByCategoryID(productRequest.getCategoryID())) {
             throw new AppException(ErrorCode.CATEGORY_NOT_EXISTED);
         }
-        if(!postRepository.existsById(productRequest.getPostID())){
+        if (postRepository.existsById(productRequest.getPostID())) {
             throw new AppException(ErrorCode.POST_ID_NOT_FOUND);
         }
-        if(productRequest.getPrice() == null || productRequest.getPrice().compareTo(BigDecimal.ZERO) == 0){
+        if (productRequest.getPrice() == null || productRequest.getPrice().compareTo(BigDecimal.ZERO) == 0) {
             throw new AppException(ErrorCode.INVALID_PRICE);
         }
-        if(productRequest.getProductDescription() == null || productRequest.getProductDescription().isEmpty()){
+        if (productRequest.getProductDescription() == null || productRequest.getProductDescription().isEmpty()) {
             throw new AppException(ErrorCode.PRODUCT_DESCRIPTION_IS_NULL);
         }
-        if(!productRepository.existsByName(productRequest.getProductName())){
+        if (productRepository.existsByProductName(productRequest.getProductName())) {
             throw new AppException(ErrorCode.PRODUCT_NAME_EXISTS);
         }
 
-    }
-
-    private void validProductImage(ProductDTO productRequest) {
-
+        if (!productRequest.getProductImage().toLowerCase().endsWith(".jpeg") || !productRequest.getProductImage().toLowerCase().endsWith(".png")) {
+            throw new AppException(ErrorCode.PRODUCT_IMAGE_INVALID);
+        }
+        if (productRequest.getQuantity() < 0) {
+            throw new AppException(ErrorCode.PRODUCT_QUANTITY_INVALID);
+        }
     }
 
     @Override
@@ -62,64 +64,56 @@ public class ProductService implements IProductService {
         return productRepository.save(productEntity);
     }
 
-
-
     @Override
     public Product updateProduct(int productID, ProductDTO productRequest) {
         Product existingProduct = productRepository.getProductById(productID);
-        if (existingProduct != null) {
-            existingProduct.setCategoryID(productRequest.getCategoryID());
-            existingProduct.setProductImage(productRequest.getProductImage());
-            existingProduct.setProductName(productRequest.getProductName());
-            existingProduct.setProductDescription(productRequest.getProductDescription());
-            existingProduct.setPostID(productRequest.getPostID());
-            existingProduct.setQuantity(productRequest.getQuantity());
-            existingProduct.setPrice(productRequest.getPrice());
-            return productRepository.save(existingProduct);
-        } else {
-            throw new RuntimeException("Not found product with id: " + productID);
+        if (existingProduct == null) {
+            throw new AppException(ErrorCode.PRODUCT_NOT_FOUND);
         }
+        validProductRequest(productRequest);
+        existingProduct = Product.builder()
+                .categoryID(productRequest.getCategoryID())
+                .postID(productRequest.getPostID())
+                .price(productRequest.getPrice())
+                .productDescription(productRequest.getProductDescription())
+                .productName(productRequest.getProductName())
+                .productImage(productRequest.getProductImage())
+                .quantity(productRequest.getQuantity())
+                .build();
+        return productRepository.save(existingProduct);
     }
 
 
     @Override
     public void deleteProduct(int id) {
         Product productEntity = productRepository.getProductById(id);
-        if (productEntity != null) {
-            productEntity.setStatus(false);
-            productRepository.save(productEntity);
-        } else {
-            throw new RuntimeException("Not found product with id: " + id);
-        }
+        if (productEntity == null)
+            throw new AppException(ErrorCode.PRODUCT_NOT_FOUND);
+        productEntity.setStatus(false);
+        productRepository.save(productEntity);
     }
 
     @Override
     public Product getProductById(int id) {
         Product findProduct = productRepository.getProductById(id);
-        if (findProduct != null) {
-            return findProduct;
-        } else {
-            throw new RuntimeException("Not found product with id: " + id);
-        }
+        if (findProduct == null)
+            throw new AppException(ErrorCode.PRODUCT_ID_NOT_FOUND);
+        return findProduct;
     }
 
     @Override
     public List<Product> getAllProducts() {
         List<Product> list = productRepository.getAll();
-        if (list != null) {
-            return list;
-        } else {
-            throw new RuntimeException("Not found any products");
-        }
+        if (list == null)
+            throw new AppException(ErrorCode.PRODUCT_LIST_NOT_FOUND);
+        return list;
     }
 
     @Override
     public List<Product> searchProduct(String value) {
         List<Product> searchList = productRepository.searchProduct(value);
-        if (searchList != null) {
-            return searchList;
-        } else {
-            throw new RuntimeException("Not found any products");
-        }
+        if (searchList == null)
+            throw new AppException(ErrorCode.PRODUCT_NOT_FOUND);
+        return searchList;
     }
 }

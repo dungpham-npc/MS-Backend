@@ -20,7 +20,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     boolean existsByCategoryID(int categoryID);
 
-    boolean existsByName(String name);
+    boolean existsByProductName(String name);
 
 }
 

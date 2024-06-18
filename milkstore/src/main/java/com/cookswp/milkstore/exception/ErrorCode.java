@@ -23,6 +23,11 @@ public enum ErrorCode {
     INVALID_PRICE(15, "Invalid price"),
     PRODUCT_DESCRIPTION_IS_NULL(16, "Product description cannot be null"),
     PRODUCT_NAME_EXISTS(17, "Product name already exists"),
+    PRODUCT_IMAGE_INVALID(18, "Invalid product image"),
+    PRODUCT_QUANTITY_INVALID(19, "Invalid product quantity"),
+    PRODUCT_NOT_FOUND(20, "Product not found"),
+    PRODUCT_LIST_NOT_FOUND(21, "Product list empty"),
+    PRODUCT_ID_NOT_FOUND(22, "Product ID not exists")
     ;
 
     private final int code;
