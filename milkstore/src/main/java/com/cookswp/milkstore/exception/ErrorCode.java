@@ -24,7 +24,7 @@ public enum ErrorCode {
     PRODUCT_DESCRIPTION_IS_NULL(16, "Product description is required"),
     PRODUCT_NAME_EXISTS(17, "Product name must unique"),
     PRODUCT_IMAGE_INVALID(18, "Invalid product image"),
-    PRODUCT_QUANTITY_INVALID(19, "Invalid product quantity"),
+    PRODUCT_QUANTITY_INVALID(19, "Quantity cannot be less than 0"),
     PRODUCT_NOT_FOUND(20, "Product not found"),
     PRODUCT_LIST_NOT_FOUND(21, "Product list empty"),
     PRODUCT_ID_NOT_FOUND(22, "Product ID not exists")

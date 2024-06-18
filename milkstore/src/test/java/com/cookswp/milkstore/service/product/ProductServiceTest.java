@@ -139,4 +139,21 @@ class ProductServiceTest {
         assertEquals("Invalid product image", exception.getMessage());
     }
 
+    @Test
+    void testAddProductQuantityCanNotBeLessThanZero(){
+        AppException exception = assertThrows(AppException.class, () -> {
+            productService.createProduct(ProductDTO.builder()
+                    .productName("name")
+                    .productDescription("description")
+                    .productImage("image.jpg")
+                    .categoryID(1)
+                    .postID(1)
+                    .quantity(-1)
+                    .price(BigDecimal.valueOf(100))
+                    .build());
+        });
+
+        assertEquals("Quantity cannot be less than 0", exception.getMessage());
+    }
+
 }
