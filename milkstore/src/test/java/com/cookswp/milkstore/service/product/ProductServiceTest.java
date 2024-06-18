@@ -32,9 +32,8 @@ class ProductServiceTest {
 
     @Test
     void testCreateProduct_ProductNameMustBeUnique() {
-        // Mocking the behavior of productRepository
         when(productRepository.existsByProductName("name")).thenReturn(true);
-        // Expect an AppException to be thrown with the appropriate message
+
         AppException exception = assertThrows(AppException.class, () -> {
             productService.createProduct(ProductDTO.builder()
                     .productName("name")
@@ -47,8 +46,24 @@ class ProductServiceTest {
                     .build());
         });
 
-        // Assert that the exception message is as expected
         assertEquals("Product name already exists", exception.getMessage());
+    }
+
+    @Test
+    void testCreateProduct_ProductDescriptionIsRequired() {
+        AppException exception = assertThrows(AppException.class, () -> {
+            productService.createProduct(ProductDTO.builder()
+                    .productName("name")
+                    .productDescription(null)
+                    .productImage("image.jpg")
+                    .categoryID(1)
+                    .postID(1)
+                    .quantity(10)
+                    .price(BigDecimal.valueOf(100))
+                    .build());
+        });
+
+        assertEquals("Product description is required", exception.getMessage());
     }
 
 }
