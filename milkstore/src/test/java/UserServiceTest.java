@@ -22,7 +22,7 @@ import static org.testng.Assert.*;
 @RunWith(MockitoJUnitRunner.class)
 public class UserServiceTest {
 
-    @InjectMocks
+    @Mock
     private UserRepository userRepository;
 
     @InjectMocks
