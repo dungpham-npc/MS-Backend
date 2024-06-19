@@ -31,7 +31,7 @@ public class ProductService implements IProductService {
         if (postRepository.existsById(productRequest.getPostID())) {
             throw new AppException(ErrorCode.POST_ID_NOT_FOUND);
         }
-        if (productRequest.getPrice() == null || productRequest.getPrice().compareTo(BigDecimal.ZERO) == 0) {
+        if (productRequest.getPrice() == null || productRequest.getPrice().compareTo(BigDecimal.ZERO) < 0) {
             throw new AppException(ErrorCode.INVALID_PRICE);
         }
         if (productRequest.getProductDescription() == null || productRequest.getProductDescription().isEmpty()) {
@@ -41,7 +41,8 @@ public class ProductService implements IProductService {
             throw new AppException(ErrorCode.PRODUCT_NAME_EXISTS);
         }
 
-        if (!productRequest.getProductImage().toLowerCase().endsWith(".jpeg") || !productRequest.getProductImage().toLowerCase().endsWith(".png")) {
+        String image = productRequest.getProductImage().toLowerCase();
+        if (!image.matches(".*\\.(jpeg|png|jpg)$")) {
             throw new AppException(ErrorCode.PRODUCT_IMAGE_INVALID);
         }
         if (productRequest.getQuantity() < 0) {
@@ -52,15 +53,7 @@ public class ProductService implements IProductService {
     @Override
     public Product createProduct(ProductDTO productRequest) {
         validProductRequest(productRequest);
-        Product productEntity = Product.builder()
-                .categoryID(productRequest.getCategoryID())
-                .postID(productRequest.getPostID())
-                .price(productRequest.getPrice())
-                .productDescription(productRequest.getProductDescription())
-                .productName(productRequest.getProductName())
-                .productImage(productRequest.getProductImage())
-                .quantity(productRequest.getQuantity())
-                .build();
+        Product productEntity = Product.builder().categoryID(productRequest.getCategoryID()).postID(productRequest.getPostID()).price(productRequest.getPrice()).productDescription(productRequest.getProductDescription()).productName(productRequest.getProductName()).productImage(productRequest.getProductImage()).quantity(productRequest.getQuantity()).build();
         return productRepository.save(productEntity);
     }
 
@@ -71,15 +64,7 @@ public class ProductService implements IProductService {
             throw new AppException(ErrorCode.PRODUCT_NOT_FOUND);
         }
         validProductRequest(productRequest);
-        existingProduct = Product.builder()
-                .categoryID(productRequest.getCategoryID())
-                .postID(productRequest.getPostID())
-                .price(productRequest.getPrice())
-                .productDescription(productRequest.getProductDescription())
-                .productName(productRequest.getProductName())
-                .productImage(productRequest.getProductImage())
-                .quantity(productRequest.getQuantity())
-                .build();
+        existingProduct = Product.builder().categoryID(productRequest.getCategoryID()).postID(productRequest.getPostID()).price(productRequest.getPrice()).productDescription(productRequest.getProductDescription()).productName(productRequest.getProductName()).productImage(productRequest.getProductImage()).quantity(productRequest.getQuantity()).build();
         return productRepository.save(existingProduct);
     }
 
@@ -87,8 +72,7 @@ public class ProductService implements IProductService {
     @Override
     public void deleteProduct(int id) {
         Product productEntity = productRepository.getProductById(id);
-        if (productEntity == null)
-            throw new AppException(ErrorCode.PRODUCT_NOT_FOUND);
+        if (productEntity == null) throw new AppException(ErrorCode.PRODUCT_NOT_FOUND);
         productEntity.setStatus(false);
         productRepository.save(productEntity);
     }
@@ -96,24 +80,21 @@ public class ProductService implements IProductService {
     @Override
     public Product getProductById(int id) {
         Product findProduct = productRepository.getProductById(id);
-        if (findProduct == null)
-            throw new AppException(ErrorCode.PRODUCT_ID_NOT_FOUND);
+        if (findProduct == null) throw new AppException(ErrorCode.PRODUCT_ID_NOT_FOUND);
         return findProduct;
     }
 
     @Override
     public List<Product> getAllProducts() {
         List<Product> list = productRepository.getAll();
-        if (list == null)
-            throw new AppException(ErrorCode.PRODUCT_LIST_NOT_FOUND);
+        if (list == null) throw new AppException(ErrorCode.PRODUCT_LIST_NOT_FOUND);
         return list;
     }
 
     @Override
     public List<Product> searchProduct(String value) {
         List<Product> searchList = productRepository.searchProduct(value);
-        if (searchList == null)
-            throw new AppException(ErrorCode.PRODUCT_NOT_FOUND);
+        if (searchList == null) throw new AppException(ErrorCode.PRODUCT_NOT_FOUND);
         return searchList;
     }
 }

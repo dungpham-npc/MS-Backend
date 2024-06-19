@@ -140,29 +140,31 @@ class ProductServiceTest {
     }
 
     @Test
-    void testAddProductQuantityCanNotBeLessThanZero(){
+    void testAddProductQuantityCanNotBeLessThanZero() {
         AppException exception = assertThrows(AppException.class, () -> {
             productService.createProduct(ProductDTO.builder()
-                    .productName("name")
-                    .productDescription("description")
-                    .productImage("image.jpeg")
-                    .categoryID(1)
-                    .postID(1)
-                    .quantity(-1)
                     .price(BigDecimal.valueOf(100))
-                    .build());
+                    .quantity(-10)
+                    .postID(1)
+                    .categoryID(1)
+                    .productImage("image.png")
+                    .productDescription("description")
+                    .productName("name")
+                    .build()
+            );
         });
 
         assertEquals("Quantity cannot be less than 0", exception.getMessage());
+
     }
 
     @Test
-    void testAddProductPriceCanNotBeLessThanZero(){
+    void testAddProductPriceCanNotBeLessThanZero() {
         AppException exception = assertThrows(AppException.class, () -> {
             productService.createProduct(ProductDTO.builder()
                     .productName("name")
                     .productDescription("description")
-                    .productImage("image.jpeg")
+                    .productImage("image.png")
                     .categoryID(1)
                     .postID(1)
                     .quantity(10)
