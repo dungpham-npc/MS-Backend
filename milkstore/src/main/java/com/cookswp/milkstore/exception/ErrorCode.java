@@ -22,7 +22,7 @@ public enum ErrorCode {
     CATEGORY_NOT_EXISTED(14, "Category must be existed"),
     INVALID_PRICE(15, "Price cannot be less than 0"),
     PRODUCT_DESCRIPTION_IS_NULL(16, "Product description is required"),
-    PRODUCT_NAME_EXISTS(17, "Product name must unique"),
+    PRODUCT_NAME_EXISTS(17, "Product name already exists in the system"),
     PRODUCT_IMAGE_INVALID(18, "Invalid product image"),
     PRODUCT_QUANTITY_INVALID(19, "Quantity cannot be less than 0"),
     PRODUCT_NOT_FOUND(20, "Product not found"),

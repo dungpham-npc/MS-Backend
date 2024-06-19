@@ -2,7 +2,6 @@ package com.cookswp.milkstore.service.product;
 
 import com.cookswp.milkstore.exception.AppException;
 import com.cookswp.milkstore.pojo.dtos.ProductModel.ProductDTO;
-import com.cookswp.milkstore.pojo.entities.Post;
 import com.cookswp.milkstore.pojo.entities.Product;
 import com.cookswp.milkstore.repository.post.PostRepository;
 import com.cookswp.milkstore.repository.product.ProductRepository;
@@ -15,7 +14,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -46,7 +44,7 @@ class ProductServiceTest {
                     .build());
         });
 
-        assertEquals("Product name must unique", exception.getMessage());
+        assertEquals("Product name already exists in the system", exception.getMessage());
     }
 
     @Test
@@ -173,6 +171,11 @@ class ProductServiceTest {
         });
 
         assertEquals("Price cannot be less than 0", exception.getMessage());
+    }
+
+    @Test
+    void testEditProduct_ProductMustExistsInTheSystem() {
+
     }
 
 }
