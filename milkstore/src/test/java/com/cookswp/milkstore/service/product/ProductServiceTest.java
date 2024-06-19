@@ -144,7 +144,7 @@ class ProductServiceTest {
         AppException exception = assertThrows(AppException.class, () -> {
             productService.createProduct(ProductDTO.builder()
                     .price(BigDecimal.valueOf(100))
-                    .quantity(-10)
+                    .quantity(-100)
                     .postID(1)
                     .categoryID(1)
                     .productImage("image.png")
