@@ -53,7 +53,15 @@ public class ProductService implements IProductService {
     @Override
     public Product createProduct(ProductDTO productRequest) {
         validProductRequest(productRequest);
-        Product productEntity = Product.builder().categoryID(productRequest.getCategoryID()).postID(productRequest.getPostID()).price(productRequest.getPrice()).productDescription(productRequest.getProductDescription()).productName(productRequest.getProductName()).productImage(productRequest.getProductImage()).quantity(productRequest.getQuantity()).build();
+        Product productEntity = Product.builder()
+                .categoryID(productRequest.getCategoryID())
+                .postID(productRequest.getPostID())
+                .price(productRequest.getPrice())
+                .productDescription(productRequest.getProductDescription())
+                .productName(productRequest.getProductName())
+                .productImage(productRequest.getProductImage())
+                .quantity(productRequest.getQuantity())
+                .build();
         return productRepository.save(productEntity);
     }
 
