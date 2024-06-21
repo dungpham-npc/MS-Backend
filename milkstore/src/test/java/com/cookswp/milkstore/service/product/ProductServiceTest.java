@@ -1,6 +1,7 @@
 package com.cookswp.milkstore.service.product;
 
 import com.cookswp.milkstore.exception.AppException;
+import com.cookswp.milkstore.exception.ErrorCode;
 import com.cookswp.milkstore.pojo.dtos.ProductModel.ProductDTO;
 import com.cookswp.milkstore.pojo.entities.Product;
 import com.cookswp.milkstore.repository.post.PostRepository;
@@ -28,6 +29,7 @@ class ProductServiceTest {
 
     @Mock
     private PostRepository postRepository;
+
 
     @Test
     void testCreateProduct_ProductNameMustBeUnique() {
@@ -203,9 +205,34 @@ class ProductServiceTest {
         assertEquals("Price cannot be less than 0", exception.getMessage());
     }
 
+    //Phần này liên quan tới phần assertEqual khá là khác. Và đây là BadCase
     @Test
     void testEditProduct_ProductMustExistsInTheSystem() {
+        // Giả lập rằng sản phẩm với ID 1 không tồn tại trong hệ thống
+        when(productRepository.getProductById(1)).thenReturn(null);
 
+        // Kiểm tra rằng ngoại lệ AppException sẽ được ném ra khi cập nhật sản phẩm với ID không tồn tại
+        AppException exception = assertThrows(AppException.class, () -> {
+//            productService.getProductById(1);
+            productService.updateProduct(1, ProductDTO.builder()
+                    .productName("name")
+                    .productDescription("description")
+                    .quantity(10)
+                    .postID(1)
+                    .categoryID(1)
+                    .price(BigDecimal.valueOf(100))
+                    .productImage("image.jpg")
+                    .build());
+        });
+
+        // Kiểm tra msg của ngoại lệ
+        //Con mẹ m tại sao ko dùng OOP cho nhanh đi còn ngồi check thống qua string rồi bắt làm gì cho cực z ?????
+      assertEquals(ErrorCode.PRODUCT_NOT_FOUND.getMessage(), exception.getMessage());
+//        assertEquals("Product ID not exists", exception.getMessage());
     }
+
+
+
+
 
 }
