@@ -204,9 +204,5 @@ class ProductServiceTest {
         assertEquals("Price cannot be less than 0", exception.getMessage());
     }
 
-    @Test
-    void testEditProduct_ProductMustExistsInTheSystem() {
-
-    }
 
 }
