@@ -43,19 +43,17 @@ public class PostService implements IPostService {
 
     @Override
     public Post updatePost(int ID, PostDTO postRequest) {
-        Post postEntity = postRepository.findByIDAndVisibility(ID);                      //Find post with ID
+        Post postEntity = postRepository.findByIDAndVisibility(ID);
         if (postEntity != null) {
-
-            validateInputRequest(postRequest);                                          //Valid null empty blank
-            postEntity.setUserID(7);                                                    //setUserID is not complete
-            postEntity.setContent(postRequest.getContent());                            //set content from the request DTO
-            postEntity.setTitle(postRequest.getTitle());                                //set title from the request DTO
-            postEntity.setDateCreated(new Date());                                      //set new date when create
+            validateInputRequest(postRequest);
+            postEntity.setUserID(7);
+            postEntity.setContent(postRequest.getContent());
+            postEntity.setTitle(postRequest.getTitle());
+            postEntity.setDateCreated(new Date());
             return postRepository.save(postEntity);
         } else {
             throw new AppException(ErrorCode.POST_ID_NOT_FOUND);
         }
-        //Save into DB
     }
 
     @Override

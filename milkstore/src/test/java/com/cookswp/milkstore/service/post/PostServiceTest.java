@@ -51,7 +51,9 @@ class PostServiceTest {
 
     @Test
     void testCreatePost_Success() {
+        //Returns true meaning that title not exists in the database
         when(postRepository.titleMustBeUnique(postDTO.getTitle())).thenReturn(true);
+        //Save any Post class then return post
         when(postRepository.save(any(Post.class))).thenReturn(post);
 
         Post createdPost = postService.createPost(postDTO);
@@ -63,6 +65,7 @@ class PostServiceTest {
 
     @Test
     void testCreatePost_With_Exists_Title() {
+        //Returns false meaning that title already exists in the database
         when(postRepository.titleMustBeUnique(postDTO.getTitle())).thenReturn(false);
 
         AppException exception = assertThrows(AppException.class, () -> {
@@ -95,8 +98,8 @@ class PostServiceTest {
             postService.createPost(postDTO);
         });
 
-        if (postDTO.getTitle() == null || postDTO.getTitle().isBlank() || postDTO.getTitle().isEmpty()) {
-            assertEquals(ErrorCode.POST_TITLE_ERROR, exception.getErrorCode());
+        if (postDTO.getContent() == null || postDTO.getContent().isBlank() || postDTO.getContent().isEmpty()) {
+            assertEquals(ErrorCode.POST_CONTENT_ERROR, exception.getErrorCode());
         }
     }
 
@@ -104,14 +107,88 @@ class PostServiceTest {
 
     @Test
     void testUpdatePost_Success() {
-        when(postRepository.titleMustBeUnique(postDTO.getTitle())).thenReturn(false);
-        when(postRepository.findByIDAndVisibility(1)).thenReturn(post);
+        int postID = 1;
+        ////Returns true meaning that title not exists in the database
+        when(postRepository.titleMustBeUnique(postDTO.getTitle())).thenReturn(true);
+        //assuming the PostID = 1 is exist in the database then return post
+        when(postRepository.findByIDAndVisibility(postID)).thenReturn(post);
+        //Save any Post class with the Post
+        when(postRepository.save(any(Post.class))).thenReturn(post);
 
-        Post updatePost = postService.updatePost(1, postDTO);
+        //Update service
+        Post updatePost = postService.updatePost(postID, postDTO);
 
         assertNotNull(updatePost);
         assertEquals(updatePost.getTitle(), post.getTitle());
         assertEquals(updatePost.getTitle(), post.getTitle());
+    }
+
+    //ED-64
+    @Test
+    void testUpdatePost_PostID_NotExist() {
+        int postID = 1;
+        //return null when postID not exist
+        when(postRepository.findByIDAndVisibility(postID)).thenReturn(null);
+
+        //exception
+        AppException exception = assertThrows(AppException.class, () -> {
+            postService.updatePost(postID, postDTO);
+        });
+
+        assertEquals(ErrorCode.POST_ID_NOT_FOUND, exception.getErrorCode());
+    }
+
+    @Test
+    void testUpdatePost_With_Title_Error() {
+        int postID = 1;
+        String title = "";
+        //return post with the postID = 1
+        when(postRepository.findByIDAndVisibility(postID)).thenReturn(post);
+        //
+        PostDTO postDTO = PostDTO.builder()
+                .title(title)
+                .content("content")
+                .build();
+
+        AppException exception = assertThrows(AppException.class, () -> {
+            postService.updatePost(postID, postDTO);
+        });
+
+        if (postDTO.getTitle() == null || postDTO.getTitle().isBlank() || postDTO.getTitle().isEmpty()) {
+            assertEquals(ErrorCode.POST_TITLE_ERROR, exception.getErrorCode());
+        }
+    }
+
+    @Test
+    void testUpdatePost_With_Content_Error() {
+        int postID = 1;
+        String content = "";
+        //assuming the post is existing with ID = 1
+        when(postRepository.findByIDAndVisibility(postID)).thenReturn(post);
+        //
+        PostDTO postDTO = PostDTO.builder().title("title").content(content).build();
+
+        AppException exception = assertThrows(AppException.class, () -> {
+            postService.updatePost(postID, postDTO);
+        });
+
+        if (postDTO.getContent() == null || postDTO.getContent().isBlank() || postDTO.getContent().isEmpty()) {
+            assertEquals(ErrorCode.POST_CONTENT_ERROR, exception.getErrorCode());
+        }
+    }
+
+    @Test
+    void testUpdatePost_With_Exists_Title() {
+        int postID = 1;
+        //Returns false meaning that title already exists in the database
+        when(postRepository.titleMustBeUnique(postDTO.getTitle())).thenReturn(false);
+        when(postRepository.findByIDAndVisibility(postID)).thenReturn(post);
+
+        AppException exception = assertThrows(AppException.class, () -> {
+            postService.updatePost(postID, postDTO);
+        });
+        //
+        assertEquals(ErrorCode.POST_TITLE_EXISTS, exception.getErrorCode());
     }
 
 
