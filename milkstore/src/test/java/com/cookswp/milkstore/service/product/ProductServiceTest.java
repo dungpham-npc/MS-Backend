@@ -106,7 +106,7 @@ class ProductServiceTest {
                     .build());
         });
 
-        assertEquals("Product name must unique", exception.getMessage());
+        assertEquals("Product name already exists in the system", exception.getMessage());
     }
 
     @Test

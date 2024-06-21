@@ -17,6 +17,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     @Query("SELECT p FROM Post p WHERE p.id = :id AND p.visibility = true")
     Post findByIDAndVisibility(@Param("id") int id);
 
-    boolean titleMustBeUnique(String title);
+    @Query("SELECT CASE WHEN COUNT(p) > 0 THEN false ELSE true END FROM Post p WHERE p.title = :title")
+    boolean titleMustBeUnique(@Param("title") String title);
 
 }

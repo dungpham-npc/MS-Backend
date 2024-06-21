@@ -15,7 +15,6 @@ import java.util.List;
 public class PostService implements IPostService {
 
     private final PostRepository postRepository;
-    private Post postEntity = new Post();
 
     @Autowired
     public PostService(PostRepository postRepository) {
@@ -44,25 +43,32 @@ public class PostService implements IPostService {
 
     @Override
     public Post updatePost(int ID, PostDTO postRequest) {
-        postEntity = postRepository.findByIDAndVisibility(ID);                      //Find post with ID
-        if (postEntity == null) throw new AppException(ErrorCode.POST_ID_NOT_FOUND);//Throw exception
-        validateInputRequest(postRequest);                                          //Valid null empty blank
-        postEntity.setUserID(7);                                                    //setUserID is not complete
-        postEntity.setContent(postRequest.getContent());                            //set content from the request DTO
-        postEntity.setTitle(postRequest.getTitle());                                //set title from the request DTO
-        postEntity.setDateCreated(new Date());                                      //set new date when create
-        return postRepository.save(postEntity);                                     //Save into DB
+        Post postEntity = postRepository.findByIDAndVisibility(ID);                      //Find post with ID
+        if (postEntity != null) {
+
+            validateInputRequest(postRequest);                                          //Valid null empty blank
+            postEntity.setUserID(7);                                                    //setUserID is not complete
+            postEntity.setContent(postRequest.getContent());                            //set content from the request DTO
+            postEntity.setTitle(postRequest.getTitle());                                //set title from the request DTO
+            postEntity.setDateCreated(new Date());                                      //set new date when create
+            return postRepository.save(postEntity);
+        } else {
+            throw new AppException(ErrorCode.POST_ID_NOT_FOUND);
+        }
+        //Save into DB
     }
 
     @Override
     public Post createPost(PostDTO postRequest) {
-        validateInputRequest(postRequest);                  //Valid null empty blank
-        postEntity.setUserID(7);                            //setUserID is not complete
-        postEntity.setTitle(postRequest.getTitle());        //create new title
-        postEntity.setContent(postRequest.getContent());    //create new content
-        postEntity.setDateCreated(new Date());              //create when create post
-        postEntity.setUserComment("");                      //set user comment to empty for the user can comment in the post
-        return postRepository.save(postEntity);
+        validateInputRequest(postRequest);
+        Post post = Post.builder()
+                .content(postRequest.getContent())
+                .title(postRequest.getTitle())
+                .dateCreated(new Date())
+                .userComment("")
+                .userID(7)
+                .build();
+        return postRepository.save(post);
     }
 
     private void validateInputRequest(PostDTO postRequest) {
@@ -72,10 +78,10 @@ public class PostService implements IPostService {
         if (postRequest.getContent() == null || postRequest.getContent().isBlank() || postRequest.getContent().isEmpty()) {
             throw new AppException(ErrorCode.POST_CONTENT_ERROR);
         }
-        if(postRepository.titleMustBeUnique(postRequest.getTitle())){
+        if (!postRepository.titleMustBeUnique(postRequest.getTitle())) {
             throw new AppException(ErrorCode.POST_TITLE_EXISTS);
         }
-        if(postRequest.getContent().equals("F*ck") || postRequest.getContent().equals("D*ck head")){
+        if (postRequest.getContent().equals("F*ck") || postRequest.getContent().equals("D*ck head")) {
             throw new AppException(ErrorCode.POST_CONTENT_OFFENSIVE_WORD);//Valid word
         }
     }
