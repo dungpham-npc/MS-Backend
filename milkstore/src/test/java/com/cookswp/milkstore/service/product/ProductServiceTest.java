@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -45,6 +46,35 @@ class ProductServiceTest {
         });
 
         assertEquals("Product name already exists in the system", exception.getMessage());
+    }
+
+    //Happy case when creating product
+    @Test
+    void testCreateProduct(){
+        Product product = Product.builder()
+                .productName("name")
+                .productDescription("description")
+                .quantity(10)
+                .postID(1)
+                .categoryID(1)
+                .price(BigDecimal.valueOf(100))
+                .productImage("image.jpg")
+                .build();
+        ProductDTO productDTO = ProductDTO.builder()
+                .productName("name")
+                .productDescription("description")
+                .quantity(10)
+                .postID(1)
+                .categoryID(1)
+                .price(BigDecimal.valueOf(100))
+                .productImage("image.jpg")
+                .build();
+        when(productRepository.save(any(Product.class))).thenReturn(product);
+        Product createProduct = productService.createProduct(productDTO);
+
+        assertNotNull(createProduct);
+        assertEquals(product.getProductName(), createProduct.getProductName());
+        assertEquals(product.getProductDescription(), createProduct.getProductDescription());
     }
 
     @Test
