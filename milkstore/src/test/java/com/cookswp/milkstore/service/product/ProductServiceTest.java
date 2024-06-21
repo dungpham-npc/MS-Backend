@@ -29,6 +29,7 @@ class ProductServiceTest {
     @Mock
     private PostRepository postRepository;
 
+    //asaosnd
     @Test
     void testCreateProduct_ProductNameMustBeUnique() {
         when(productRepository.existsByProductName("name")).thenReturn(true);
@@ -48,7 +49,7 @@ class ProductServiceTest {
         assertEquals("Product name already exists in the system", exception.getMessage());
     }
 
-    //Happy case when creating product
+    //Happy case when creating product #2
     @Test
     void testCreateProduct(){
         Product product = Product.builder()
