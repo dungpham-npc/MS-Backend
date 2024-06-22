@@ -32,13 +32,6 @@
             <artifactId>firebase-admin</artifactId>
             <version>9.1.1</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.testng/testng -->
-        <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-            <version>7.10.2</version>
-            <scope>test</scope>
-        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -64,12 +57,6 @@
             <artifactId>mysql-connector-j</artifactId>
             <scope>runtime</scope>
         </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>5.10.0</version>
-            <scope>test</scope>
-        </dependency>
 
         <dependency>
             <groupId>org.mockito</groupId>
@@ -91,37 +78,18 @@
             <version>3.12.4</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
-            <version>5.3.20</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-params</artifactId>
-            <version>5.10.1</version>
-            <scope>test</scope>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.springframework</groupId>-->
+<!--            <artifactId>spring-test</artifactId>-->
+<!--            <version>5.3.20</version>-->
+<!--            <scope>test</scope>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>org.junit.vintage</groupId>
             <artifactId>junit-vintage-engine</artifactId>
             <version>5.10.1</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.junit.platform</groupId>
-            <artifactId>junit-platform-suite-engine</artifactId>
-            <version>1.10.1</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.platform</groupId>
-            <artifactId>junit-platform-launcher</artifactId>
-            <version>1.10.1</version>
-            <scope>test</scope>
-        </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -168,9 +136,46 @@
             <version>6.1.6</version>
         </dependency>
         <dependency>
+            <groupId>org.apache.maven.shared</groupId>
+            <artifactId>maven-dependency-tree</artifactId>
+            <version>3.2.1</version>
+        </dependency>
+        <!-- Testing -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.10.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.10.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <version>5.10.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.junit.platform</groupId>
-            <artifactId>junit-platform-surefire-provider</artifactId>
-            <version>1.1.0</version>
+            <artifactId>junit-platform-suite-engine</artifactId>
+            <version>1.10.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-launcher</artifactId>
+            <version>1.10.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>7.10.2</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -178,50 +183,32 @@
             <version>4.13.2</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-core</artifactId>
-            <version>2.2</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.apache.maven.shared/maven-dependency-tree -->
-        <dependency>
-            <groupId>org.apache.maven.shared</groupId>
-            <artifactId>maven-dependency-tree</artifactId>
-            <version>3.2.1</version>
-        </dependency>
 
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.8.2</version>
-            <scope>test</scope>
-        </dependency>
+        <!-- JUnit Jupiter API -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>5.8.2</version>
+            <version>5.10.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
-    <!---->
     <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>${surefire.plugin.version}</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-report-plugin</artifactId>
-                <version>${surefire.plugin.version}</version>
-            </plugin>
-        </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>3.3.0</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
+    <repositories>
+        <repository>
+            <id>central</id>
+            <url>https://repo.maven.apache.org/maven2</url>
+        </repository>
+    </repositories>
+
 
 </project>
