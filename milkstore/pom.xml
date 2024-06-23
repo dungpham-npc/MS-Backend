@@ -15,6 +15,8 @@
 	<description>Milk Store project</description>
 	<properties>
 		<java.version>17</java.version>
+		<maven.compiler.source>11</maven.compiler.source>
+		<maven.compiler.target>11</maven.compiler.target>
 		<surefire.plugin.version>2.22.2</surefire.plugin.version>
 	</properties>
 	<dependencies>
@@ -84,14 +86,35 @@
 			<artifactId>spring-security-web</artifactId>
 			<version>6.3.0</version>
 		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-api</artifactId>
+			<version>0.12.5</version>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-impl</artifactId>
+			<version>0.12.5</version>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-jackson</artifactId>
+			<version>0.12.5</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt -->
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt</artifactId>
+			<version>0.12.5</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+		</dependency>
+
+
 
 		<!-- Testing -->
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-engine</artifactId>
-			<version>5.10.0</version>
-			<scope>test</scope>
-		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter</artifactId>
@@ -101,44 +124,31 @@
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-params</artifactId>
-			<version>5.10.1</version>
+			<version>5.10.0</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.junit.platform</groupId>
-			<artifactId>junit-platform-suite-engine</artifactId>
-			<version>1.10.1</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.junit.platform</groupId>
-			<artifactId>junit-platform-launcher</artifactId>
-			<version>1.10.1</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.testng</groupId>
-			<artifactId>testng</artifactId>
-			<version>7.10.2</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.13.2</version>
-			<scope>test</scope>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>org.junit.platform</groupId>-->
+<!--			<artifactId>junit-platform-suite-engine</artifactId>-->
+<!--			<version>1.10.1</version>-->
+<!--			<scope>test</scope>-->
+<!--		</dependency>-->
+<!--		<dependency>-->
+<!--			<groupId>org.junit.platform</groupId>-->
+<!--			<artifactId>junit-platform-launcher</artifactId>-->
+<!--			<version>1.10.2</version>-->
+<!--			<scope>test</scope>-->
+<!--		</dependency>-->
+<!--		<dependency>-->
+<!--			<groupId>org.testng</groupId>-->
+<!--			<artifactId>testng</artifactId>-->
+<!--			<version>7.10.2</version>-->
+<!--			<scope>test</scope>-->
+<!--		</dependency>-->
 		<dependency>
 			<groupId>org.hamcrest</groupId>
 			<artifactId>hamcrest-core</artifactId>
 			<version>2.2</version>
-		</dependency>
-
-		<!-- OpenCSV -->
-		<dependency>
-			<groupId>com.opencsv</groupId>
-			<artifactId>opencsv</artifactId>
-			<version>5.5.2</version>
 		</dependency>
 
 		<!-- JUnit Jupiter API -->
@@ -148,40 +158,19 @@
 			<version>5.10.0</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.junit.platform</groupId>
-			<artifactId>junit-platform-surefire-provider</artifactId>
-			<version>1.1.0</version>
-		</dependency>
 	</dependencies>
 
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.22.0</version>
-				<dependencies>
-					<dependency>
-						<groupId>org.junit.jupiter</groupId>
-						<artifactId>junit-jupiter-engine</artifactId>
-						<version>5.10.0</version>
-					</dependency>
-				</dependencies>
+				<version>${surefire.plugin.version}</version>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-report-plugin</artifactId>
 				<version>${surefire.plugin.version}</version>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-failsafe-plugin</artifactId>
-				<version>3.0.0-M7</version>
 			</plugin>
 		</plugins>
 	</build>
