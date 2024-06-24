@@ -1,5 +1,6 @@
 package com.cookswp.milkstore.service.shoppingcart;
 
+import com.cookswp.milkstore.enums.Status;
 import com.cookswp.milkstore.pojo.dtos.CartModel.AddToCartDTO;
 import com.cookswp.milkstore.pojo.dtos.CartModel.ShowCartModelDTO;
 import com.cookswp.milkstore.pojo.dtos.CartModel.UpdateToCartDTO;
@@ -101,5 +102,10 @@ public class ShoppingCartService implements IShoppingCartService{
         item.setQuantity(updateToCartDTO.getQuantity());
         shoppingCartItemRepository.save(item);
         return cart;
+    }
+
+    public void updateCartStatus (ShoppingCart cart, Status status) {
+        cart.setStatus(status);
+        shoppingCartRepository.save(cart);
     }
 }

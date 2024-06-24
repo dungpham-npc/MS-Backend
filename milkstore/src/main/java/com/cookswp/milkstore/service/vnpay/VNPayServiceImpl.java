@@ -24,6 +24,7 @@ public class VNPayServiceImpl implements VNPayService {
         this.paymentRepository = paymentRepository;
     }
 
+    //Create purchase bill from product in cart to show
     public PaymentDTO.VNPayResponse createVNPayPayment(HttpServletRequest request) {
         long amount = Integer.parseInt(request.getParameter("amount")) * 100L;
         String bankCode = request.getParameter("bankCode");

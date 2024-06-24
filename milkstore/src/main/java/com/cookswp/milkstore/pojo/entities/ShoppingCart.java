@@ -1,5 +1,6 @@
 package com.cookswp.milkstore.pojo.entities;
 
+import com.cookswp.milkstore.enums.Status;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,6 +21,11 @@ public class ShoppingCart {
 
     @OneToMany(mappedBy = "shoppingCart", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ShoppingCartItem> items;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private Status status; // Add this line to keep track of the cart status
+
 
 
 }

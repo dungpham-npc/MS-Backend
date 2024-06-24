@@ -3,7 +3,12 @@ package com.cookswp.milkstore.service.order;
 import com.cookswp.milkstore.enums.Status;
 import com.cookswp.milkstore.pojo.dtos.OrderModel.OrderDTO;
 import com.cookswp.milkstore.pojo.entities.Order;
+import com.cookswp.milkstore.pojo.entities.ShoppingCart;
+import com.cookswp.milkstore.pojo.entities.ShoppingCartItem;
 import com.cookswp.milkstore.repository.order.OrderRepository;
+import com.cookswp.milkstore.repository.shoppingCartItem.ShoppingCartItemRepository;
+import com.cookswp.milkstore.service.product.ProductService;
+import com.cookswp.milkstore.service.shoppingcart.ShoppingCartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,14 +20,22 @@ public class OrderService  implements IOrderService{
     @Autowired
     private OrderRepository orderRepository;
 
+    @Autowired
+    private ShoppingCartService shoppingCartService;
+
+    @Autowired
+    private ProductService productService;
+
+    @Autowired
+    private ShoppingCartItemRepository shoppingCartItemRepository;
 
     @Override
-    public List<Object> getAllOrders() {
+    public List<OrderDTO> getAllOrders() {
         return orderRepository.findAll().stream().map(this::toOrderDTO).collect(Collectors.toList());
     }
 
     //Change Order Entity to OrderDTO
-    private Object toOrderDTO(Order order) {
+    private OrderDTO toOrderDTO(Order order) {
         OrderDTO orderDTO = new OrderDTO();
         orderDTO.setId(order.getId());
         orderDTO.setUserId(orderDTO.getUserId());
@@ -85,4 +98,9 @@ public class OrderService  implements IOrderService{
         order = orderRepository.save(order);
         return (OrderDTO) toOrderDTO(order);
     }
+
+//    public void reduceQuantity(Order order) {
+//        ShoppingCart cart = order.
+//    }
+
 }
