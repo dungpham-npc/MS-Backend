@@ -2,8 +2,8 @@ package com.cookswp.milkstore.configuration;
 
 
 import com.cookswp.milkstore.pojo.entities.User;
-import com.cookswp.milkstore.service.AccountService;
-import com.cookswp.milkstore.service.UserService;
+import com.cookswp.milkstore.service.account.AccountService;
+import com.cookswp.milkstore.service.user.UserService;
 //import com.cookswp.milkstore.utils.JwtUtils;
 import com.cookswp.milkstore.utils.JwtUtils;
 import jakarta.servlet.ServletException;
