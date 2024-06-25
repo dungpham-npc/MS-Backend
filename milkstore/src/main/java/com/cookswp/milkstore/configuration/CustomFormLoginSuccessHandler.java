@@ -6,10 +6,12 @@ import com.cookswp.milkstore.service.account.AccountService;
 import com.cookswp.milkstore.service.user.UserService;
 //import com.cookswp.milkstore.utils.JwtUtils;
 import com.cookswp.milkstore.utils.JwtUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
@@ -18,6 +20,8 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
@@ -25,13 +29,22 @@ public class CustomFormLoginSuccessHandler extends SimpleUrlAuthenticationSucces
 
     @Autowired
     private final JwtUtils jwtUtils;
+
+    @Autowired
+    private final ModelMapper mapper;
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
         User user = (User) authentication.getPrincipal();
         String jwt = jwtUtils.generateJwtToken(authentication);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.getWriter().write("{\"token\": \"" + jwt + "\"}");
+        Map<String, Object> userMap = new HashMap<>();
+        userMap.put("id", user.getUserId());
+        userMap.put("email", user.getEmailAddress());
+        userMap.put("username", user.getUsername());
+        userMap.put("role", user.getRole().getRoleName());
+        userMap.put("phone", user.getPhoneNumber());
+        response.getWriter().write(String.format("{\"token\": \"%s\", \"user\": %s}", jwt, new ObjectMapper().writeValueAsString(userMap)));
         response.getWriter().flush();
 
 //        this.setAlwaysUseDefaultTargetUrl(true);

@@ -46,7 +46,6 @@ public class PersonalAccountController {
     }
 
     @PutMapping
-    @PreAuthorize("hasAuthority('CUSTOMER')")
     @ResponseStatus(HttpStatus.OK)
     public ResponseData<UserDTO> updatePersonalProfileInformation(UserDTO userDTO){
         if (userDTO.getPhoneNumber() == null ||
@@ -57,7 +56,6 @@ public class PersonalAccountController {
     }
 
     @PutMapping("/password-update")
-    @PreAuthorize("hasAuthority('CUSTOMER')")
     @ResponseStatus(HttpStatus.OK)
     public ResponseData<String> updateUserPassword(PasswordUpdateDTO passwordUpdateDTO){
         User user = userService.getCurrentUser();
@@ -69,7 +67,6 @@ public class PersonalAccountController {
     }
 
     @PutMapping("/forgot-password-update")
-    @PreAuthorize("hasAuthority('CUSTOMER')")
     @ResponseStatus(HttpStatus.OK)
     public ResponseData<String> updateUserForgotPassword(String email, String newPassword){
         userService.updateUserPassword(userService.getUserByEmail(email).getUserId(), newPassword);

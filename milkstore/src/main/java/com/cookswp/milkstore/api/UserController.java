@@ -2,16 +2,20 @@ package com.cookswp.milkstore.api;
 
 import com.cookswp.milkstore.exception.MissingRequiredFieldException;
 import com.cookswp.milkstore.exception.RoleNotFoundException;
+import com.cookswp.milkstore.exception.UnauthorizedAccessException;
 import com.cookswp.milkstore.pojo.dtos.UserModel.UserRegistrationDTO;
 import com.cookswp.milkstore.pojo.dtos.UserModel.UserDTO;
 import com.cookswp.milkstore.pojo.entities.User;
 import com.cookswp.milkstore.response.ResponseData;
 import com.cookswp.milkstore.service.user.UserService;
+import com.cookswp.milkstore.utils.AuthorizationUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AuthorizationServiceException;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,9 +35,9 @@ public class UserController {
     }
 
     @GetMapping("/staffs")
-    @PreAuthorize("hasAuthority('ADMIN')")
     @ResponseStatus(HttpStatus.OK)
     public ResponseData<List<UserDTO>> getStaffList(){
+        AuthorizationUtils.checkAuthorization("ADMIN");
         return new ResponseData<>(HttpStatus.OK.value(),
                 "List retrieved successfully!",
                 userService.getInternalUserList().stream()
@@ -42,9 +46,9 @@ public class UserController {
     }
 
     @GetMapping("/members")
-    @PreAuthorize("hasAuthority('ADMIN')")
     @ResponseStatus(HttpStatus.OK)
     public ResponseData<List<UserDTO>> getMemberList(){
+        AuthorizationUtils.checkAuthorization("ADMIN");
         return new ResponseData<>(HttpStatus.OK.value(),
                 "List retrieved successfully!",
                 userService.getMemberUserList().stream()
@@ -53,27 +57,27 @@ public class UserController {
     }
 
     @GetMapping("/staffs/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
     @ResponseStatus(HttpStatus.OK)
     public ResponseData<UserRegistrationDTO> getStaff(@PathVariable int id){
+        AuthorizationUtils.checkAuthorization("ADMIN");
         return new ResponseData<>(HttpStatus.OK.value(),
                 "Staff retrieved successfully!",
                 mapper.map(userService.getUserById(id), UserRegistrationDTO.class));
     }
 
     @GetMapping("/member")
-    @PreAuthorize("hasAuthority('ADMIN')")
     @ResponseStatus(HttpStatus.OK)
     public ResponseData<UserDTO> getMember(String email){
+        AuthorizationUtils.checkAuthorization("ADMIN");
         return new ResponseData<>(HttpStatus.OK.value(),
                 "List retrieved successfully!",
                 mapper.map(userService.getUserByEmail(email), UserDTO.class));
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseData<UserDTO> createStaff(UserRegistrationDTO userRegistrationDTO){
+        AuthorizationUtils.checkAuthorization("ADMIN");
         if (userService.checkEmailExistence(userRegistrationDTO.getEmailAddress()))
             throw new DataIntegrityViolationException("Email existed, please try with another email");
 
@@ -96,9 +100,9 @@ public class UserController {
     }
 
     @PutMapping("/staffs/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
     @ResponseStatus(HttpStatus.OK)
     public ResponseData<UserDTO> updateStaff(@PathVariable int id, UserRegistrationDTO userRegistrationDTO){
+        AuthorizationUtils.checkAuthorization("ADMIN");
         if (userRegistrationDTO.getEmailAddress() == null ||
                 userRegistrationDTO.getPassword() == null ||
                 userRegistrationDTO.getUsername() == null)
@@ -121,17 +125,17 @@ public class UserController {
     }
 
     @DeleteMapping("/staffs/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
     @ResponseStatus(HttpStatus.OK)
     public ResponseData<String> deleteStaff(@PathVariable int id){
+        AuthorizationUtils.checkAuthorization("ADMIN");
         userService.deleteUser(id);
         return new ResponseData<>(HttpStatus.OK.value(), "Staff deleted successfully!", null);
     }
 
     @PutMapping("/members/ban")
-    @PreAuthorize("hasAuthority('ADMIN')")
     @ResponseStatus(HttpStatus.OK)
     public ResponseData<String> banMember(String email){
+        AuthorizationUtils.checkAuthorization("ADMIN");
         userService.banMemberUser(userService.getUserByEmail(email).getUserId());
         return new ResponseData<>(HttpStatus.OK.value(), "Member banned successfully!", null);
     }
@@ -152,6 +156,12 @@ public class UserController {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseData<UserRegistrationDTO> handleRoleNotFoundException(RoleNotFoundException e){
         return new ResponseData<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
+    }
+
+    @ExceptionHandler(UnauthorizedAccessException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ResponseData<String> handleUnauthorizedAccessException(UnauthorizedAccessException e){
+        return new ResponseData<>(HttpStatus.FORBIDDEN.value(), e.getMessage(), null);
     }
 
 }
