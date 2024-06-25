@@ -1,9 +1,10 @@
-package com.cookswp.milkstore.service;
+package com.cookswp.milkstore.service.user;
 
 import com.cookswp.milkstore.exception.UserInvisibilityException;
 import com.cookswp.milkstore.exception.UserNotFoundException;
 import com.cookswp.milkstore.pojo.entities.User;
-import com.cookswp.milkstore.repository.UserRepository.UserRepository;
+import com.cookswp.milkstore.repository.user.UserRepository;
+import com.cookswp.milkstore.service.role.RoleService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;

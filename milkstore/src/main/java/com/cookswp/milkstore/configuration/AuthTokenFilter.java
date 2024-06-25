@@ -1,7 +1,7 @@
 package com.cookswp.milkstore.configuration;
 
 import com.cookswp.milkstore.pojo.entities.User;
-import com.cookswp.milkstore.service.UserService;
+import com.cookswp.milkstore.service.user.UserService;
 import com.cookswp.milkstore.utils.JwtUtils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtParser;
