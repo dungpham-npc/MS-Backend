@@ -10,7 +10,6 @@ import lombok.Setter;
 @Table(name = "shopping_cart_item")
 @Getter
 @Setter
-
 public class ShoppingCartItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,7 +21,7 @@ public class ShoppingCartItem {
 
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
-    private MilkProduct milkProduct;
+    private Product product;
 
     @Column(nullable = false)
     private int quantity;
