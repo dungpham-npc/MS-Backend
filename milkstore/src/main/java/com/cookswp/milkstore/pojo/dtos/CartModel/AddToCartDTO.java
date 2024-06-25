@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class AddToCart {
+public class AddToCartDTO {
 
     @NotNull(message = "User ID can not be null")
     private int user_id;

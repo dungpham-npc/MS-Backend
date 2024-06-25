@@ -17,7 +17,7 @@ public class VNPayController {
 
     private final VNPayService vnpayService;
 
-    @GetMapping("/vn-pay")
+    @PostMapping("/vn-pay")
     public ResponseData<PaymentDTO.VNPayResponse> pay(HttpServletRequest request) {
         return new ResponseData<>(HttpStatus.OK.value(), "Success", vnpayService.createVNPayPayment(request));
     }

@@ -1,6 +1,5 @@
 package com.cookswp.milkstore.pojo.dtos.CartModel;
 
-import com.cookswp.milkstore.pojo.entities.ShoppingCartItem;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +13,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ShowCartModel {
+public class ShowCartModelDTO {
     private int userId;
     private List<CartItemModel> items;
 
