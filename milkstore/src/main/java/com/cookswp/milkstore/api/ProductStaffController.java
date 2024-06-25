@@ -16,7 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
-@RequestMapping("/product-staff")
+@RequestMapping("/api/products")
 @RequiredArgsConstructor
 public class ProductStaffController {
 
@@ -24,44 +24,44 @@ public class ProductStaffController {
 
     private final ProductCategoryService productCategoryService;
 
-    @PostMapping("/create-category")
+    @PostMapping("/category")
     public ResponseData<ProductCategory> createProductCategory(@RequestBody ProductCategoryDTO productCategoryRequest) {
         return new ResponseData<>(HttpStatus.CREATED.value(), "New product category create successfully", productCategoryService.createProductCategory(productCategoryRequest));
     }
 
-    @PostMapping("/create-product")
+    @PostMapping("/")
     public ResponseData<Product> createProduct(@ModelAttribute ProductDTO productRequest, @RequestParam("productImage") MultipartFile productImage) {
         return new ResponseData<>(HttpStatus.CREATED.value(), "New Milk Product create successfully", productService.createProduct(productRequest, productImage));
     }
 
     //Delete Product
-    @PatchMapping("/delete-product/{ID}")
+    @PatchMapping("/{ID}/delete")
     public ResponseData<Post> deleteProduct(@PathVariable int ID) {
         productService.deleteProduct(ID);
         return new ResponseData<>(HttpStatus.OK.value(), "Product deleted successfully", null);
     }
 
     //Update Product
-    @PatchMapping("/update-product/{productId}")
+    @PatchMapping("/{productId}")
     public ResponseData<Product> updateProduct(@PathVariable int productId, @ModelAttribute ProductDTO productRequest, @RequestParam("productImage") MultipartFile productImage) {
         return new ResponseData<>(HttpStatus.OK.value(), "Product update successfully", productService.updateProduct(productId, productRequest, productImage));
     }
 
     //Get all
-    @GetMapping("/get-product")
+    @GetMapping
     // @PreAuthorize("hasAuthority('PRODUCT_STAFF')")
     public ResponseData<List<Product>> getProduct() {
         return new ResponseData<>(HttpStatus.OK.value(), "List Product", productService.getAllProducts());
     }
 
     //get product by id
-    @GetMapping("/get-product/{ID}")
+    @GetMapping("/{ID}")
     public ResponseData<Product> getProductByID(@PathVariable int ID) {
         return new ResponseData<>(HttpStatus.OK.value(), "Get product by ID: " + ID, productService.getProductById(ID));
     }
 
     //              /search-product?value=abs
-    @GetMapping("/search-product")
+    @GetMapping("/search")
     //@PreAuthorize("hasAuthority('PRODUCT_STAFF')")
     public ResponseData<List<Product>> searchProduct(@RequestParam(value = "value") String value) {
         return new ResponseData<>(HttpStatus.OK.value(), "Search product: " + value, productService.searchProduct(value));
