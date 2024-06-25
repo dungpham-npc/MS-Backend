@@ -1,7 +1,7 @@
-package com.cookswp.milkstore.service;
+package com.cookswp.milkstore.service.role;
 
 import com.cookswp.milkstore.pojo.entities.Role;
-import com.cookswp.milkstore.repository.RoleRepository.RoleRepository;
+import com.cookswp.milkstore.repository.role.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

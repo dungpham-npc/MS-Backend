@@ -3,8 +3,10 @@ package com.cookswp.milkstore.api;
 import com.cookswp.milkstore.exception.MissingRequiredFieldException;
 import com.cookswp.milkstore.pojo.dtos.UserModel.UserDTO;
 import com.cookswp.milkstore.pojo.dtos.UserModel.UserRegistrationDTO;
+import com.cookswp.milkstore.pojo.entities.User;
 import com.cookswp.milkstore.response.ResponseData;
-import com.cookswp.milkstore.service.UserService;
+import com.cookswp.milkstore.service.user.UserService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -16,9 +18,12 @@ import org.springframework.web.bind.annotation.*;
 public class RegisterController {
     private final UserService userService;
 
+    private final ModelMapper mapper;
+
     @Autowired
-    public RegisterController(UserService userService){
+    public RegisterController(UserService userService, ModelMapper mapper){
         this.userService = userService;
+        this.mapper = mapper;
     }
 
     @PostMapping
@@ -32,7 +37,7 @@ public class RegisterController {
                 userRegistrationDTO.getUsername() == null)
             throw new MissingRequiredFieldException("Fields with asterisk");
 
-        userService.registerUser(userRegistrationDTO);
+        userService.registerUser(mapper.map(userRegistrationDTO, User.class));
         return new ResponseData<>(HttpStatus.CREATED.value(),
                 "Registration successfully!",
                 new UserDTO(userRegistrationDTO.getEmailAddress(),
@@ -43,13 +48,13 @@ public class RegisterController {
     @PostMapping("/complete-registration")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseData<UserDTO> completeRegister(UserRegistrationDTO userRegistrationDTO) throws Exception {
-        UserRegistrationDTO user = userService.getUserByEmail(userRegistrationDTO.getEmailAddress());
+        User user = userService.getUserByEmail(userRegistrationDTO.getEmailAddress());
         if (user == null)
             throw new Exception("Error processing the request");
 
         user.setPassword(userRegistrationDTO.getPassword());
         user.setPhoneNumber(userRegistrationDTO.getPhoneNumber());
-        userService.updateUser(user.getUserId(), user);
+        userService.updateUserBasicInformation(user.getUserId(), user);
 
         return new ResponseData<>(HttpStatus.CREATED.value(),
                 "Registration completed!",
