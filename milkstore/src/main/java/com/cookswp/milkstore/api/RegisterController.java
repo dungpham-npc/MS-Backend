@@ -1,4 +1,3 @@
-
 package com.cookswp.milkstore.api;
 
 import com.cookswp.milkstore.exception.MissingRequiredFieldException;
@@ -11,15 +10,14 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/register")
-@CrossOrigin(maxAge = 3600)
 @ControllerAdvice
 public class RegisterController {
     private final UserService userService;
+
     private final ModelMapper mapper;
 
     @Autowired
@@ -29,9 +27,8 @@ public class RegisterController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('CUSTOMER')")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseData<UserDTO> register(UserRegistrationDTO userRegistrationDTO){
+    public ResponseData<UserDTO> register(@RequestBody UserRegistrationDTO userRegistrationDTO){
         if (userService.checkEmailExistence(userRegistrationDTO.getEmailAddress()))
             throw new DataIntegrityViolationException("Email existed, please try with another email");
 
@@ -40,29 +37,30 @@ public class RegisterController {
                 userRegistrationDTO.getUsername() == null)
             throw new MissingRequiredFieldException("Fields with asterisk");
 
-        User user = userService.registerUser(mapper.map(userRegistrationDTO, User.class));
+        userService.registerUser(mapper.map(userRegistrationDTO, User.class));
         return new ResponseData<>(HttpStatus.CREATED.value(),
                 "Registration successfully!",
-                        mapper.map(user, UserDTO.class));
+                new UserDTO(userRegistrationDTO.getEmailAddress(),
+                        userRegistrationDTO.getPhoneNumber(),
+                        userRegistrationDTO.getUsername()));
     }
 
     @PostMapping("/complete-registration")
-    @PreAuthorize("hasAuthority('CUSTOMER')")
-    @CrossOrigin(maxAge = 3600)
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseData<UserDTO> completeRegister(UserRegistrationDTO userRegistrationDTO) throws Exception {
         User user = userService.getUserByEmail(userRegistrationDTO.getEmailAddress());
         if (user == null)
             throw new Exception("Error processing the request");
 
+        user.setPassword(userRegistrationDTO.getPassword());
         user.setPhoneNumber(userRegistrationDTO.getPhoneNumber());
-        user.setUsername(userRegistrationDTO.getUsername());
         userService.updateUserBasicInformation(user.getUserId(), user);
-        userService.updateUserPassword(user.getUserId(), userRegistrationDTO.getPassword());
 
         return new ResponseData<>(HttpStatus.CREATED.value(),
                 "Registration completed!",
-                mapper.map(user, UserDTO.class));
+                new UserDTO(user.getEmailAddress(),
+                        user.getPhoneNumber(),
+                        user.getUsername()));
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
