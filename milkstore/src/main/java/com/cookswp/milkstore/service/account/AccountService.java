@@ -5,7 +5,7 @@ import com.cookswp.milkstore.repository.user.UserRepository;
 import com.cookswp.milkstore.service.role.RoleService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+//import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
-@EnableWebSecurity
+//@EnableWebSecurity
 public class AccountService {
     private final ModelMapper mapper;
     private final UserRepository userRepository;

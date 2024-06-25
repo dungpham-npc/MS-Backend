@@ -22,9 +22,9 @@ public class PostStaffController {
     private final PostService postService;
 
     //create
-    @PostMapping("/create-post/{ID}")
+    @PostMapping("/create-post")
     //@PreAuthorize("hasAuthority('POST_STAFF')")
-    public ResponseData<Post> createPost(@PathVariable @RequestBody @Valid PostDTO postRequest) {
+    public ResponseData<Post> createPost(@RequestBody @Valid PostDTO postRequest) {
         return new ResponseData<>(HttpStatus.CREATED.value(), "Post created successfully", postService.createPost(postRequest));
     }
 

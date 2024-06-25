@@ -46,7 +46,7 @@ public class PostService implements IPostService {
         Post postEntity = postRepository.findByIDAndVisibility(ID);
         if (postEntity != null) {
             validateInputRequest(postRequest);
-            postEntity.setUserID(7);
+            postEntity.setUserID(6);
             postEntity.setContent(postRequest.getContent());
             postEntity.setTitle(postRequest.getTitle());
             postEntity.setDateCreated(new Date());
@@ -64,7 +64,7 @@ public class PostService implements IPostService {
                 .title(postRequest.getTitle())
                 .dateCreated(new Date())
                 .userComment("")
-                .userID(7)
+                .userID(6)
                 .build();
         return postRepository.save(post);
     }
