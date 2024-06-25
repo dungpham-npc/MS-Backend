@@ -10,10 +10,12 @@ import com.cookswp.milkstore.pojo.entities.ShoppingCart;
 import com.cookswp.milkstore.pojo.entities.ShoppingCartItem;
 //import com.cookswp.milkstore.repository.ProductRepository;
 //import com.cookswp.milkstore.repository.ShoppingCartRepository;
+import com.cookswp.milkstore.pojo.entities.User;
 import com.cookswp.milkstore.repository.product.ProductRepository;
 import com.cookswp.milkstore.repository.shoppingCart.ShoppingCartRepository;
 import com.cookswp.milkstore.repository.shoppingCartItem.ShoppingCartItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 

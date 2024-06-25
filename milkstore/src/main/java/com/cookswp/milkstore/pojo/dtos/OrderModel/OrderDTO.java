@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 public class OrderDTO {
 //    private Long id;
     private int userId;
-    private int customerPaymentMethodId;
+//    private int customerPaymentMethodId;
     private String shippingAddress;
     private Status status;
     private Integer voucherId;

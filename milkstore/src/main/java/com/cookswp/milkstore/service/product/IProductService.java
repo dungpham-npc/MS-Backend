@@ -21,4 +21,6 @@ public interface IProductService {
 
     List<Product> searchProduct(String keyword);
 
+    void reduceQuantityProduct(int productId, int quantity);
+
 }

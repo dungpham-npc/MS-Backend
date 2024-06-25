@@ -43,7 +43,7 @@ public class RegisterController {
         User user = userService.registerUser(mapper.map(userRegistrationDTO, User.class));
         return new ResponseData<>(HttpStatus.CREATED.value(),
                 "Registration successfully!",
-                        mapper.map(user, UserDTO.class));
+                mapper.map(user, UserDTO.class));
     }
 
     @PostMapping("/complete-registration")
@@ -76,3 +76,4 @@ public class RegisterController {
         return new ResponseData<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
     }
 }
+
