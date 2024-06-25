@@ -1,3 +1,4 @@
+
 package com.cookswp.milkstore.pojo.entities;
 
 import jakarta.persistence.*;

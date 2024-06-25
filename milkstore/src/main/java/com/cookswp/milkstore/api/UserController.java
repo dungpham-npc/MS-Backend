@@ -6,7 +6,7 @@ import com.cookswp.milkstore.pojo.dtos.UserModel.UserRegistrationDTO;
 import com.cookswp.milkstore.pojo.dtos.UserModel.UserDTO;
 import com.cookswp.milkstore.pojo.entities.User;
 import com.cookswp.milkstore.response.ResponseData;
-import com.cookswp.milkstore.service.UserService;
+import com.cookswp.milkstore.service.user.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;

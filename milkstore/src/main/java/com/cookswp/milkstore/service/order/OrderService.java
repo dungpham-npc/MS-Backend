@@ -1,0 +1,104 @@
+package com.cookswp.milkstore.service.order;
+
+import com.cookswp.milkstore.enums.Status;
+import com.cookswp.milkstore.pojo.dtos.OrderModel.OrderDTO;
+import com.cookswp.milkstore.pojo.entities.Order;
+import com.cookswp.milkstore.pojo.entities.ShoppingCart;
+import com.cookswp.milkstore.pojo.entities.ShoppingCartItem;
+import com.cookswp.milkstore.repository.order.OrderRepository;
+import com.cookswp.milkstore.repository.shoppingCartItem.ShoppingCartItemRepository;
+import com.cookswp.milkstore.service.product.ProductService;
+import com.cookswp.milkstore.service.shoppingcart.ShoppingCartService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+public class OrderService  implements IOrderService{
+    @Autowired
+    private OrderRepository orderRepository;
+
+    @Autowired
+    private ShoppingCartService shoppingCartService;
+
+    @Autowired
+    private ProductService productService;
+
+    @Autowired
+    private ShoppingCartItemRepository shoppingCartItemRepository;
+
+    @Override
+    public List<OrderDTO> getAllOrders() {
+        return orderRepository.findAll().stream().map(this::toOrderDTO).collect(Collectors.toList());
+    }
+
+    //Change Order Entity to OrderDTO
+    private OrderDTO toOrderDTO(Order order) {
+        OrderDTO orderDTO = new OrderDTO();
+//        orderDTO.setId(order.getId());
+        orderDTO.setUserId(orderDTO.getUserId());
+        orderDTO.setStatus(order.getOrderStatus());
+        orderDTO.setTotalPrice(order.getTotalPrice());
+        orderDTO.setOrderDate(order.getOrderDate());
+        orderDTO.setShippingAddress(order.getShippingAddress());
+        return orderDTO;
+
+    }
+
+    //Change OrderDTO to Order entity
+    private Order toOrderEntity(OrderDTO orderDTO) {
+        Order order = new Order();
+//        order.setId(orderDTO.getId());
+        order.setUserId(order.getUserId());
+        order.setOrderStatus(orderDTO.getStatus());
+        order.setTotalPrice(orderDTO.getTotalPrice());
+        order.setOrderDate(orderDTO.getOrderDate());
+        order.setShippingAddress(orderDTO.getShippingAddress());
+        return order;
+    }
+
+    @Override
+    public OrderDTO getOrderById(int orderId) {
+        Order order = orderRepository.findById((long) orderId).orElseThrow(() -> new RuntimeException("Order not found"));
+        return (OrderDTO) toOrderDTO(order);
+    }
+
+    @Override
+    public OrderDTO createOrder(OrderDTO orderDTO) {
+        Order order = toOrderEntity(orderDTO);
+        order.setOrderStatus(Status.IN_CART); //Trien khai status In_Cart o day de xac dinh trang thai van con la product list
+        order = orderRepository.save(order);
+        return  toOrderDTO(order);
+    }
+
+    @Override
+    public OrderDTO updateOrder(int orderId, OrderDTO orderDTO) {
+        Order existingOrder = orderRepository.findById((long) orderId).orElseThrow(() -> new RuntimeException("Order not found"));
+        existingOrder.setUserId(existingOrder.getUserId());
+        existingOrder.setOrderStatus(orderDTO.getStatus());
+        existingOrder.setTotalPrice(orderDTO.getTotalPrice());
+        existingOrder.setShippingAddress(orderDTO.getShippingAddress());
+        existingOrder = orderRepository.save(existingOrder);
+        return (OrderDTO) toOrderDTO(existingOrder);
+    }
+
+    @Override
+    public void deleteOrder(int orderId) {
+        orderRepository.deleteById((long) orderId);
+    }
+
+    @Override
+    public OrderDTO updateOrderStatus(long orderId, Status status) {
+        Order order = orderRepository.findById((long) orderId).orElseThrow(() -> new RuntimeException("Order not found"));
+        order.setOrderStatus(status);
+        order = orderRepository.save(order);
+        return (OrderDTO) toOrderDTO(order);
+    }
+
+//    public void reduceQuantity(Order order) {
+//        ShoppingCart cart = order.
+//    }
+
+}
