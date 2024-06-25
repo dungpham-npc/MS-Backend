@@ -37,7 +37,7 @@ public class OrderService  implements IOrderService{
     //Change Order Entity to OrderDTO
     private OrderDTO toOrderDTO(Order order) {
         OrderDTO orderDTO = new OrderDTO();
-        orderDTO.setId(order.getId());
+//        orderDTO.setId(order.getId());
         orderDTO.setUserId(orderDTO.getUserId());
         orderDTO.setStatus(order.getOrderStatus());
         orderDTO.setTotalPrice(order.getTotalPrice());
@@ -50,15 +50,13 @@ public class OrderService  implements IOrderService{
     //Change OrderDTO to Order entity
     private Order toOrderEntity(OrderDTO orderDTO) {
         Order order = new Order();
-        order.setId(orderDTO.getId());
+//        order.setId(orderDTO.getId());
         order.setUserId(order.getUserId());
         order.setOrderStatus(orderDTO.getStatus());
         order.setTotalPrice(orderDTO.getTotalPrice());
         order.setOrderDate(orderDTO.getOrderDate());
         order.setShippingAddress(orderDTO.getShippingAddress());
         return order;
-
-
     }
 
     @Override
@@ -72,7 +70,7 @@ public class OrderService  implements IOrderService{
         Order order = toOrderEntity(orderDTO);
         order.setOrderStatus(Status.IN_CART); //Trien khai status In_Cart o day de xac dinh trang thai van con la product list
         order = orderRepository.save(order);
-        return (OrderDTO) toOrderDTO(order);
+        return  toOrderDTO(order);
     }
 
     @Override

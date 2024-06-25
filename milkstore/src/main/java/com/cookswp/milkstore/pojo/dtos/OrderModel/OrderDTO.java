@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderDTO {
-    private Long id;
+//    private Long id;
     private int userId;
     private int customerPaymentMethodId;
     private String shippingAddress;

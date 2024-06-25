@@ -4,7 +4,7 @@ import com.cookswp.milkstore.pojo.dtos.CartModel.AddToCartDTO;
 import com.cookswp.milkstore.pojo.dtos.CartModel.ShowCartModelDTO;
 import com.cookswp.milkstore.pojo.dtos.CartModel.UpdateToCartDTO;
 import com.cookswp.milkstore.pojo.entities.ShoppingCart;
-import com.cookswp.milkstore.service.shoppingcart.IShoppingCartService;
+import com.cookswp.milkstore.service.shoppingcart.ShoppingCartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +16,7 @@ import java.util.List;
 public class CartController {
 
     @Autowired
-    private IShoppingCartService shoppingCartService;
+    private ShoppingCartService shoppingCartService;
 
     @GetMapping("/{userId}")
     public ResponseEntity<List<ShowCartModelDTO>> getCartByUserId(@PathVariable int userId) {
@@ -30,16 +30,21 @@ public class CartController {
         return ResponseEntity.ok(cart);
     }
 
-    @DeleteMapping("/{userId}/carts/{cartId}")
-    public ResponseEntity<Void> deleteCart(@PathVariable int userId, @PathVariable int cartId) {
-        ShoppingCart cart = shoppingCartService.deleteToCart(cartId, userId);
-        return ResponseEntity.ok().build();
-    }
-
-    @PutMapping("/{userId}/carts/{cartId}/items")
-    public ResponseEntity<ShoppingCart> updateItemInCart(@PathVariable int userId, @PathVariable int cartId, @RequestBody UpdateToCartDTO updateToCartDTO) {
+    @PutMapping("/{cartId}/items")
+    public ResponseEntity<ShoppingCart> updateItemInCart(@PathVariable int cartId, @RequestParam int userId, @RequestBody UpdateToCartDTO updateToCartDTO) {
         ShoppingCart cart = shoppingCartService.updateItem(updateToCartDTO, cartId, userId);
         return ResponseEntity.ok(cart);
     }
-}
 
+    @DeleteMapping("/{cartId}")
+    public ResponseEntity<ShoppingCart> deleteCart(@PathVariable int cartId, @RequestParam int userId) {
+        ShoppingCart cart = shoppingCartService.deleteToCart(cartId, userId);
+        return ResponseEntity.ok(cart);
+    }
+
+//    @PostMapping("/{userId}/checkout")
+//    public ResponseEntity<String> checkoutCart(@PathVariable int userId) {
+//        shoppingCartService.processCheckout(userId);
+//        return ResponseEntity.ok("Checkout successful and order placed.");
+//    }
+}
