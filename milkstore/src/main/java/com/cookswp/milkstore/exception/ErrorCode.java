@@ -27,7 +27,8 @@ public enum ErrorCode {
     PRODUCT_QUANTITY_INVALID(19, "Quantity cannot be less than 0"),
     PRODUCT_NOT_FOUND(20, "Product not found"),
     PRODUCT_LIST_NOT_FOUND(21, "Product list empty"),
-    PRODUCT_ID_NOT_FOUND(22, "Product ID not exists");
+    PRODUCT_ID_NOT_FOUND(22, "Product ID not exists"),
+    MANU_DATE_CAN_NOT_BEFORE_EXPI_DATE(23, "Manufacturing date can not before expiration date");
 
     private final int code;
     private final String message;

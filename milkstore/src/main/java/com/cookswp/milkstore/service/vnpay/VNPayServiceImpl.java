@@ -2,8 +2,8 @@ package com.cookswp.milkstore.service.vnpay;
 
 import com.cookswp.milkstore.configuration.VNPayConfig;
 import com.cookswp.milkstore.pojo.dtos.PaymentModel.PaymentDTO;
-import com.cookswp.milkstore.pojo.entities.Payment;
-import com.cookswp.milkstore.repository.payment.PaymentRepository;
+import com.cookswp.milkstore.pojo.entities.TransactionLog;
+import com.cookswp.milkstore.repository.transactionLog.TransactionLogRepository;
 import com.cookswp.milkstore.utils.VNPayUtil;
 
 import java.text.ParseException;
@@ -13,9 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.DateFormat;
-import java.time.LocalDate;
 import java.util.Date;
-import java.util.Formatter;
 import java.util.Map;
 
 @Service
@@ -23,12 +21,12 @@ public class VNPayServiceImpl implements VNPayService {
 
     private final VNPayConfig vnPayConfig;
 
-    private final PaymentRepository paymentRepository;
+    private final TransactionLogRepository transactionLogRepository;
 
     @Autowired
-    public VNPayServiceImpl(VNPayConfig vnPayConfig, PaymentRepository paymentRepository) {
+    public VNPayServiceImpl(VNPayConfig vnPayConfig, TransactionLogRepository transactionLogRepository) {
         this.vnPayConfig = vnPayConfig;
-        this.paymentRepository = paymentRepository;
+        this.transactionLogRepository = transactionLogRepository;
     }
 
     public PaymentDTO.VNPayResponse createVNPayPayment(HttpServletRequest request) {
@@ -49,8 +47,8 @@ public class VNPayServiceImpl implements VNPayService {
         return PaymentDTO.VNPayResponse.builder().code("ok").message("success").paymentUrl(paymentUrl).build();
     }
 
-    public Payment saveBillVNPayPayment(HttpServletRequest request) throws ParseException {
-        Payment payment = new Payment();
+    public TransactionLog saveBillVNPayPayment(HttpServletRequest request) throws ParseException {
+        TransactionLog payment = new TransactionLog();
         payment.setAmount(Long.valueOf(request.getParameter("vnp_Amount")));
         payment.setBankCode(request.getParameter("vnp_BankCode"));
         payment.setBankTranNo(request.getParameter("vnp_BankTranNo"));
@@ -71,6 +69,6 @@ public class VNPayServiceImpl implements VNPayService {
         payment.setTransactionNo(request.getParameter("vnp_TransactionNo"));
         payment.setTransactionStatus(request.getParameter("vnp_TransactionStatus"));
 
-        return paymentRepository.save(payment);
+        return transactionLogRepository.save(payment);
     }
 }

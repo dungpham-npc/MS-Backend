@@ -1,10 +1,13 @@
 package com.cookswp.milkstore.pojo.dtos.ProductModel;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -27,6 +30,14 @@ public class ProductDTO {
 
     @NotNull(message = "Image can not be null")
     private String productImage;
+
+    @NotNull(message = "Manufacturing date can not be null")
+    @JsonFormat(pattern = "dd-MM-yyyy")
+    private Date manuDate;
+
+    @NotNull(message = "Expiration date can not be null")
+    @JsonFormat(pattern = "dd-MM-yyyy")
+    private Date expiDate;
 
     @NotNull(message = "Quantity can not be null")
     @Size(min = 1, message = "Quantity can not lower than 1")

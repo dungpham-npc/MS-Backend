@@ -17,6 +17,7 @@ public class ProductService implements IProductService {
 
     private final ProductRepository productRepository;
     private final PostRepository postRepository;
+    private final Product product = new Product();
 
     @Autowired
     public ProductService(ProductRepository productRepository, PostRepository postRepository) {
@@ -40,7 +41,10 @@ public class ProductService implements IProductService {
         if (productRepository.existsByProductName(productRequest.getProductName())) {
             throw new AppException(ErrorCode.PRODUCT_NAME_EXISTS);
         }
-
+        boolean checkDate = product.dateBefore(productRequest.getManuDate(), productRequest.getExpiDate());
+        if(!checkDate){
+            throw new AppException(ErrorCode.MANU_DATE_CAN_NOT_BEFORE_EXPI_DATE);
+        }
         String image = productRequest.getProductImage().toLowerCase();
         if (!image.matches(".*\\.(jpeg|png|jpg)$")) {
             throw new AppException(ErrorCode.PRODUCT_IMAGE_INVALID);
@@ -57,6 +61,8 @@ public class ProductService implements IProductService {
                 .categoryID(productRequest.getCategoryID())
                 .postID(productRequest.getPostID())
                 .price(productRequest.getPrice())
+                .manuDate(productRequest.getManuDate())
+                .expiDate(productRequest.getExpiDate())
                 .productDescription(productRequest.getProductDescription())
                 .productName(productRequest.getProductName())
                 .productImage(productRequest.getProductImage())
@@ -72,7 +78,17 @@ public class ProductService implements IProductService {
             throw new AppException(ErrorCode.PRODUCT_NOT_FOUND);
         }
         validProductRequest(productRequest);
-        existingProduct = Product.builder().categoryID(productRequest.getCategoryID()).postID(productRequest.getPostID()).price(productRequest.getPrice()).productDescription(productRequest.getProductDescription()).productName(productRequest.getProductName()).productImage(productRequest.getProductImage()).quantity(productRequest.getQuantity()).build();
+        existingProduct = Product.builder()
+                .categoryID(productRequest.getCategoryID())
+                .postID(productRequest.getPostID())
+                .price(productRequest.getPrice())
+                .manuDate(productRequest.getManuDate())
+                .expiDate(productRequest.getExpiDate())
+                .productDescription(productRequest.getProductDescription())
+                .productName(productRequest.getProductName())
+                .productImage(productRequest.getProductImage())
+                .quantity(productRequest.getQuantity())
+                .build();
         return productRepository.save(existingProduct);
     }
 
