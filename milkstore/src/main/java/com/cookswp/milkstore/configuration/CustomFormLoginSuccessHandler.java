@@ -30,11 +30,10 @@ public class CustomFormLoginSuccessHandler extends SimpleUrlAuthenticationSucces
     @Autowired
     private final JwtUtils jwtUtils;
 
-    @Autowired
-    private final ModelMapper mapper;
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
+        System.out.println("onAuthSuccess is called");
         User user = (User) authentication.getPrincipal();
         String jwt = jwtUtils.generateJwtToken(authentication);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);

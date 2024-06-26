@@ -35,6 +35,8 @@ public class SecurityConfig {
     private final CustomAuthenticationProvider customAuthenticationProvider;
     @Autowired
     private final CustomFormLoginSuccessHandler customFormLoginSuccessHandler;
+    @Autowired
+    private final CustomFormLoginFailureHandler customFormLoginFailureHandler;
     @Bean
     public AuthenticationManager authenticationManager(){
         return new ProviderManager(Collections.singletonList(customAuthenticationProvider));
@@ -49,12 +51,12 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers("/register", "/login", "/register/**", "/otp", "/otp/**", "/account", "/account/**").permitAll();
-                    auth.requestMatchers(HttpMethod.GET, "/users/**").hasAuthority("CUSTOMER");
                     auth.anyRequest().authenticated();
                 })
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .formLogin(form -> {
-                    form.successHandler(customFormLoginSuccessHandler); // Use custom form login success handler
+                    form.failureHandler(customFormLoginFailureHandler);
+                    form.successHandler(customFormLoginSuccessHandler);
                 })
                 .oauth2Login(oauth2 ->{
                     oauth2.successHandler(oAuth2LoginSuccessHandler);
