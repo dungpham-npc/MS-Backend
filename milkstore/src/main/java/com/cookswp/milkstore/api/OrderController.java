@@ -2,7 +2,9 @@ package com.cookswp.milkstore.api;
 
 import com.cookswp.milkstore.enums.Status;
 import com.cookswp.milkstore.pojo.dtos.OrderModel.OrderDTO;
-import com.cookswp.milkstore.service.order.IOrderService;
+import com.cookswp.milkstore.pojo.entities.Order;
+import com.cookswp.milkstore.response.ResponseData;
+import com.cookswp.milkstore.service.order.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,42 +16,42 @@ import java.util.List;
 @RequestMapping("/api/orders")
 public class OrderController {
 
+    private final OrderService orderService;
+
     @Autowired
-    private IOrderService orderService;
+    public OrderController(OrderService orderService){
+        this.orderService = orderService;
+    }
 
     @GetMapping
-    public ResponseEntity<List<OrderDTO>> getAllOrders() {
-        List<OrderDTO> orders = orderService.getAllOrders();
-        return new ResponseEntity<>(orders, HttpStatus.OK);
+    public ResponseData<List<Order>> getAllOrders() {
+       return new ResponseData<>(HttpStatus.OK.value(), "LIST ORDER", orderService.getAllOrders());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<OrderDTO> getOrderById(@PathVariable int id) {
-        OrderDTO order = orderService.getOrderById(id);
-        return new ResponseEntity<>(order, HttpStatus.OK);
+    public ResponseData<Order> getOrderById(@PathVariable long id) {
+       return new ResponseData<>(HttpStatus.OK.value(), "GET ORDER BY ID", orderService.getOrderById(id));
     }
 
     @PostMapping
-    public ResponseEntity<OrderDTO> createOrder(@RequestBody OrderDTO orderDTO) {
-        OrderDTO createdOrder = orderService.createOrder(orderDTO);
-        return new ResponseEntity<>(createdOrder, HttpStatus.CREATED);
+    public ResponseData<Order> createOrder(@RequestBody OrderDTO orderDTO) {
+        return new ResponseData<>(HttpStatus.CREATED.value(), "CREATE ORDER", orderService.createOrder(orderDTO));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<OrderDTO> updateOrder(@PathVariable int id, @RequestBody OrderDTO orderDTO) {
-        OrderDTO updatedOrder = orderService.updateOrder(id, orderDTO);
-        return new ResponseEntity<>(updatedOrder, HttpStatus.OK);
+    public ResponseData<Order> updateOrder(@PathVariable long id, @RequestBody OrderDTO orderDTO) {
+        return new ResponseData<>(HttpStatus.ACCEPTED.value(), "UPDATE ORDER", orderService.updateOrder(id, orderDTO));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteOrder(@PathVariable int id) {
+    public ResponseData<?> deleteOrder(@PathVariable long id) {
         orderService.deleteOrder(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return new ResponseData<>(HttpStatus.NO_CONTENT.value(), "DELETE ORDER", null);
     }
 
     @PutMapping("/{id}/status")
     public ResponseEntity<OrderDTO> updateOrderStatus(@PathVariable long id, @RequestBody Status status) {
-        OrderDTO updatedOrder = orderService.updateOrderStatus(id, Status.valueOf(status.name()));
-        return new ResponseEntity<>(updatedOrder, HttpStatus.OK);
+        OrderDTO updatedOrder = orderService.updateOrderStatus(id, status);
+        return ResponseEntity.ok(updatedOrder);
     }
 }

@@ -15,7 +15,6 @@ import com.cookswp.milkstore.repository.product.ProductRepository;
 import com.cookswp.milkstore.repository.shoppingCart.ShoppingCartRepository;
 import com.cookswp.milkstore.repository.shoppingCartItem.ShoppingCartItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 
@@ -37,11 +36,8 @@ public class ShoppingCartService implements IShoppingCartService{
 
     @Override
     public List<ShowCartModelDTO> getCartByUserId(int userId) {
-        Optional<ShoppingCart> cartOptional =shoppingCartRepository.findByUserId(userId);
-        if (!cartOptional.isPresent()) {
-            throw new RuntimeException("Shopping cart not found");
-        }
-        ShoppingCart shoppingCart = cartOptional.get();
+        Optional<ShoppingCart> cartOptional = shoppingCartRepository.findByUserId(userId);
+        ShoppingCart shoppingCart = cartOptional.orElseThrow(() -> new RuntimeException("Shopping cart not found"));
 
         List<ShowCartModelDTO.CartItemModel> items = shoppingCart.getItems().stream()
                 .map(item -> {
@@ -53,12 +49,14 @@ public class ShoppingCartService implements IShoppingCartService{
                     return cartItemModel;
                 })
                 .collect(Collectors.toList());
+
         ShowCartModelDTO showCartModelDTO = new ShowCartModelDTO();
         showCartModelDTO.setUserId(userId);
         showCartModelDTO.setItems(items);
 
         return List.of(showCartModelDTO);
     }
+
 
     @Override
     public ShoppingCart addToCart(AddToCartDTO addToCartDTO, int userId) {

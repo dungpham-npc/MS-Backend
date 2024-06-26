@@ -18,22 +18,94 @@ import java.util.stream.Collectors;
 @Service
 public class OrderService implements IOrderService {
 
-    @Autowired
-    private OrderRepository orderRepository;
+    private final OrderRepository orderRepository;
+
+    private final ShoppingCartService shoppingCartService;
+
+    private final ProductService productService;
+
+    private final ShoppingCartItemRepository shoppingCartItemRepository;
+
+    private Order order = null;
 
     @Autowired
-    private ShoppingCartService shoppingCartService;
-
-    @Autowired
-    private ProductService productService;
-
-    @Autowired
-    private ShoppingCartItemRepository shoppingCartItemRepository;
+    public OrderService(OrderRepository orderRepository, ShoppingCartService shoppingCartService, ProductService productService, ShoppingCartItemRepository shoppingCartItemRepository) {
+        this.orderRepository = orderRepository;
+        this.shoppingCartItemRepository = shoppingCartItemRepository;
+        this.productService = productService;
+        this.shoppingCartService = shoppingCartService;
+    }
 
     @Override
-    public List<OrderDTO> getAllOrders() {
-        return orderRepository.findAll().stream().map(this::toOrderDTO).collect(Collectors.toList());
+    public List<Order> getAllOrders() {
+        return orderRepository.findAll();
     }
+
+
+    @Override
+    @Transactional
+    public Order createOrder(OrderDTO orderDTO) {
+        order = new Order();
+        order.setUserId(orderDTO.getUserId());
+        order.setOrderStatus(orderDTO.getStatus());
+        order.setTotalPrice(orderDTO.getTotalPrice());
+        order.setOrderDate(orderDTO.getOrderDate());
+        order.setShippingAddress(orderDTO.getShippingAddress());
+        return orderRepository.save(order);
+    }
+
+    @Override
+    @Transactional
+    public Order updateOrder(long orderId, OrderDTO orderDTO) {
+        Order findOrder = orderRepository.findById(orderId).orElseThrow(()-> new RuntimeException("Order not found"));
+        findOrder.setUserId(orderDTO.getUserId());
+        findOrder.setOrderDate(orderDTO.getOrderDate());
+
+        findOrder.setTotalPrice(orderDTO.getTotalPrice());
+        findOrder.setShippingAddress(orderDTO.getShippingAddress());
+        return orderRepository.save(findOrder);
+    }
+
+    @Override
+    @Transactional
+    public void deleteOrder(long orderId) {
+        orderRepository.deleteById(orderId);
+    }
+
+    @Override
+    @Transactional
+    public OrderDTO updateOrderStatus(long orderId, Status status) {
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
+        order.setOrderStatus(status);
+        order = orderRepository.save(order);
+
+        // Reduce product quantity when order status is set
+        if (status == Status.PAID) {
+            reduceProductQuantity(order.getId());
+        }
+
+        return toOrderDTO(order);
+    }
+
+    @Override
+    public List<Order> getAll() {
+        return orderRepository.findAll();
+    }
+
+    // Reduce product quantity for a given order
+    private void reduceProductQuantity(long orderId) {
+        List<ShoppingCartItem> cartItems = shoppingCartItemRepository.findById(orderId);
+
+        for (ShoppingCartItem item : cartItems) {
+            productService.reduceQuantityProduct(item.getProduct().getProductID(), item.getQuantity());
+        }
+    }
+
+    @Override
+    public Order getOrderById(long orderId) {
+        return  orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
+    }
+
 
     // Convert Order Entity to OrderDTO
     private OrderDTO toOrderDTO(Order order) {
@@ -55,62 +127,5 @@ public class OrderService implements IOrderService {
         order.setOrderDate(orderDTO.getOrderDate());
         order.setShippingAddress(orderDTO.getShippingAddress());
         return order;
-    }
-
-    @Override
-    @Transactional
-    public OrderDTO createOrder(OrderDTO orderDTO) {
-        Order order = toOrderEntity(orderDTO);
-        order.setOrderStatus(Status.IN_CART); // Set status to indicate product list
-        order = orderRepository.save(order);
-        return toOrderDTO(order);
-    }
-
-    @Override
-    @Transactional
-    public OrderDTO updateOrder(int orderId, OrderDTO orderDTO) {
-        Order existingOrder = orderRepository.findById((long) orderId).orElseThrow(() -> new RuntimeException("Order not found"));
-        existingOrder.setUserId(existingOrder.getUserId());
-        existingOrder.setOrderStatus(orderDTO.getStatus());
-        existingOrder.setTotalPrice(orderDTO.getTotalPrice());
-        existingOrder.setShippingAddress(orderDTO.getShippingAddress());
-        existingOrder = orderRepository.save(existingOrder);
-        return toOrderDTO(existingOrder);
-    }
-
-    @Override
-    @Transactional
-    public void deleteOrder(int orderId) {
-        orderRepository.deleteById((long) orderId);
-    }
-
-    @Override
-    @Transactional
-    public OrderDTO updateOrderStatus(long orderId, Status status) {
-        Order order = orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
-        order.setOrderStatus(status);
-        order = orderRepository.save(order);
-
-        // Reduce product quantity when order status is set
-        if (status == Status.PAID) {
-            reduceProductQuantity(order.getId());
-        }
-
-        return toOrderDTO(order);
-    }
-
-    // Reduce product quantity for a given order
-    private void reduceProductQuantity(long orderId) {
-        List<ShoppingCartItem> cartItems = shoppingCartItemRepository.findById(orderId);
-
-        for (ShoppingCartItem item : cartItems) {
-            productService.reduceQuantityProduct(item.getProduct().getProductID(), item.getQuantity());
-        }
-    }
-
-    @Override
-    public OrderDTO getOrderById(int orderId) {
-        Order order = orderRepository.findById((long) orderId).orElseThrow(() -> new RuntimeException("Order not found"));
-        return toOrderDTO(order);
     }
 }

@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -25,9 +26,10 @@ public class ShowCartModelDTO {
         private int productId;
         private String productName;
         private int quantity;
-        private double price;
+        private BigDecimal price;
 
-        public void setPrice(BigDecimal price) {
-        }
+
+
+
     }
 }
