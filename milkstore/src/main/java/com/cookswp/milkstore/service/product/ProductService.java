@@ -100,6 +100,11 @@ public class ProductService implements IProductService {
         return searchList;
     }
 
+    @Override
+    public void reduceQuantityProduct(int productId, int quantity) {
+
+    }
+
     private void validProductRequest(ProductDTO productRequest) {
         if (!productRepository.existsByCategoryID(productRequest.getCategoryID())) {
             throw new AppException(ErrorCode.CATEGORY_NOT_EXISTED);
