@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "order")
+@Table(name = "`order`")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -22,7 +22,7 @@ public class Order implements  Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private int id;
 
     @Column(name = "user_id", nullable = false)
     private int userId;
