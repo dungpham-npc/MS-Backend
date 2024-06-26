@@ -39,7 +39,7 @@ public class CustomFormLoginFailureHandler extends SimpleUrlAuthenticationFailur
 
         response.setStatus(statusCode);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.getWriter().write("{\"error\": \"" + errorMessage + "\"}");
+        response.getWriter().write("{\"message\": \"" + errorMessage + "\"}");
         response.getWriter().flush();
     }
 }
