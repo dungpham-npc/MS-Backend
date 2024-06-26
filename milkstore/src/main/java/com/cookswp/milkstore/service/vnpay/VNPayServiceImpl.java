@@ -32,7 +32,6 @@ public class VNPayServiceImpl implements VNPayService {
         this.transactionLogRepository = transactionLogRepository;
     }
 
-    //Create purchase bill from product in cart to show
     public PaymentDTO.VNPayResponse createVNPayPayment(HttpServletRequest request) {
         long amount = Integer.parseInt(request.getParameter("amount")) * 100L;
         String bankCode = request.getParameter("bankCode");
@@ -55,59 +54,15 @@ public class VNPayServiceImpl implements VNPayService {
                 .build();
     }
 
-    @Override
     public PaymentDTO.VNPayResponse responseVNPay(HttpServletRequest request) {
         String responseCode = request.getParameter("vnp_ResponseCode");
         PaymentDTO.VNPayResponse callBack = null;
-        switch (responseCode) {
-            case "00": {
-                callBack = PaymentDTO.VNPayResponse.builder()
-                        .code("00")
-                        .message("Giao dịch thành công")
-                        .paymentUrl("")
-                        .build();
-                break;
-            }
-            case "09": {
-                callBack = PaymentDTO.VNPayResponse.builder()
-                        .code("09")
-                        .message("Thẻ chưa được kích hoạt")
-                        .paymentUrl("")
-                        .build();
-                break;
-            }
-            case "10": {
-                callBack = PaymentDTO.VNPayResponse.builder()
-                        .code("10")
-                        .message("Nhập sai thông tin quá 3 lần")
-                        .paymentUrl("")
-                        .build();
-                break;
-            }
-            case "11": {
-                callBack = PaymentDTO.VNPayResponse.builder()
-                        .code("11")
-                        .message("Thẻ bị hết hạn")
-                        .paymentUrl("")
-                        .build();
-                break;
-            }
-            case "12": {
-                callBack = PaymentDTO.VNPayResponse.builder()
-                        .code("12")
-                        .message("Thẻ bị khóa")
-                        .paymentUrl("")
-                        .build();
-                break;
-            }
-            case "51": {
-                callBack = PaymentDTO.VNPayResponse.builder()
-                        .code("51")
-                        .message("Thẻ không đủ số dư")
-                        .paymentUrl("")
-                        .build();
-                break;
-            }
+        if (responseCode.equals("00")) {
+            callBack = PaymentDTO.VNPayResponse.builder()
+                    .code("00")
+                    .message("Giao dịch thành công")
+                    .paymentUrl("")
+                    .build();
         }
         return callBack;
     }
