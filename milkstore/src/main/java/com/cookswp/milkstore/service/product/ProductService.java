@@ -55,10 +55,8 @@ public class ProductService implements IProductService {
             throw new AppException(ErrorCode.PRODUCT_NOT_FOUND);
         }
 
-        // Upload ảnh lên và lấy URL mới
         String imageURL = firebaseService.upload(productImage);
 
-        // Cập nhật thông tin của sản phẩm
         product.setCategoryID(productRequest.getCategoryID());
         product.setPostID(productRequest.getPostID());
         product.setProductName(productRequest.getProductName());
@@ -68,9 +66,7 @@ public class ProductService implements IProductService {
         product.setProductImage(imageURL);
         product.setManuDate(productRequest.getManuDate());
         product.setExpiDate(productRequest.getExpiDate());
-        product.setStatus(true); // Giả sử bạn muốn luôn set status là true khi cập nhật
-
-        // Lưu lại vào cơ sở dữ liệu
+        product.setStatus(true);
         return productRepository.save(product);
     }
 
@@ -124,23 +120,9 @@ public class ProductService implements IProductService {
         if (!checkDate) {
             throw new AppException(ErrorCode.MANU_DATE_CAN_NOT_BEFORE_EXPI_DATE);
         }
-//        String image = productRequest.getProductImage().toLowerCase();
-//        if (!image.matches(".*\\.(jpeg|png|jpg)$")) {
-//            throw new AppException(ErrorCode.PRODUCT_IMAGE_INVALID);
-//        }
         if (productRequest.getQuantity() < 0) {
             throw new AppException(ErrorCode.PRODUCT_QUANTITY_INVALID);
         }
     }
 
-
-    //        product.setCategoryID(productRequest.getCategoryID());
-//        product.setProductImage(imageURL);
-//        product.setProductName(productRequest.getProductName());
-//        product.setProductDescription(productRequest.getProductDescription());
-//        product.setQuantity(productRequest.getQuantity());
-//        product.setPostID(productRequest.getPostID());
-//        product.setManuDate(productRequest.getManuDate());
-//        product.setExpiDate(productRequest.getExpiDate());
-//        product.setPrice(productRequest.getPrice());
 }
