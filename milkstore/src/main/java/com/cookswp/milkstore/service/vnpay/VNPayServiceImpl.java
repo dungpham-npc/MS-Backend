@@ -2,8 +2,11 @@ package com.cookswp.milkstore.service.vnpay;
 
 import com.cookswp.milkstore.configuration.VNPayConfig;
 import com.cookswp.milkstore.pojo.dtos.PaymentModel.PaymentDTO;
+import com.cookswp.milkstore.pojo.entities.Order;
 import com.cookswp.milkstore.pojo.entities.TransactionLog;
 import com.cookswp.milkstore.repository.transactionLog.TransactionLogRepository;
+import com.cookswp.milkstore.service.order.IOrderService;
+import com.cookswp.milkstore.service.order.OrderService;
 import com.cookswp.milkstore.utils.VNPayUtil;
 
 import java.text.SimpleDateFormat;
@@ -45,17 +48,73 @@ public class VNPayServiceImpl implements VNPayService {
         String vnpSecureHash = VNPayUtil.hmacSHA512(vnPayConfig.getSecretKey(), hashData);
         queryUrl += "&vnp_SecureHash=" + vnpSecureHash;
         String paymentUrl = vnPayConfig.getVnp_PayUrl() + "?" + queryUrl;
-        return PaymentDTO.VNPayResponse.builder().code("ok").message("success").paymentUrl(paymentUrl).build();
+        return PaymentDTO.VNPayResponse.builder()
+                .code("ok")
+                .message("success")
+                .paymentUrl(paymentUrl)
+                .build();
     }
 
     @Override
-    public String checkResponseCode(HttpServletRequest request) {
-        return "";
+    public PaymentDTO.VNPayResponse responseVNPay(HttpServletRequest request) {
+        String responseCode = request.getParameter("vnp_ResponseCode");
+        PaymentDTO.VNPayResponse callBack = null;
+        switch (responseCode) {
+            case "00": {
+                callBack = PaymentDTO.VNPayResponse.builder()
+                        .code("00")
+                        .message("Giao dịch thành công")
+                        .paymentUrl("")
+                        .build();
+                break;
+            }
+            case "09": {
+                callBack = PaymentDTO.VNPayResponse.builder()
+                        .code("09")
+                        .message("Thẻ chưa được kích hoạt")
+                        .paymentUrl("")
+                        .build();
+                break;
+            }
+            case "10": {
+                callBack = PaymentDTO.VNPayResponse.builder()
+                        .code("10")
+                        .message("Nhập sai thông tin quá 3 lần")
+                        .paymentUrl("")
+                        .build();
+                break;
+            }
+            case "11": {
+                callBack = PaymentDTO.VNPayResponse.builder()
+                        .code("11")
+                        .message("Thẻ bị hết hạn")
+                        .paymentUrl("")
+                        .build();
+                break;
+            }
+            case "12": {
+                callBack = PaymentDTO.VNPayResponse.builder()
+                        .code("12")
+                        .message("Thẻ bị khóa")
+                        .paymentUrl("")
+                        .build();
+                break;
+            }
+            case "51": {
+                callBack = PaymentDTO.VNPayResponse.builder()
+                        .code("51")
+                        .message("Thẻ không đủ số dư")
+                        .paymentUrl("")
+                        .build();
+                break;
+            }
+        }
+        return callBack;
     }
 
     public void saveBillVNPayPayment(HttpServletRequest request) {
         TransactionLog trans = TransactionLog.builder()
-                .order_id(1L)
+                .order_id(1)
                 .amount(Long.valueOf(request.getParameter("vnp_Amount")))
                 .bankCode(request.getParameter("vnp_BankCode"))
                 .bankTranNo(request.getParameter("vnp_BankTranNo"))

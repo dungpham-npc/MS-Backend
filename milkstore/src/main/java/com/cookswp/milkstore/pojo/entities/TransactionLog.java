@@ -20,7 +20,7 @@ public class TransactionLog {
     @Column(name = "transaction_id")
     Long transaction_id;
     @Column(name = "order_id", nullable = false)
-    Long order_id;
+    int order_id;
     @Column(name = "amount", nullable = false)
     Long amount;
     @Column(name = "bank_code", nullable = false)

@@ -17,9 +17,8 @@ public class VNPayController {
 
     private final VNPayService vnpayService;
 
-    @PostMapping("/vn-pay")
-    public ResponseData<PaymentDTO.VNPayResponse> pay(HttpServletRequest request) throws ParseException {
-        vnpayService.saveBillVNPayPayment(request);
+    @GetMapping("/vn-pay")
+    public ResponseData<PaymentDTO.VNPayResponse> pay(HttpServletRequest request)  {
         return new ResponseData<>(HttpStatus.OK.value(), "Success", vnpayService.createVNPayPayment(request));
     }
     //00: giao dịch thành công
@@ -30,17 +29,8 @@ public class VNPayController {
     //10: nhập sai thông tin quá 3 lần
 
     @GetMapping("/vn-pay-callback")
-    public ResponseData<PaymentDTO.VNPayResponse> callback(HttpServletRequest request) {
-        String status = request.getParameter("vnp_ResponseCode");
-        if (status.equals("00")) {
-            PaymentDTO.VNPayResponse callbackResponse = PaymentDTO.VNPayResponse.builder()
-                    .code("00")
-                    .message("success call back")
-                    .paymentUrl("")
-                    .build();
-            return new ResponseData<>(HttpStatus.OK.value(), "Success", callbackResponse);
-        } else {
-            return new ResponseData<>(HttpStatus.BAD_REQUEST.value(), "Failed", null);
-        }
+    public ResponseData<PaymentDTO.VNPayResponse> callback(HttpServletRequest request) throws ParseException {
+        vnpayService.saveBillVNPayPayment(request);
+        return new ResponseData<>(HttpStatus.OK.value(), "Success", vnpayService.responseVNPay(request));
     }
 }

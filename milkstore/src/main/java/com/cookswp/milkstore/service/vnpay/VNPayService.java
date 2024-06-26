@@ -11,5 +11,5 @@ public interface VNPayService {
 
     public void saveBillVNPayPayment(HttpServletRequest request) throws ParseException;
 
-    public String checkResponseCode(HttpServletRequest request);
+    public PaymentDTO.VNPayResponse responseVNPay(HttpServletRequest request);
 }
