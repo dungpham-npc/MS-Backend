@@ -91,7 +91,7 @@ public class ProductService implements IProductService {
         Product product = productRepository.findById(productId).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
         if(product.getQuantity() < quantity) {
             throw new AppException(ErrorCode.PRODUCT_QUANTITY_INVALID);
-        }
+        }//Hiièn ay
         product.setQuantity(product.getQuantity() - quantity);
         productRepository.save(product);
 
