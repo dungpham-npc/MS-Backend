@@ -64,7 +64,7 @@ public class PersonalAccountController {
         if (!passwordEncoder.matches(passwordUpdateDTO.getOldPassword(), user.getPassword()))
             throw new IllegalArgumentException("Old password is wrong");
 
-        userService.updateUserPassword(userService.getUserByEmail(user.getName()).getUserId(), passwordUpdateDTO.getNewPassword());
+        userService.updateUserPassword(userService.getUserByEmail(user.getEmailAddress()).getUserId(), passwordUpdateDTO.getNewPassword());
         return new ResponseData<>(HttpStatus.OK.value(), "Password updated successfully!", null);
     }
 

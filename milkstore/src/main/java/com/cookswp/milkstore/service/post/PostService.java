@@ -46,10 +46,11 @@ public class PostService implements IPostService {
         Post postEntity = postRepository.findByIDAndVisibility(ID);
         if (postEntity != null) {
             validateInputRequest(postRequest);
-            postEntity.setUserID(7);
+            postEntity.setUserID(1);
             postEntity.setContent(postRequest.getContent());
             postEntity.setTitle(postRequest.getTitle());
             postEntity.setDateCreated(new Date());
+            postEntity.setVisibility(true);
             return postRepository.save(postEntity);
         } else {
             throw new AppException(ErrorCode.POST_ID_NOT_FOUND);
@@ -64,7 +65,8 @@ public class PostService implements IPostService {
                 .title(postRequest.getTitle())
                 .dateCreated(new Date())
                 .userComment("")
-                .userID(7)
+                .userID(6)
+                .visibility(true)
                 .build();
         return postRepository.save(post);
     }

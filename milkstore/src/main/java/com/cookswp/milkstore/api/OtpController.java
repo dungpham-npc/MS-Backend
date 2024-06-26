@@ -1,15 +1,12 @@
 package com.cookswp.milkstore.api;
 
-import com.cookswp.milkstore.exception.RoleNotFoundException;
 import com.cookswp.milkstore.pojo.dtos.UserModel.TemporaryUserDTO;
-import com.cookswp.milkstore.pojo.dtos.UserModel.UserRegistrationDTO;
 import com.cookswp.milkstore.response.ResponseData;
 import com.cookswp.milkstore.service.OtpService;
 import com.cookswp.milkstore.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

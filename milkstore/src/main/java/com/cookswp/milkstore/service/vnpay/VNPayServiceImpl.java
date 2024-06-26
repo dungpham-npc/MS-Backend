@@ -6,8 +6,8 @@ import com.cookswp.milkstore.pojo.entities.TransactionLog;
 import com.cookswp.milkstore.repository.transactionLog.TransactionLogRepository;
 import com.cookswp.milkstore.utils.VNPayUtil;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
+
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -48,28 +48,37 @@ public class VNPayServiceImpl implements VNPayService {
         return PaymentDTO.VNPayResponse.builder().code("ok").message("success").paymentUrl(paymentUrl).build();
     }
 
-    public TransactionLog saveBillVNPayPayment(HttpServletRequest request) throws ParseException {
-        TransactionLog payment = new TransactionLog();
-        payment.setAmount(Long.valueOf(request.getParameter("vnp_Amount")));
-        payment.setBankCode(request.getParameter("vnp_BankCode"));
-        payment.setBankTranNo(request.getParameter("vnp_BankTranNo"));
-        payment.setCardType(request.getParameter("vnp_CardType"));
+    @Override
+    public String checkResponseCode(HttpServletRequest request) {
+        return "";
+    }
 
-        String payDate = request.getParameter("vnp_PayDate");
-        DateFormat originalFormat = new SimpleDateFormat("yyyyMMddHHmmss");
-        Date date = originalFormat.parse(payDate);
+    public void saveBillVNPayPayment(HttpServletRequest request) {
+        TransactionLog trans = TransactionLog.builder()
+                .order_id(1L)
+                .amount(Long.valueOf(request.getParameter("vnp_Amount")))
+                .bankCode(request.getParameter("vnp_BankCode"))
+                .bankTranNo(request.getParameter("vnp_BankTranNo"))
+                .cardType(request.getParameter("vnp_CardType"))
+                .orderInfo(request.getParameter("vnp_OrderInfo"))
+                .responseCode(request.getParameter("vnp_ResponseCode"))
+                .payDate(convertPayDate(request.getParameter("vnp_PayDate")))
+                .transactionNo(request.getParameter("vnp_TransactionNo"))
+                .transactionStatus(request.getParameter("vnp_TransactionStatus"))
+                .build();
+        transactionLogRepository.save(trans);
+    }
 
-        DateFormat targetFormat = new SimpleDateFormat("dd-MM-yyyy");
-        String finalDate = targetFormat.format(date);
+    private String convertPayDate(String payDate) {
+        try {
+            DateFormat originalFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+            Date date = originalFormat.parse(payDate);
 
-        System.out.println(finalDate);
-        payment.setPayDate(finalDate);
-
-        payment.setResponseCode(request.getParameter("vnp_ResponseCode"));
-        payment.setOrderInfo(request.getParameter("vnp_OrderInfo"));
-        payment.setTransactionNo(request.getParameter("vnp_TransactionNo"));
-        payment.setTransactionStatus(request.getParameter("vnp_TransactionStatus"));
-
-        return transactionLogRepository.save(payment);
+            DateFormat targetFormat = new SimpleDateFormat("dd-MM-yyyy");
+            return targetFormat.format(date);
+        } catch (Exception e) {
+            System.out.println("Error at convertPayDate");
+            return null;
+        }
     }
 }
