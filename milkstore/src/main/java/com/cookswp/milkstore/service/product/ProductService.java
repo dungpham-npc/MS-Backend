@@ -102,6 +102,12 @@ public class ProductService implements IProductService {
 
     @Override
     public void reduceQuantityProduct(int productId, int quantity) {
+        Product product = productRepository.findById(productId).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
+        if(product.getQuantity() < quantity) {
+            throw new AppException(ErrorCode.PRODUCT_QUANTITY_INVALID);
+        }
+        product.setQuantity(product.getQuantity() - quantity);
+        productRepository.save(product);
 
     }
 
