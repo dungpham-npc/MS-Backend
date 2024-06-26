@@ -27,12 +27,12 @@ public class OtpController {
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseData<String> sendRegistrationOtp(String email){
-        if (email == null || email.isEmpty())
+    public ResponseData<String> sendRegistrationOtp(String emailAddress){
+        if (emailAddress == null || emailAddress.isEmpty())
             throw new IllegalArgumentException("Email address cannot be null or empty.");
-        if (userService.getUserByEmail(email) != null)
+        if (userService.getUserByEmail(emailAddress) != null)
             throw new DataIntegrityViolationException("Account with this email already existed!");
-        otpService.sendRegistrationOtpByEmail(email);
+        otpService.sendRegistrationOtpByEmail(emailAddress);
         return new ResponseData<>(HttpStatus.OK.value(), "OTP initialized successfully!", null);
     }
 
@@ -48,12 +48,12 @@ public class OtpController {
 
     @PostMapping("/forgot")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseData<String> sendForgotPasswordOtp(String email){
-        if (email == null || email.isEmpty())
+    public ResponseData<String> sendForgotPasswordOtp(String emailAddress){
+        if (emailAddress == null || emailAddress.isEmpty())
             throw new IllegalArgumentException("Email address cannot be null or empty.");
-        if (userService.getUserByEmail(email) == null)
+        if (userService.getUserByEmail(emailAddress) == null)
             throw new DataIntegrityViolationException("Account with this email can't be found!");
-        otpService.sendForgotPasswordOtpByEmail(email);
+        otpService.sendForgotPasswordOtpByEmail(emailAddress);
         return new ResponseData<>(HttpStatus.OK.value(), "OTP initialized successfully!", null);
     }
 
