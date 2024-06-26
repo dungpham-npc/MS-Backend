@@ -8,6 +8,7 @@ import com.cookswp.milkstore.repository.post.PostRepository;
 import com.cookswp.milkstore.repository.product.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -45,52 +46,15 @@ public class ProductService implements IProductService {
         if(!checkDate){
             throw new AppException(ErrorCode.MANU_DATE_CAN_NOT_BEFORE_EXPI_DATE);
         }
-        String image = productRequest.getProductImage().toLowerCase();
-        if (!image.matches(".*\\.(jpeg|png|jpg)$")) {
-            throw new AppException(ErrorCode.PRODUCT_IMAGE_INVALID);
-        }
+//        String image = productRequest.getProductImage().toLowerCase();
+//        if (!image.matches(".*\\.(jpeg|png|jpg)$")) {
+//            throw new AppException(ErrorCode.PRODUCT_IMAGE_INVALID);
+//        }
         if (productRequest.getQuantity() < 0) {
             throw new AppException(ErrorCode.PRODUCT_QUANTITY_INVALID);
         }
     }
 
-    @Override
-    public Product createProduct(ProductDTO productRequest) {
-        validProductRequest(productRequest);
-        Product productEntity = Product.builder()
-                .categoryID(productRequest.getCategoryID())
-                .postID(productRequest.getPostID())
-                .price(productRequest.getPrice())
-                .manuDate(productRequest.getManuDate())
-                .expiDate(productRequest.getExpiDate())
-                .productDescription(productRequest.getProductDescription())
-                .productName(productRequest.getProductName())
-                .productImage(productRequest.getProductImage())
-                .quantity(productRequest.getQuantity())
-                .build();
-        return productRepository.save(productEntity);
-    }
-
-    @Override
-    public Product updateProduct(int productID, ProductDTO productRequest) {
-        Product existingProduct = productRepository.getProductById(productID);
-        if (existingProduct == null) {
-            throw new AppException(ErrorCode.PRODUCT_NOT_FOUND);
-        }
-        validProductRequest(productRequest);
-        existingProduct = Product.builder()
-                .categoryID(productRequest.getCategoryID())
-                .postID(productRequest.getPostID())
-                .price(productRequest.getPrice())
-                .manuDate(productRequest.getManuDate())
-                .expiDate(productRequest.getExpiDate())
-                .productDescription(productRequest.getProductDescription())
-                .productName(productRequest.getProductName())
-                .productImage(productRequest.getProductImage())
-                .quantity(productRequest.getQuantity())
-                .build();
-        return productRepository.save(existingProduct);
-    }
 
 
     @Override
@@ -133,5 +97,41 @@ public class ProductService implements IProductService {
 
     }
 
+    @Override
+    public Product updateProduct(int productID, ProductDTO productRequest, MultipartFile productImageFile) {
+        Product existingProduct = productRepository.getProductById(productID);
+        if (existingProduct == null) {
+            throw new AppException(ErrorCode.PRODUCT_NOT_FOUND);
+        }
+        validProductRequest(productRequest);
+        existingProduct = Product.builder()
+                .categoryID(productRequest.getCategoryID())
+                .postID(productRequest.getPostID())
+                .price(productRequest.getPrice())
+                .manuDate(productRequest.getManuDate())
+                .expiDate(productRequest.getExpiDate())
+                .productDescription(productRequest.getProductDescription())
+                .productName(productRequest.getProductName())
+                // .productImage(productRequest.getProductImage())
+                .quantity(productRequest.getQuantity())
+                .build();
+        return productRepository.save(existingProduct);
+    }
 
+    @Override
+    public Product createProduct(ProductDTO productRequest, MultipartFile productImageFile) {
+        validProductRequest(productRequest);
+        Product productEntity = Product.builder()
+                .categoryID(productRequest.getCategoryID())
+                .postID(productRequest.getPostID())
+                .price(productRequest.getPrice())
+                .manuDate(productRequest.getManuDate())
+                .expiDate(productRequest.getExpiDate())
+                .productDescription(productRequest.getProductDescription())
+                .productName(productRequest.getProductName())
+                //    .productImage(productRequest.getProductImage())
+                .quantity(productRequest.getQuantity())
+                .build();
+        return productRepository.save(productEntity);
+    }
 }

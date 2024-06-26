@@ -5,19 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f2c39ff5-8b99-4c8e-9f3c-52770c2e8229" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_6_13_2024_3_35_PM__Changes_.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_6_13_2024_3_35_PM__Changes_1.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/milkstore/src/main/java/com/cookswp/milkstore/api/VNPayController.java" beforeDir="false" afterPath="$PROJECT_DIR$/milkstore/src/main/java/com/cookswp/milkstore/api/VNPayController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/milkstore/src/main/java/com/cookswp/milkstore/exception/ErrorCode.java" beforeDir="false" afterPath="$PROJECT_DIR$/milkstore/src/main/java/com/cookswp/milkstore/exception/ErrorCode.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/milkstore/src/main/java/com/cookswp/milkstore/pojo/dtos/OrderModel/OrderDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/milkstore/src/main/java/com/cookswp/milkstore/pojo/dtos/OrderModel/OrderDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/milkstore/src/main/java/com/cookswp/milkstore/pojo/entities/Order.java" beforeDir="false" afterPath="$PROJECT_DIR$/milkstore/src/main/java/com/cookswp/milkstore/pojo/entities/Order.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/milkstore/src/main/java/com/cookswp/milkstore/repository/shoppingCartItem/ShoppingCartItemRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/milkstore/src/main/java/com/cookswp/milkstore/repository/shoppingCartItem/ShoppingCartItemRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/milkstore/src/main/java/com/cookswp/milkstore/service/order/OrderService.java" beforeDir="false" afterPath="$PROJECT_DIR$/milkstore/src/main/java/com/cookswp/milkstore/service/order/OrderService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/milkstore/src/main/java/com/cookswp/milkstore/service/product/IProductService.java" beforeDir="false" afterPath="$PROJECT_DIR$/milkstore/src/main/java/com/cookswp/milkstore/service/product/IProductService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/milkstore/src/main/java/com/cookswp/milkstore/service/product/ProductService.java" beforeDir="false" afterPath="$PROJECT_DIR$/milkstore/src/main/java/com/cookswp/milkstore/service/product/ProductService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/milkstore/src/main/java/com/cookswp/milkstore/service/shoppingcart/ShoppingCartService.java" beforeDir="false" afterPath="$PROJECT_DIR$/milkstore/src/main/java/com/cookswp/milkstore/service/shoppingcart/ShoppingCartService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
