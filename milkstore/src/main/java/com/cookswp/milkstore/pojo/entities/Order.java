@@ -22,7 +22,7 @@ public class Order implements  Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private int id;
 
     @Column(name = "user_id", nullable = false)
     private int userId;
