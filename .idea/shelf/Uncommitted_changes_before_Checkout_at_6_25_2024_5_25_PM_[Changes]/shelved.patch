@@ -1,0 +1,391 @@
+Index: milkstore/src/test/java/com/cookswp/milkstore/service/UserServiceTest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.cookswp.milkstore.service;\r\n\r\nimport com.cookswp.milkstore.configuration.CustomAuthenticationProvider;\r\nimport com.cookswp.milkstore.exception.UserInvisibilityException;\r\nimport com.cookswp.milkstore.exception.UserNotFoundException;\r\nimport com.cookswp.milkstore.pojo.entities.Role;\r\nimport com.cookswp.milkstore.pojo.entities.User;\r\nimport com.cookswp.milkstore.repository.RoleRepository.RoleRepository;\r\nimport com.cookswp.milkstore.repository.UserRepository.UserRepository;\r\nimport org.junit.jupiter.api.BeforeEach;\r\nimport org.junit.jupiter.api.Test;\r\nimport org.junit.jupiter.api.extension.ExtendWith;\r\nimport org.mockito.*;\r\nimport org.mockito.junit.jupiter.MockitoExtension;\r\nimport org.springframework.dao.DataIntegrityViolationException;\r\nimport org.springframework.security.authentication.UsernamePasswordAuthenticationToken;\r\nimport org.springframework.security.core.Authentication;\r\nimport org.springframework.security.crypto.password.PasswordEncoder;\r\n\r\nimport static org.junit.jupiter.api.Assertions.*;\r\nimport static org.mockito.ArgumentMatchers.any;\r\nimport static org.mockito.ArgumentMatchers.anyString;\r\nimport static org.mockito.Mockito.*;\r\n\r\n\r\npublic class UserServiceTest {\r\n\r\n    @Mock\r\n    private UserRepository userRepository;\r\n\r\n    @Mock\r\n    private PasswordEncoder passwordEncoder;\r\n\r\n    @Mock\r\n    private RoleRepository roleRepository;\r\n\r\n    @Mock\r\n    private RoleService roleService;\r\n\r\n    @InjectMocks\r\n    private UserService userService;\r\n\r\n    @Mock\r\n    private CustomAuthenticationProvider customAuthenticationProvider;\r\n\r\n    @BeforeEach\r\n    public void setUp(){\r\n        MockitoAnnotations.openMocks(this);\r\n    }\r\n\r\n\r\n    // T1: Add Staff Account - Email must be unique\r\n    @Test\r\n    public void testAddStaffAccountEmailUnique_HappyCase() {\r\n        User user = new User();\r\n        user.setEmailAddress(\"test@domain.com\"); // Unique email\r\n        Role role = new Role();\r\n        user.setRole(role);\r\n\r\n        when(userRepository.findByEmailAddress(user.getEmailAddress())).thenReturn(null);\r\n        when(userRepository.save(any(User.class))).thenReturn(user);\r\n\r\n        User savedUser = userService.registerStaff(user);\r\n\r\n        assertNotNull(savedUser);\r\n        assertEquals(\"test@domain.com\", savedUser.getEmailAddress()); // Verify email\r\n        verify(userRepository, times(1)).save(any(User.class));\r\n    }\r\n\r\n\r\n    @Test\r\n    public void testAddStaffAccountEmailUnique_BadCase() {\r\n        User user = new User();\r\n        Role role = new Role();\r\n        role.setRoleId(1);\r\n        role.setRoleName(\"SELLER\");\r\n        user.setEmailAddress(\"test@domain.com\");\r\n        user.setRole(role);\r\n        when(roleService.getRoleByRoleName(Mockito.any())).thenReturn(role);\r\n\r\n        // Mock email check - return null for happy case\r\n        when(userRepository.findByEmailAddress(user.getEmailAddress())).thenReturn(null);\r\n        when(userRepository.save(any(User.class))).thenReturn(user);\r\n\r\n        User savedUser = userService.registerStaff(user);\r\n        assertNotNull(savedUser); // Verify happy case creation\r\n\r\n        // Mock email check - return existing user for duplicate test\r\n        when(userRepository.findByEmailAddress(user.getEmailAddress())).thenReturn(new User());\r\n\r\n        assertThrows(DataIntegrityViolationException.class, () -> userService.registerStaff(user));\r\n        verify(userRepository, times(1)).save(any(User.class)); // Verify only 1 save for happy case\r\n    }\r\n\r\n    // T16: Register - Email must be unique and not associated with any other account\r\n    @Test\r\n    public void testRegisterEmailUnique_HappyCase() {\r\n        User user = new User();\r\n        user.setEmailAddress(\"test@domain.com\"); // Unique email\r\n        Role role = new Role();\r\n        user.setRole(role);\r\n\r\n        when(userRepository.findByEmailAddress(user.getEmailAddress())).thenReturn(null);\r\n        when(userRepository.save(any(User.class))).thenReturn(user);\r\n\r\n        User savedUser = userService.registerUser(user);\r\n\r\n        assertNotNull(savedUser);\r\n        assertEquals(\"test@domain.com\", savedUser.getEmailAddress()); // Verify email\r\n        verify(userRepository, times(1)).save(any(User.class));\r\n    }\r\n\r\n    @Test\r\n    public void testRegisterEmailUnique_BadCase() {\r\n        User user = new User();\r\n        Role role = new Role();\r\n        role.setRoleId(1);\r\n        user.setEmailAddress(\"test@domain.com\");\r\n        user.setRole(role);\r\n        when(roleService.getRoleByRoleName(Mockito.any())).thenReturn(role);\r\n\r\n        // Mock email check - return null for happy case\r\n        when(userRepository.findByEmailAddress(user.getEmailAddress())).thenReturn(null);\r\n        when(userRepository.save(any(User.class))).thenReturn(user);\r\n\r\n        User savedUser = userService.registerUser(user);\r\n        assertNotNull(savedUser); // Verify happy case creation\r\n\r\n        // Mock email check - return existing user for duplicate test\r\n        when(userRepository.findByEmailAddress(user.getEmailAddress())).thenReturn(new User());\r\n\r\n        assertThrows(DataIntegrityViolationException.class, () -> userService.registerUser(user));\r\n    }\r\n\r\n\r\n    // T22: Login - Email must exist in the system\r\n    @Test\r\n    public void testLoginEmailExists_HappyCase() {\r\n        String email = \"test@example.com\";\r\n\r\n        User user = new User();\r\n        user.setEmailAddress(email);\r\n\r\n        when(userRepository.findByEmailAddress(email)).thenReturn(user);\r\n\r\n        assertNotNull(userService.getUserByEmail(email)); // Ensure getUserByEmail returns the expected user\r\n\r\n    }\r\n\r\n    @Test\r\n    public void testLoginEmailExists_BadCase() {\r\n        String nonExistentEmail = \"nonexistent@domain.com\";\r\n\r\n        when(userRepository.findByEmailAddress(nonExistentEmail)).thenReturn(null);\r\n\r\n        // Assertions\r\n        assertThrows(UserNotFoundException.class, () -> userService.getUserByEmail(nonExistentEmail));\r\n    }\r\n\r\n\r\n\r\n    // T9: Ban User Account - Banned users must not be able to log in\r\n    @Test\r\n    public void testBanUserAccount_HappyCase() {\r\n        String email = \"test@example.com\";\r\n\r\n        User user = new User();\r\n        user.setProhibitStatus(false);\r\n        user.setEmailAddress(email);\r\n\r\n        when(userRepository.findByEmailAddress(email)).thenReturn(user);\r\n\r\n        // Perform assertions to verify the behavior\r\n        assertNotNull(userService.getUserByEmail(email));\r\n\r\n    }\r\n\r\n    @Test\r\n    public void testBanUserAccount_BadCase() {\r\n        String email = \"test@example.com\";\r\n\r\n        User user = new User();\r\n        user.setProhibitStatus(true);\r\n        user.setEmailAddress(email);\r\n\r\n        when(userRepository.findByEmailAddress(email)).thenReturn(user);\r\n\r\n        // Perform assertions to verify the behavior\r\n        assertThrows(UserInvisibilityException.class, () -> userService.getUserByEmail(email));\r\n    }\r\n}\r\n
+===================================================================
+diff --git a/milkstore/src/test/java/com/cookswp/milkstore/service/UserServiceTest.java b/milkstore/src/test/java/com/cookswp/milkstore/service/UserServiceTest.java
+--- a/milkstore/src/test/java/com/cookswp/milkstore/service/UserServiceTest.java	
++++ b/milkstore/src/test/java/com/cookswp/milkstore/service/UserServiceTest.java	
+@@ -1,191 +1,191 @@
+-package com.cookswp.milkstore.service;
+-
+-import com.cookswp.milkstore.configuration.CustomAuthenticationProvider;
+-import com.cookswp.milkstore.exception.UserInvisibilityException;
+-import com.cookswp.milkstore.exception.UserNotFoundException;
+-import com.cookswp.milkstore.pojo.entities.Role;
+-import com.cookswp.milkstore.pojo.entities.User;
+-import com.cookswp.milkstore.repository.RoleRepository.RoleRepository;
+-import com.cookswp.milkstore.repository.UserRepository.UserRepository;
+-import org.junit.jupiter.api.BeforeEach;
+-import org.junit.jupiter.api.Test;
+-import org.junit.jupiter.api.extension.ExtendWith;
+-import org.mockito.*;
+-import org.mockito.junit.jupiter.MockitoExtension;
+-import org.springframework.dao.DataIntegrityViolationException;
+-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+-import org.springframework.security.core.Authentication;
+-import org.springframework.security.crypto.password.PasswordEncoder;
+-
+-import static org.junit.jupiter.api.Assertions.*;
+-import static org.mockito.ArgumentMatchers.any;
+-import static org.mockito.ArgumentMatchers.anyString;
+-import static org.mockito.Mockito.*;
+-
+-
+-public class UserServiceTest {
+-
+-    @Mock
+-    private UserRepository userRepository;
+-
+-    @Mock
+-    private PasswordEncoder passwordEncoder;
+-
+-    @Mock
+-    private RoleRepository roleRepository;
+-
+-    @Mock
+-    private RoleService roleService;
+-
+-    @InjectMocks
+-    private UserService userService;
+-
+-    @Mock
+-    private CustomAuthenticationProvider customAuthenticationProvider;
+-
+-    @BeforeEach
+-    public void setUp(){
+-        MockitoAnnotations.openMocks(this);
+-    }
+-
+-
+-    // T1: Add Staff Account - Email must be unique
+-    @Test
+-    public void testAddStaffAccountEmailUnique_HappyCase() {
+-        User user = new User();
+-        user.setEmailAddress("test@domain.com"); // Unique email
+-        Role role = new Role();
+-        user.setRole(role);
+-
+-        when(userRepository.findByEmailAddress(user.getEmailAddress())).thenReturn(null);
+-        when(userRepository.save(any(User.class))).thenReturn(user);
+-
+-        User savedUser = userService.registerStaff(user);
+-
+-        assertNotNull(savedUser);
+-        assertEquals("test@domain.com", savedUser.getEmailAddress()); // Verify email
+-        verify(userRepository, times(1)).save(any(User.class));
+-    }
+-
+-
+-    @Test
+-    public void testAddStaffAccountEmailUnique_BadCase() {
+-        User user = new User();
+-        Role role = new Role();
+-        role.setRoleId(1);
+-        role.setRoleName("SELLER");
+-        user.setEmailAddress("test@domain.com");
+-        user.setRole(role);
+-        when(roleService.getRoleByRoleName(Mockito.any())).thenReturn(role);
+-
+-        // Mock email check - return null for happy case
+-        when(userRepository.findByEmailAddress(user.getEmailAddress())).thenReturn(null);
+-        when(userRepository.save(any(User.class))).thenReturn(user);
+-
+-        User savedUser = userService.registerStaff(user);
+-        assertNotNull(savedUser); // Verify happy case creation
+-
+-        // Mock email check - return existing user for duplicate test
+-        when(userRepository.findByEmailAddress(user.getEmailAddress())).thenReturn(new User());
+-
+-        assertThrows(DataIntegrityViolationException.class, () -> userService.registerStaff(user));
+-        verify(userRepository, times(1)).save(any(User.class)); // Verify only 1 save for happy case
+-    }
+-
+-    // T16: Register - Email must be unique and not associated with any other account
+-    @Test
+-    public void testRegisterEmailUnique_HappyCase() {
+-        User user = new User();
+-        user.setEmailAddress("test@domain.com"); // Unique email
+-        Role role = new Role();
+-        user.setRole(role);
+-
+-        when(userRepository.findByEmailAddress(user.getEmailAddress())).thenReturn(null);
+-        when(userRepository.save(any(User.class))).thenReturn(user);
+-
+-        User savedUser = userService.registerUser(user);
+-
+-        assertNotNull(savedUser);
+-        assertEquals("test@domain.com", savedUser.getEmailAddress()); // Verify email
+-        verify(userRepository, times(1)).save(any(User.class));
+-    }
+-
+-    @Test
+-    public void testRegisterEmailUnique_BadCase() {
+-        User user = new User();
+-        Role role = new Role();
+-        role.setRoleId(1);
+-        user.setEmailAddress("test@domain.com");
+-        user.setRole(role);
+-        when(roleService.getRoleByRoleName(Mockito.any())).thenReturn(role);
+-
+-        // Mock email check - return null for happy case
+-        when(userRepository.findByEmailAddress(user.getEmailAddress())).thenReturn(null);
+-        when(userRepository.save(any(User.class))).thenReturn(user);
+-
+-        User savedUser = userService.registerUser(user);
+-        assertNotNull(savedUser); // Verify happy case creation
+-
+-        // Mock email check - return existing user for duplicate test
+-        when(userRepository.findByEmailAddress(user.getEmailAddress())).thenReturn(new User());
+-
+-        assertThrows(DataIntegrityViolationException.class, () -> userService.registerUser(user));
+-    }
+-
+-
+-    // T22: Login - Email must exist in the system
+-    @Test
+-    public void testLoginEmailExists_HappyCase() {
+-        String email = "test@example.com";
+-
+-        User user = new User();
+-        user.setEmailAddress(email);
+-
+-        when(userRepository.findByEmailAddress(email)).thenReturn(user);
+-
+-        assertNotNull(userService.getUserByEmail(email)); // Ensure getUserByEmail returns the expected user
+-
+-    }
+-
+-    @Test
+-    public void testLoginEmailExists_BadCase() {
+-        String nonExistentEmail = "nonexistent@domain.com";
+-
+-        when(userRepository.findByEmailAddress(nonExistentEmail)).thenReturn(null);
+-
+-        // Assertions
+-        assertThrows(UserNotFoundException.class, () -> userService.getUserByEmail(nonExistentEmail));
+-    }
+-
+-
+-
+-    // T9: Ban User Account - Banned users must not be able to log in
+-    @Test
+-    public void testBanUserAccount_HappyCase() {
+-        String email = "test@example.com";
+-
+-        User user = new User();
+-        user.setProhibitStatus(false);
+-        user.setEmailAddress(email);
+-
+-        when(userRepository.findByEmailAddress(email)).thenReturn(user);
+-
+-        // Perform assertions to verify the behavior
+-        assertNotNull(userService.getUserByEmail(email));
+-
+-    }
+-
+-    @Test
+-    public void testBanUserAccount_BadCase() {
+-        String email = "test@example.com";
+-
+-        User user = new User();
+-        user.setProhibitStatus(true);
+-        user.setEmailAddress(email);
+-
+-        when(userRepository.findByEmailAddress(email)).thenReturn(user);
+-
+-        // Perform assertions to verify the behavior
+-        assertThrows(UserInvisibilityException.class, () -> userService.getUserByEmail(email));
+-    }
+-}
++//package com.cookswp.milkstore.service;
++//
++//import com.cookswp.milkstore.configuration.CustomAuthenticationProvider;
++//import com.cookswp.milkstore.exception.UserInvisibilityException;
++//import com.cookswp.milkstore.exception.UserNotFoundException;
++//import com.cookswp.milkstore.pojo.entities.Role;
++//import com.cookswp.milkstore.pojo.entities.User;
++//import com.cookswp.milkstore.repository.RoleRepository.RoleRepository;
++//import com.cookswp.milkstore.repository.UserRepository.UserRepository;
++//import org.junit.jupiter.api.BeforeEach;
++//import org.junit.jupiter.api.Test;
++//import org.junit.jupiter.api.extension.ExtendWith;
++//import org.mockito.*;
++//import org.mockito.junit.jupiter.MockitoExtension;
++//import org.springframework.dao.DataIntegrityViolationException;
++//import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
++//import org.springframework.security.core.Authentication;
++//import org.springframework.security.crypto.password.PasswordEncoder;
++//
++//import static org.junit.jupiter.api.Assertions.*;
++//import static org.mockito.ArgumentMatchers.any;
++//import static org.mockito.ArgumentMatchers.anyString;
++//import static org.mockito.Mockito.*;
++//
++//
++//public class UserServiceTest {
++//
++//    @Mock
++//    private UserRepository userRepository;
++//
++//    @Mock
++//    private PasswordEncoder passwordEncoder;
++//
++//    @Mock
++//    private RoleRepository roleRepository;
++//
++//    @Mock
++//    private RoleService roleService;
++//
++//    @InjectMocks
++//    private UserService userService;
++//
++//    @Mock
++//    private CustomAuthenticationProvider customAuthenticationProvider;
++//
++//    @BeforeEach
++//    public void setUp(){
++//        MockitoAnnotations.openMocks(this);
++//    }
++//
++//
++//    // T1: Add Staff Account - Email must be unique
++//    @Test
++//    public void testAddStaffAccountEmailUnique_HappyCase() {
++//        User user = new User();
++//        user.setEmailAddress("test@domain.com"); // Unique email
++//        Role role = new Role();
++//        user.setRole(role);
++//
++//        when(userRepository.findByEmailAddress(user.getEmailAddress())).thenReturn(null);
++//        when(userRepository.save(any(User.class))).thenReturn(user);
++//
++//        User savedUser = userService.registerStaff(user);
++//
++//        assertNotNull(savedUser);
++//        assertEquals("test@domain.com", savedUser.getEmailAddress()); // Verify email
++//        verify(userRepository, times(1)).save(any(User.class));
++//    }
++//
++//
++//    @Test
++//    public void testAddStaffAccountEmailUnique_BadCase() {
++//        User user = new User();
++//        Role role = new Role();
++//        role.setRoleId(1);
++//        role.setRoleName("SELLER");
++//        user.setEmailAddress("test@domain.com");
++//        user.setRole(role);
++//        when(roleService.getRoleByRoleName(Mockito.any())).thenReturn(role);
++//
++//        // Mock email check - return null for happy case
++//        when(userRepository.findByEmailAddress(user.getEmailAddress())).thenReturn(null);
++//        when(userRepository.save(any(User.class))).thenReturn(user);
++//
++//        User savedUser = userService.registerStaff(user);
++//        assertNotNull(savedUser); // Verify happy case creation
++//
++//        // Mock email check - return existing user for duplicate test
++//        when(userRepository.findByEmailAddress(user.getEmailAddress())).thenReturn(new User());
++//
++//        assertThrows(DataIntegrityViolationException.class, () -> userService.registerStaff(user));
++//        verify(userRepository, times(1)).save(any(User.class)); // Verify only 1 save for happy case
++//    }
++//
++//    // T16: Register - Email must be unique and not associated with any other account
++//    @Test
++//    public void testRegisterEmailUnique_HappyCase() {
++//        User user = new User();
++//        user.setEmailAddress("test@domain.com"); // Unique email
++//        Role role = new Role();
++//        user.setRole(role);
++//
++//        when(userRepository.findByEmailAddress(user.getEmailAddress())).thenReturn(null);
++//        when(userRepository.save(any(User.class))).thenReturn(user);
++//
++//        User savedUser = userService.registerUser(user);
++//
++//        assertNotNull(savedUser);
++//        assertEquals("test@domain.com", savedUser.getEmailAddress()); // Verify email
++//        verify(userRepository, times(1)).save(any(User.class));
++//    }
++//
++//    @Test
++//    public void testRegisterEmailUnique_BadCase() {
++//        User user = new User();
++//        Role role = new Role();
++//        role.setRoleId(1);
++//        user.setEmailAddress("test@domain.com");
++//        user.setRole(role);
++//        when(roleService.getRoleByRoleName(Mockito.any())).thenReturn(role);
++//
++//        // Mock email check - return null for happy case
++//        when(userRepository.findByEmailAddress(user.getEmailAddress())).thenReturn(null);
++//        when(userRepository.save(any(User.class))).thenReturn(user);
++//
++//        User savedUser = userService.registerUser(user);
++//        assertNotNull(savedUser); // Verify happy case creation
++//
++//        // Mock email check - return existing user for duplicate test
++//        when(userRepository.findByEmailAddress(user.getEmailAddress())).thenReturn(new User());
++//
++//        assertThrows(DataIntegrityViolationException.class, () -> userService.registerUser(user));
++//    }
++//
++//
++//    // T22: Login - Email must exist in the system
++//    @Test
++//    public void testLoginEmailExists_HappyCase() {
++//        String email = "test@example.com";
++//
++//        User user = new User();
++//        user.setEmailAddress(email);
++//
++//        when(userRepository.findByEmailAddress(email)).thenReturn(user);
++//
++//        assertNotNull(userService.getUserByEmail(email)); // Ensure getUserByEmail returns the expected user
++//
++//    }
++//
++//    @Test
++//    public void testLoginEmailExists_BadCase() {
++//        String nonExistentEmail = "nonexistent@domain.com";
++//
++//        when(userRepository.findByEmailAddress(nonExistentEmail)).thenReturn(null);
++//
++//        // Assertions
++//        assertThrows(UserNotFoundException.class, () -> userService.getUserByEmail(nonExistentEmail));
++//    }
++//
++//
++//
++//    // T9: Ban User Account - Banned users must not be able to log in
++//    @Test
++//    public void testBanUserAccount_HappyCase() {
++//        String email = "test@example.com";
++//
++//        User user = new User();
++//        user.setProhibitStatus(false);
++//        user.setEmailAddress(email);
++//
++//        when(userRepository.findByEmailAddress(email)).thenReturn(user);
++//
++//        // Perform assertions to verify the behavior
++//        assertNotNull(userService.getUserByEmail(email));
++//
++//    }
++//
++//    @Test
++//    public void testBanUserAccount_BadCase() {
++//        String email = "test@example.com";
++//
++//        User user = new User();
++//        user.setProhibitStatus(true);
++//        user.setEmailAddress(email);
++//
++//        when(userRepository.findByEmailAddress(email)).thenReturn(user);
++//
++//        // Perform assertions to verify the behavior
++//        assertThrows(UserInvisibilityException.class, () -> userService.getUserByEmail(email));
++//    }
++//}
