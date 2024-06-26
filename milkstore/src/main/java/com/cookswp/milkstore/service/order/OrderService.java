@@ -2,9 +2,13 @@ package com.cookswp.milkstore.service.order;
 
 import com.cookswp.milkstore.enums.Status;
 import com.cookswp.milkstore.pojo.dtos.OrderModel.OrderDTO;
+import com.cookswp.milkstore.pojo.dtos.PaymentModel.PaymentDTO;
 import com.cookswp.milkstore.pojo.entities.Order;
+import com.cookswp.milkstore.pojo.entities.Payment;
+import com.cookswp.milkstore.pojo.entities.ShoppingCart;
 import com.cookswp.milkstore.pojo.entities.ShoppingCartItem;
 import com.cookswp.milkstore.repository.order.OrderRepository;
+import com.cookswp.milkstore.repository.shoppingCart.ShoppingCartRepository;
 import com.cookswp.milkstore.repository.shoppingCartItem.ShoppingCartItemRepository;
 import com.cookswp.milkstore.service.product.ProductService;
 import com.cookswp.milkstore.service.shoppingcart.ShoppingCartService;
@@ -19,22 +23,28 @@ import java.util.stream.Collectors;
 public class OrderService implements IOrderService {
 
     private final OrderRepository orderRepository;
-//hiengya
+
     private final ShoppingCartService shoppingCartService;
 
     private final ProductService productService;
 
     private final ShoppingCartItemRepository shoppingCartItemRepository;
 
+//    private final ShoppingCartRepository shoppingCartRepository;
+
+//    private final ShoppingCart cart;
+
     private Order order = null;
 
-    @Autowired
     public OrderService(OrderRepository orderRepository, ShoppingCartService shoppingCartService, ProductService productService, ShoppingCartItemRepository shoppingCartItemRepository) {
         this.orderRepository = orderRepository;
-        this.shoppingCartItemRepository = shoppingCartItemRepository;
-        this.productService = productService;
         this.shoppingCartService = shoppingCartService;
+        this.productService = productService;
+        this.shoppingCartItemRepository = shoppingCartItemRepository;
+//        this.shoppingCartRepository = shoppingCartRepository;
+//        this.cart = cart;
     }
+
 
     @Override
     public List<Order> getAllOrders() {
@@ -45,6 +55,9 @@ public class OrderService implements IOrderService {
     @Override
     @Transactional
     public Order createOrder(OrderDTO orderDTO) {
+//      Status status = orderDTO.getStatus();
+
+//    if(status == Status.PAID) {}
         order = new Order();
         order.setUserId(orderDTO.getUserId());
         order.setOrderStatus(orderDTO.getStatus());
@@ -52,6 +65,7 @@ public class OrderService implements IOrderService {
         order.setOrderDate(orderDTO.getOrderDate());
         order.setShippingAddress(orderDTO.getShippingAddress());
         return orderRepository.save(order);
+
     }
 
     @Override
@@ -84,6 +98,13 @@ public class OrderService implements IOrderService {
             reduceProductQuantity(order.getId());
         }
 
+        // Check Delivery Status
+        if (status == Status.IN_DELIVERY) {
+
+        } else {
+            throw new RuntimeException(Status.CANNOT_DELIVER + "Reason");
+        }
+
         return toOrderDTO(order);
     }
 
@@ -105,6 +126,8 @@ public class OrderService implements IOrderService {
     public Order getOrderById(long orderId) {
         return  orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
     }
+
+
 
 
     // Convert Order Entity to OrderDTO

@@ -82,6 +82,7 @@ public class ShoppingCartService implements IShoppingCartService{
             newItem.setQuantity(addToCartDTO.getQuantity());
             shoppingCartItemRepository.save(newItem);
         }
+
         return cart;
     }
 
