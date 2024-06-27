@@ -1,5 +1,6 @@
 package com.cookswp.milkstore.service.order;
 
+import com.cookswp.milkstore.enums.PaymentStatus;
 import com.cookswp.milkstore.enums.Status;
 import com.cookswp.milkstore.pojo.dtos.OrderModel.OrderDTO;
 import com.cookswp.milkstore.pojo.dtos.PaymentModel.PaymentDTO;
@@ -55,18 +56,23 @@ public class OrderService implements IOrderService {
     @Override
     @Transactional
     public Order createOrder(OrderDTO orderDTO) {
-//      Status status = orderDTO.getStatus();
+        Status status = orderDTO.getStatus();
 
-//    if(status == Status.PAID) {}
-        order = new Order();
-        order.setUserId(orderDTO.getUserId());
-        order.setOrderStatus(orderDTO.getStatus());
-        order.setTotalPrice(orderDTO.getTotalPrice());
-        order.setOrderDate(orderDTO.getOrderDate());
-        order.setShippingAddress(orderDTO.getShippingAddress());
-        return orderRepository.save(order);
-
+        if (status == Status.PAID) {
+            Order order = new Order();
+            order.setUserId(orderDTO.getUserId());
+            order.setOrderStatus(orderDTO.getStatus());
+            order.setTotalPrice(orderDTO.getTotalPrice());
+            order.setOrderDate(orderDTO.getOrderDate());
+            order.setShippingAddress(orderDTO.getShippingAddress());
+            return orderRepository.save(order);
+        } else if (status == Status.IN_CHECKOUT) {
+            throw new RuntimeException(PaymentStatus.PendingPayment + "In payment time");
+        } else {
+            throw new RuntimeException(PaymentStatus.Failed + "Payment not complete");
+        }
     }
+
 
     @Override
     @Transactional

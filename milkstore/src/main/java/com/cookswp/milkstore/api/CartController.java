@@ -4,8 +4,10 @@ import com.cookswp.milkstore.pojo.dtos.CartModel.AddToCartDTO;
 import com.cookswp.milkstore.pojo.dtos.CartModel.ShowCartModelDTO;
 import com.cookswp.milkstore.pojo.dtos.CartModel.UpdateToCartDTO;
 import com.cookswp.milkstore.pojo.entities.ShoppingCart;
+import com.cookswp.milkstore.response.ResponseData;
 import com.cookswp.milkstore.service.shoppingcart.ShoppingCartService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,15 +21,16 @@ public class CartController {
     private ShoppingCartService shoppingCartService;
 
     @GetMapping("/{userId}")
-    public ResponseEntity<List<ShowCartModelDTO>> getCartByUserId(@PathVariable int userId) {
+    public ResponseData<List<ShowCartModelDTO>> getCartByUserId(@PathVariable int userId) {
         List<ShowCartModelDTO> carts = shoppingCartService.getCartByUserId(userId);
-        return ResponseEntity.ok(carts);
+        return new ResponseData<>(HttpStatus.OK.value(), "GET CART BY ID", carts);
     }
 
     @PostMapping("/{userId}/items")
-    public ResponseEntity<ShoppingCart> addItemToCart(@PathVariable int userId, @RequestBody AddToCartDTO addToCartDTO) {
+    public ResponseEntity<ResponseData<ShoppingCart>> addItemToCart(@PathVariable int userId, @RequestBody AddToCartDTO addToCartDTO) {
         ShoppingCart cart = shoppingCartService.addToCart(addToCartDTO, userId);
-        return ResponseEntity.ok(cart);
+        ResponseData<ShoppingCart> responseData = new ResponseData<>(HttpStatus.OK.value(), "Add Item To Cart", cart);
+        return ResponseEntity.ok(responseData);
     }
 
     @PutMapping("/{cartId}/items")
@@ -37,9 +40,10 @@ public class CartController {
     }
 
     @DeleteMapping("/{cartId}")
-    public ResponseEntity<ShoppingCart> deleteCart(@PathVariable int cartId, @RequestParam int userId) {
+    public ResponseEntity<ShoppingCart> deleteCart(@PathVariable int cartId,  @RequestParam int userId) {
         ShoppingCart cart = shoppingCartService.deleteToCart(cartId, userId);
         return ResponseEntity.ok(cart);
+
     }
 
 //    @PostMapping("/{userId}/checkout")
