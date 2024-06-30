@@ -37,6 +37,8 @@ public class SecurityConfig {
     private final CustomFormLoginSuccessHandler customFormLoginSuccessHandler;
     @Autowired
     private final CustomFormLoginFailureHandler customFormLoginFailureHandler;
+    @Autowired
+    private final AuthEntryPointJwt authEntryPointJwt;
     @Bean
     public AuthenticationManager authenticationManager(){
         return new ProviderManager(Collections.singletonList(customAuthenticationProvider));
@@ -50,10 +52,13 @@ public class SecurityConfig {
         return httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/register", "/login", "/register/**", "/otp", "/otp/**", "/account", "/account/**").permitAll();
+                    auth.requestMatchers("/register", "/login", "/register/**", "/otp", "/otp/**", "/account", "/account/**", "/product-staff/get-product").permitAll();
                     auth.anyRequest().authenticated();
                 })
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
+                .exceptionHandling(exception -> {
+                    exception.authenticationEntryPoint(authEntryPointJwt);
+                })
                 .formLogin(form -> {
                     form.failureHandler(customFormLoginFailureHandler);
                     form.successHandler(customFormLoginSuccessHandler);
