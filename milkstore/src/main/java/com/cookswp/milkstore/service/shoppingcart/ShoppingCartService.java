@@ -66,7 +66,7 @@ public class ShoppingCartService implements IShoppingCartService {
                 });
 
         Product product = productRepository.findById(addToCartDTO.getProduct_id())
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
 
         Optional<ShoppingCartItem> existingItemOpt = cart.getItems().stream()
                 .filter(item -> item.getProduct().getProductID() == product.getProductID())

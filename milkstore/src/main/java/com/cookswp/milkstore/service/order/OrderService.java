@@ -2,6 +2,8 @@ package com.cookswp.milkstore.service.order;
 
 import com.cookswp.milkstore.enums.PaymentStatus;
 import com.cookswp.milkstore.enums.Status;
+import com.cookswp.milkstore.exception.AppException;
+import com.cookswp.milkstore.exception.ErrorCode;
 import com.cookswp.milkstore.pojo.dtos.OrderModel.OrderDTO;
 import com.cookswp.milkstore.pojo.dtos.PaymentModel.PaymentDTO;
 import com.cookswp.milkstore.pojo.entities.Order;
@@ -95,7 +97,7 @@ public class OrderService implements IOrderService {
     @Override
     @Transactional
     public OrderDTO updateOrderStatus(long orderId, Status status) {
-        Order order = orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
         order.setOrderStatus(status);
         order = orderRepository.save(order);
 

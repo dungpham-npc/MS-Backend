@@ -33,8 +33,10 @@ public enum ErrorCode {
     CART_NOT_FOUND(24, "Shopping cart not found"),
     PRODUCT_NOT_FOUND_IN_CART(25, "Product not found in shopping cart"),
     INSUFFICIENT_STOCK(26, "Insufficient stock for the product"),
-    INVALID_QUANTITY(27, "Quantity must be greater than 0");
+    INVALID_QUANTITY(27, "Quantity must be greater than 0"),
     //Checkout to Order Code
+    ORDER_NOT_FOUND(28, "Order not found"),
+    ORDER_NOT_COMPLETE_TRANSFER(29, "Oder is not complete purchase or checkout");
 
 
 
