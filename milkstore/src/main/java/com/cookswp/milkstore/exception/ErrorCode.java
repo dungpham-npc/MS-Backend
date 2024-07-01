@@ -28,7 +28,19 @@ public enum ErrorCode {
     PRODUCT_NOT_FOUND(20, "Product not found"),
     PRODUCT_LIST_NOT_FOUND(21, "Product list empty"),
     PRODUCT_ID_NOT_FOUND(22, "Product ID not exists"),
-    MANU_DATE_CAN_NOT_BEFORE_EXPI_DATE(23, "Manufacturing date can not before expiration date");
+    MANU_DATE_CAN_NOT_BEFORE_EXPI_DATE(23, "Manufacturing date can not before expiration date"),
+    //ADD TO CART ERROR CODE
+    CART_NOT_FOUND(24, "Shopping cart not found"),
+    PRODUCT_NOT_FOUND_IN_CART(25, "Product not found in shopping cart"),
+    INSUFFICIENT_STOCK(26, "Insufficient stock for the product"),
+    INVALID_QUANTITY(27, "Quantity must be greater than 0"),
+    //Checkout to Order Code
+    ORDER_NOT_FOUND(28, "Order not found"),
+    ORDER_NOT_COMPLETE_TRANSFER(29, "Oder is not complete purchase or checkout");
+
+
+
+
 
     private final int code;
     private final String message;

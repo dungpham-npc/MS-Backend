@@ -1,104 +1,159 @@
 package com.cookswp.milkstore.service.order;
 
+import com.cookswp.milkstore.enums.PaymentStatus;
 import com.cookswp.milkstore.enums.Status;
+import com.cookswp.milkstore.exception.AppException;
+import com.cookswp.milkstore.exception.ErrorCode;
 import com.cookswp.milkstore.pojo.dtos.OrderModel.OrderDTO;
-import com.cookswp.milkstore.pojo.entities.Order;
-import com.cookswp.milkstore.pojo.entities.ShoppingCart;
-import com.cookswp.milkstore.pojo.entities.ShoppingCartItem;
+import com.cookswp.milkstore.pojo.dtos.PaymentModel.PaymentDTO;
+import com.cookswp.milkstore.pojo.entities.*;
 import com.cookswp.milkstore.repository.order.OrderRepository;
+import com.cookswp.milkstore.repository.shoppingCart.ShoppingCartRepository;
 import com.cookswp.milkstore.repository.shoppingCartItem.ShoppingCartItemRepository;
+import com.cookswp.milkstore.repository.transactionLog.TransactionLogRepository;
 import com.cookswp.milkstore.service.product.ProductService;
 import com.cookswp.milkstore.service.shoppingcart.ShoppingCartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class OrderService  implements IOrderService{
-    @Autowired
-    private OrderRepository orderRepository;
+public class OrderService implements IOrderService {
+
+    private final OrderRepository orderRepository;
+
+    private final ShoppingCartService shoppingCartService;
+
+    private final ProductService productService;
+
+    private final ShoppingCartItemRepository shoppingCartItemRepository;
+
+    private final TransactionLogRepository transactionLogRepository;
+
+//    private final ShoppingCartRepository shoppingCartRepository;
+
+//    private final ShoppingCart cart;
+
+    private Order order = null;
 
     @Autowired
-    private ShoppingCartService shoppingCartService;
-
-    @Autowired
-    private ProductService productService;
-
-    @Autowired
-    private ShoppingCartItemRepository shoppingCartItemRepository;
-
-    @Override
-    public List<OrderDTO> getAllOrders() {
-        return orderRepository.findAll().stream().map(this::toOrderDTO).collect(Collectors.toList());
+    public OrderService(OrderRepository orderRepository, ShoppingCartService shoppingCartService, ProductService productService, ShoppingCartItemRepository shoppingCartItemRepository, TransactionLogRepository transactionLogRepository) {
+        this.orderRepository = orderRepository;
+        this.shoppingCartService = shoppingCartService;
+        this.productService = productService;
+        this.shoppingCartItemRepository = shoppingCartItemRepository;
+        this.transactionLogRepository = transactionLogRepository;
     }
 
-    //Change Order Entity to OrderDTO
+
+    @Override
+    public List<Order> getAllOrders() {
+        return orderRepository.findAll();
+    }
+
+
+    @Override
+    @Transactional
+    public Order createOrder(OrderDTO orderDTO) {
+        Status status = orderDTO.getStatus();
+        if (status == Status.PAID) {
+            Order order = new Order();
+            order.setUserId(orderDTO.getUserId());
+            order.setOrderStatus(orderDTO.getStatus());
+            order.setTotalPrice(orderDTO.getTotalPrice());
+            order.setOrderDate(orderDTO.getOrderDate());
+            order.setShippingAddress(orderDTO.getShippingAddress());
+            return orderRepository.save(order);
+        } else if (status == Status.IN_CHECKOUT) {
+            throw new RuntimeException(PaymentStatus.PendingPayment + "In payment time");
+        } else {
+            throw new RuntimeException(PaymentStatus.Failed + "Payment not complete");
+        }
+    }
+
+
+    @Override
+    @Transactional
+    public Order updateOrder(long orderId, OrderDTO orderDTO) {
+        Order findOrder = orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
+        findOrder.setUserId(orderDTO.getUserId());
+        findOrder.setOrderDate(orderDTO.getOrderDate());
+
+        findOrder.setTotalPrice(orderDTO.getTotalPrice());
+        findOrder.setShippingAddress(orderDTO.getShippingAddress());
+        return orderRepository.save(findOrder);
+    }
+
+    @Override
+    @Transactional
+    public void deleteOrder(long orderId) {
+        orderRepository.deleteById(orderId);
+    }
+
+    @Override
+    @Transactional
+    public OrderDTO updateOrderStatus(long orderId, Status status) {
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
+        order.setOrderStatus(status);
+        order = orderRepository.save(order);
+
+        // Reduce product quantity when order status is set
+        if (status == Status.PAID) {
+            reduceProductQuantity(order.getId());
+        }
+
+        // Check Delivery Status
+        if (status == Status.IN_DELIVERY) {
+
+        } else {
+            throw new RuntimeException(Status.CANNOT_DELIVER + "Reason");
+        }
+
+        return toOrderDTO(order);
+    }
+
+    @Override
+    public List<Order> getAll() {
+        return orderRepository.findAll();
+    }
+
+    // Reduce product quantity for a given order
+    private void reduceProductQuantity(long orderId) {
+        List<ShoppingCartItem> cartItems = shoppingCartItemRepository.findById(orderId);
+
+        for (ShoppingCartItem item : cartItems) {
+            productService.reduceQuantityProduct(item.getProduct().getProductID(), item.getQuantity());
+        }
+    }
+
+    @Override
+    public Order getOrderById(long orderId) {
+        return orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
+    }
+
+
+    // Convert Order Entity to OrderDTO
     private OrderDTO toOrderDTO(Order order) {
         OrderDTO orderDTO = new OrderDTO();
-//        orderDTO.setId(order.getId());
-        orderDTO.setUserId(orderDTO.getUserId());
+        orderDTO.setUserId(order.getUserId());
         orderDTO.setStatus(order.getOrderStatus());
         orderDTO.setTotalPrice(order.getTotalPrice());
         orderDTO.setOrderDate(order.getOrderDate());
         orderDTO.setShippingAddress(order.getShippingAddress());
         return orderDTO;
-
     }
 
-    //Change OrderDTO to Order entity
+    // Convert OrderDTO to Order entity
     private Order toOrderEntity(OrderDTO orderDTO) {
         Order order = new Order();
-//        order.setId(orderDTO.getId());
-        order.setUserId(order.getUserId());
+        order.setUserId(orderDTO.getUserId());
         order.setOrderStatus(orderDTO.getStatus());
         order.setTotalPrice(orderDTO.getTotalPrice());
         order.setOrderDate(orderDTO.getOrderDate());
         order.setShippingAddress(orderDTO.getShippingAddress());
         return order;
     }
-
-    @Override
-    public OrderDTO getOrderById(int orderId) {
-        Order order = orderRepository.findById((long) orderId).orElseThrow(() -> new RuntimeException("Order not found"));
-        return (OrderDTO) toOrderDTO(order);
-    }
-
-    @Override
-    public OrderDTO createOrder(OrderDTO orderDTO) {
-        Order order = toOrderEntity(orderDTO);
-        order.setOrderStatus(Status.IN_CART); //Trien khai status In_Cart o day de xac dinh trang thai van con la product list
-        order = orderRepository.save(order);
-        return  toOrderDTO(order);
-    }
-
-    @Override
-    public OrderDTO updateOrder(int orderId, OrderDTO orderDTO) {
-        Order existingOrder = orderRepository.findById((long) orderId).orElseThrow(() -> new RuntimeException("Order not found"));
-        existingOrder.setUserId(existingOrder.getUserId());
-        existingOrder.setOrderStatus(orderDTO.getStatus());
-        existingOrder.setTotalPrice(orderDTO.getTotalPrice());
-        existingOrder.setShippingAddress(orderDTO.getShippingAddress());
-        existingOrder = orderRepository.save(existingOrder);
-        return (OrderDTO) toOrderDTO(existingOrder);
-    }
-
-    @Override
-    public void deleteOrder(int orderId) {
-        orderRepository.deleteById((long) orderId);
-    }
-
-    @Override
-    public OrderDTO updateOrderStatus(long orderId, Status status) {
-        Order order = orderRepository.findById((long) orderId).orElseThrow(() -> new RuntimeException("Order not found"));
-        order.setOrderStatus(status);
-        order = orderRepository.save(order);
-        return (OrderDTO) toOrderDTO(order);
-    }
-
-//    public void reduceQuantity(Order order) {
-//        ShoppingCart cart = order.
-//    }
-
 }

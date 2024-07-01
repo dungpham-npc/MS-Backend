@@ -5,6 +5,7 @@ import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -28,14 +29,13 @@ public class ProductDTO {
     @NotNull(message = "Product description can not be null")
     private String productDescription;
 
-    @NotNull(message = "Image can not be null")
-    private String productImage;
-
     @NotNull(message = "Manufacturing date can not be null")
+    @DateTimeFormat(pattern = "dd-MM-yyyy")
     @JsonFormat(pattern = "dd-MM-yyyy")
     private Date manuDate;
 
     @NotNull(message = "Expiration date can not be null")
+    @DateTimeFormat(pattern = "dd-MM-yyyy")
     @JsonFormat(pattern = "dd-MM-yyyy")
     private Date expiDate;
 

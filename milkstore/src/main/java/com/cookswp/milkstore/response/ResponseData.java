@@ -16,6 +16,6 @@ public class ResponseData<T> {
 
     String message;
 
-    T data;
+    T result;
 
 }

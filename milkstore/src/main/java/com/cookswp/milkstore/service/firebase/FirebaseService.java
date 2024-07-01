@@ -22,14 +22,14 @@ import java.util.UUID;
 public class FirebaseService {
 
     private String uploadFile(File file, String fileName) throws IOException {
-        BlobId blobId = BlobId.of("swp-demo-9a030.appspot.com", fileName); // Replace with your bucker name
+        BlobId blobId = BlobId.of("firebase-service-427505.appspot.com", fileName);
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("media").build();
-        InputStream inputStream = FirebaseService.class.getClassLoader().getResourceAsStream("firebase-private-key.json"); // change the file name with your one
+        InputStream inputStream = FirebaseService.class.getClassLoader().getResourceAsStream("firebase-private-key.json");
         Credentials credentials = GoogleCredentials.fromStream(inputStream);
         Storage storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
         storage.create(blobInfo, Files.readAllBytes(file.toPath()));
 
-        String DOWNLOAD_URL = "https://firebasestorage.googleapis.com/v0/b/swp-demo-9a030.appspot.com/o/%s?alt=media";
+        String DOWNLOAD_URL = "https://firebasestorage.googleapis.com/v0/b/firebase-service-427505.appspot.com/o/%s?alt=media";
         return String.format(DOWNLOAD_URL, URLEncoder.encode(fileName, StandardCharsets.UTF_8));
     }
 

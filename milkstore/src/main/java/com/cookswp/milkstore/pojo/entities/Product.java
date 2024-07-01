@@ -57,7 +57,4 @@ public class Product implements Serializable {
     public boolean dateBefore(Date manuDate, Date expiDate){
         return manuDate.before(expiDate);
     }
-
-
-
 }
