@@ -32,7 +32,7 @@ public class VNPayServiceImpl implements VNPayService {
         this.transactionLogRepository = transactionLogRepository;
     }
 
-    public PaymentDTO.VNPayResponse createVNPayPayment(HttpServletRequest request) {
+    public PaymentDTO createVNPayPayment(HttpServletRequest request) {
         long amount = Integer.parseInt(request.getParameter("amount")) * 100L;
         String bankCode = request.getParameter("bankCode");
         Map<String, String> vnpParamsMap = vnPayConfig.getVNPayConfig();
@@ -47,18 +47,18 @@ public class VNPayServiceImpl implements VNPayService {
         String vnpSecureHash = VNPayUtil.hmacSHA512(vnPayConfig.getSecretKey(), hashData);
         queryUrl += "&vnp_SecureHash=" + vnpSecureHash;
         String paymentUrl = vnPayConfig.getVnp_PayUrl() + "?" + queryUrl;
-        return PaymentDTO.VNPayResponse.builder()
+        return PaymentDTO.builder()
                 .code("ok")
                 .message("success")
                 .paymentUrl(paymentUrl)
                 .build();
     }
 
-    public PaymentDTO.VNPayResponse responseVNPay(HttpServletRequest request) {
+    public PaymentDTO responseVNPay(HttpServletRequest request) {
         String responseCode = request.getParameter("vnp_ResponseCode");
-        PaymentDTO.VNPayResponse callBack = null;
+        PaymentDTO callBack = null;
         if (responseCode.equals("00")) {
-            callBack = PaymentDTO.VNPayResponse.builder()
+            callBack = PaymentDTO.builder()
                     .code("00")
                     .message("Giao dịch thành công")
                     .paymentUrl("")

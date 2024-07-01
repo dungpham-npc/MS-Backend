@@ -443,7 +443,9 @@
 //        // Giả lập rằng sản phẩm với ID 1 không tồn tại trong hệ thống
 //        when(productRepository.getProductById(1)).thenReturn(null);
 //
+//        // Kiểm tra rằng ngoại lệ AppException sẽ được ném ra khi cập nhật sản phẩm với ID không tồn tại
 //        AppException exception = assertThrows(AppException.class, () -> {
+////            productService.getProductById(1);
 //            productService.updateProduct(1, ProductDTO.builder()
 //                    .productName("name")
 //                    .productDescription("description")
@@ -455,7 +457,11 @@
 //                    .build());
 //        });
 //
+//        // Kiểm tra msg của ngoại lệ
+//        //Con mẹ m tại sao ko dùng OOP cho nhanh đi còn ngồi check thống qua string rồi bắt làm gì cho cực z ?????
 //        assertEquals(ErrorCode.PRODUCT_NOT_FOUND.getMessage(), exception.getMessage());
+////      assertEquals("Product ID not exists", exception.getMessage());
+//
 //    }
 //    //Happy case về phần check Product tồn tại trong hệ thống
 //    @Test

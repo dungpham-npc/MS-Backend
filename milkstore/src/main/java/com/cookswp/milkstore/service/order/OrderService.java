@@ -6,13 +6,11 @@ import com.cookswp.milkstore.exception.AppException;
 import com.cookswp.milkstore.exception.ErrorCode;
 import com.cookswp.milkstore.pojo.dtos.OrderModel.OrderDTO;
 import com.cookswp.milkstore.pojo.dtos.PaymentModel.PaymentDTO;
-import com.cookswp.milkstore.pojo.entities.Order;
-import com.cookswp.milkstore.pojo.entities.Payment;
-import com.cookswp.milkstore.pojo.entities.ShoppingCart;
-import com.cookswp.milkstore.pojo.entities.ShoppingCartItem;
+import com.cookswp.milkstore.pojo.entities.*;
 import com.cookswp.milkstore.repository.order.OrderRepository;
 import com.cookswp.milkstore.repository.shoppingCart.ShoppingCartRepository;
 import com.cookswp.milkstore.repository.shoppingCartItem.ShoppingCartItemRepository;
+import com.cookswp.milkstore.repository.transactionLog.TransactionLogRepository;
 import com.cookswp.milkstore.service.product.ProductService;
 import com.cookswp.milkstore.service.shoppingcart.ShoppingCartService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,19 +31,21 @@ public class OrderService implements IOrderService {
 
     private final ShoppingCartItemRepository shoppingCartItemRepository;
 
+    private final TransactionLogRepository transactionLogRepository;
+
 //    private final ShoppingCartRepository shoppingCartRepository;
 
 //    private final ShoppingCart cart;
 
     private Order order = null;
 
-    public OrderService(OrderRepository orderRepository, ShoppingCartService shoppingCartService, ProductService productService, ShoppingCartItemRepository shoppingCartItemRepository) {
+    @Autowired
+    public OrderService(OrderRepository orderRepository, ShoppingCartService shoppingCartService, ProductService productService, ShoppingCartItemRepository shoppingCartItemRepository, TransactionLogRepository transactionLogRepository) {
         this.orderRepository = orderRepository;
         this.shoppingCartService = shoppingCartService;
         this.productService = productService;
         this.shoppingCartItemRepository = shoppingCartItemRepository;
-//        this.shoppingCartRepository = shoppingCartRepository;
-//        this.cart = cart;
+        this.transactionLogRepository = transactionLogRepository;
     }
 
 
@@ -59,7 +59,6 @@ public class OrderService implements IOrderService {
     @Transactional
     public Order createOrder(OrderDTO orderDTO) {
         Status status = orderDTO.getStatus();
-
         if (status == Status.PAID) {
             Order order = new Order();
             order.setUserId(orderDTO.getUserId());
@@ -79,7 +78,7 @@ public class OrderService implements IOrderService {
     @Override
     @Transactional
     public Order updateOrder(long orderId, OrderDTO orderDTO) {
-        Order findOrder = orderRepository.findById(orderId).orElseThrow(()-> new RuntimeException("Order not found"));
+        Order findOrder = orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
         findOrder.setUserId(orderDTO.getUserId());
         findOrder.setOrderDate(orderDTO.getOrderDate());
 
@@ -132,10 +131,8 @@ public class OrderService implements IOrderService {
 
     @Override
     public Order getOrderById(long orderId) {
-        return  orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
+        return orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
     }
-
-
 
 
     // Convert Order Entity to OrderDTO

@@ -8,9 +8,9 @@ import java.text.ParseException;
 
 public interface VNPayService {
 
-    public PaymentDTO.VNPayResponse createVNPayPayment(HttpServletRequest request);
+    public PaymentDTO createVNPayPayment(HttpServletRequest request);
 
     public void saveBillVNPayPayment(HttpServletRequest request) throws ParseException;
 
-    public PaymentDTO.VNPayResponse responseVNPay(HttpServletRequest request);
+    public PaymentDTO responseVNPay(HttpServletRequest request);
 }
