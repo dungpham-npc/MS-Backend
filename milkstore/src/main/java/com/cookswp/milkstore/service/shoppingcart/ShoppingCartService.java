@@ -55,6 +55,7 @@ public class ShoppingCartService implements IShoppingCartService {
         return List.of(showCartModelDTO);
     }
 
+
     @Override
     @Transactional
     public ShoppingCart addToCart(AddToCartDTO addToCartDTO, int userId) {
@@ -68,6 +69,7 @@ public class ShoppingCartService implements IShoppingCartService {
         Product product = productRepository.findById(addToCartDTO.getProduct_id())
                 .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
 
+        // Sử dụng stream để kiểm tra và xử lý sản phẩm trong giỏ hàng
         Optional<ShoppingCartItem> existingItemOpt = cart.getItems().stream()
                 .filter(item -> item.getProduct().getProductID() == product.getProductID())
                 .findFirst();
@@ -82,41 +84,77 @@ public class ShoppingCartService implements IShoppingCartService {
             newItem.setProduct(product);
             newItem.setQuantity(addToCartDTO.getQuantity());
             shoppingCartItemRepository.save(newItem);
+            cart.getItems().add(newItem);
         }
 
-        return cart;
-    }
-
-    @Override
-    @Transactional
-    public ShoppingCart deleteToCart(int cartId, int userId) {
-        ShoppingCart cart = shoppingCartRepository.findByIdAndUserId(cartId, userId).orElseThrow(() -> new AppException(ErrorCode.CART_NOT_FOUND));
-        ShoppingCartItem item = shoppingCartItemRepository.findById(cartId).stream().findFirst().orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
-        cart.getItems().remove(item);
-        shoppingCartItemRepository.delete(item);
         return shoppingCartRepository.save(cart);
     }
 
-    @Override
-    @Transactional
-    public ShoppingCart updateItem(UpdateToCartDTO updateToCartDTO, int cartId, int userId) {
-        ShoppingCart cart = shoppingCartRepository.findByIdAndUserId(cartId, userId)
-                .orElseThrow(() -> new AppException(ErrorCode.CART_NOT_FOUND));
 
-        ShoppingCartItem item = cart.getItems().stream()
-                .filter(shoppingCartItem -> shoppingCartItem.getProduct().getProductID() == updateToCartDTO.getProduct_id())
-                .findFirst()
-                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND_IN_CART));
+//    @Override
+//    @Transactional
+//    public ShoppingCart addToCart(AddToCartDTO addToCartDTO, int userId) {
+//        ShoppingCart cart = shoppingCartRepository.findByUserId(userId)
+//                .orElseGet(() -> {
+//                    ShoppingCart newCart = new ShoppingCart();
+//                    newCart.setUserId(userId);
+//                    return shoppingCartRepository.save(newCart);
+//                });
+//
+//        Product product = productRepository.findById(addToCartDTO.getProduct_id())
+//                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
+//
+//        Optional<ShoppingCartItem> existingItemOpt = cart.getItems().stream()
+//                .filter(item -> item.getProduct().getProductID() == product.getProductID())
+//                .findFirst();
+//
+//        ShoppingCartItem existingItem;
+//        if (existingItemOpt.isPresent()) {
+//            existingItem = existingItemOpt.get();
+//            existingItem.setQuantity(existingItem.getQuantity() + addToCartDTO.getQuantity());
+//            shoppingCartItemRepository.save(existingItem);
+//        } else {
+//            ShoppingCartItem newItem = new ShoppingCartItem();
+//            newItem.setShoppingCart(cart);
+//            newItem.setProduct(product);
+//            newItem.setQuantity(addToCartDTO.getQuantity());
+//            shoppingCartItemRepository.save(newItem);
+//            shoppingCartItemRepository.save(newItem);
+//            }
+//        return cart;
+//        }
 
-        item.setQuantity(updateToCartDTO.getQuantity());
-        shoppingCartItemRepository.save(item);
 
-        return cart;
+        @Override
+        @Transactional
+        public ShoppingCart deleteToCart ( int cartId, int userId){
+            ShoppingCart cart = shoppingCartRepository.findByIdAndUserId(cartId, userId).orElseThrow(() -> new AppException(ErrorCode.CART_NOT_FOUND));
+            ShoppingCartItem item = shoppingCartItemRepository.findById(cartId).stream().findFirst().orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
+            cart.getItems().remove(item);
+            shoppingCartItemRepository.delete(item);
+            return shoppingCartRepository.save(cart);
+        }
+
+        @Override
+        @Transactional
+        public ShoppingCart updateItem (UpdateToCartDTO updateToCartDTO,int cartId, int userId){
+            ShoppingCart cart = shoppingCartRepository.findByIdAndUserId(cartId, userId)
+                    .orElseThrow(() -> new AppException(ErrorCode.CART_NOT_FOUND));
+
+            ShoppingCartItem item = cart.getItems().stream()
+                    .filter(shoppingCartItem -> shoppingCartItem.getProduct().getProductID() == updateToCartDTO.getProduct_id())
+                    .findFirst()
+                    .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND_IN_CART));
+
+            item.setQuantity(updateToCartDTO.getQuantity());
+            shoppingCartItemRepository.save(item);
+
+            return cart;
+        }
+
+
+        public void updateCartStatus (ShoppingCart cart, Status status){
+            cart.setStatus(status);
+            shoppingCartRepository.save(cart);
+        }
     }
-
-
-    public void updateCartStatus(ShoppingCart cart, Status status) {
-        cart.setStatus(status);
-        shoppingCartRepository.save(cart);
-    }
-}
