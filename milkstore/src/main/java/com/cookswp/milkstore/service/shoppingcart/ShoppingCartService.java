@@ -151,7 +151,7 @@ public class ShoppingCartService implements IShoppingCartService {
 
     @Override
     @Transactional
-    public ShoppingCart deleteToCart(int cartId, int userId, int itemId) {
+    public ShoppingCart deleteItemFromCart(int cartId, int userId, int itemId) {
 
         ShoppingCart cart = shoppingCartRepository.findByIdAndUserId(cartId, userId)
                 .orElseThrow(() -> new AppException(ErrorCode.CART_NOT_FOUND));

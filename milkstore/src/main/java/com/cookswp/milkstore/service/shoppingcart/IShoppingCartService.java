@@ -12,7 +12,7 @@ public interface IShoppingCartService {
 
     ShoppingCart addToCart(AddToCartDTO addToCartDTO, int userId);
 
-    ShoppingCart deleteToCart (int cartId, int userId, int itemId);
+    ShoppingCart deleteItemFromCart(int cartId, int userId, int itemId);
 
     ShoppingCart updateItem(UpdateToCartDTO updateToCartDTO, int cartId, int userId);
 

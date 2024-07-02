@@ -103,7 +103,15 @@
       <option name="project" value="LOCAL" />
       <updated>1719900352897</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="fix deleteToCart Function with add new param is itemId in the nutshell and comple delete the product by productId in Cart with all its quantity">
+      <option name="closed" value="true" />
+      <created>1719906727065</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1719906727065</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -111,7 +119,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="update addToCart function can show the product info in the first time add not become a bug like before" />
-    <option name="LAST_COMMIT_MESSAGE" value="update addToCart function can show the product info in the first time add not become a bug like before" />
+    <MESSAGE value="fix deleteToCart Function with add new param is itemId in the nutshell and comple delete the product by productId in Cart with all its quantity" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix deleteToCart Function with add new param is itemId in the nutshell and comple delete the product by productId in Cart with all its quantity" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
