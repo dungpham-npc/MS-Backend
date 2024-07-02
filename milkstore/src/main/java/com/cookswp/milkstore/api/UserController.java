@@ -36,12 +36,12 @@ public class UserController {
 
     @GetMapping("/staffs")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseData<List<UserDTO>> getStaffList(){
+    public ResponseData<List<UserRegistrationDTO>> getStaffList(){
         AuthorizationUtils.checkAuthorization("ADMIN");
         return new ResponseData<>(HttpStatus.OK.value(),
                 "List retrieved successfully!",
                 userService.getInternalUserList().stream()
-                        .map(user -> mapper.map(user, UserDTO.class))
+                        .map(user -> mapper.map(user, UserRegistrationDTO.class))
                         .toList());
     }
 
