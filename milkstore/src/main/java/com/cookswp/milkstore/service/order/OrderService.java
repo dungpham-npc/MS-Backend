@@ -4,22 +4,26 @@ import com.cookswp.milkstore.enums.PaymentStatus;
 import com.cookswp.milkstore.enums.Status;
 import com.cookswp.milkstore.exception.AppException;
 import com.cookswp.milkstore.exception.ErrorCode;
+import com.cookswp.milkstore.pojo.dtos.OrderModel.CreateOrderRequest;
 import com.cookswp.milkstore.pojo.dtos.OrderModel.OrderDTO;
 import com.cookswp.milkstore.pojo.dtos.PaymentModel.PaymentDTO;
-import com.cookswp.milkstore.pojo.entities.Order;
-import com.cookswp.milkstore.pojo.entities.Payment;
-import com.cookswp.milkstore.pojo.entities.ShoppingCart;
-import com.cookswp.milkstore.pojo.entities.ShoppingCartItem;
+import com.cookswp.milkstore.pojo.entities.*;
 import com.cookswp.milkstore.repository.order.OrderRepository;
 import com.cookswp.milkstore.repository.shoppingCart.ShoppingCartRepository;
 import com.cookswp.milkstore.repository.shoppingCartItem.ShoppingCartItemRepository;
+import com.cookswp.milkstore.repository.transactionLog.TransactionLogRepository;
+import com.cookswp.milkstore.repository.user.UserRepository;
 import com.cookswp.milkstore.service.product.ProductService;
 import com.cookswp.milkstore.service.shoppingcart.ShoppingCartService;
+import com.cookswp.milkstore.service.transactionLog.TransactionLogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,25 +31,21 @@ public class OrderService implements IOrderService {
 
     private final OrderRepository orderRepository;
 
-    private final ShoppingCartService shoppingCartService;
-
     private final ProductService productService;
 
     private final ShoppingCartItemRepository shoppingCartItemRepository;
 
-//    private final ShoppingCartRepository shoppingCartRepository;
+    private final TransactionLogRepository transactionLogRepository;
 
-//    private final ShoppingCart cart;
+    private final UserRepository userRepository;
 
-    private Order order = null;
-
-    public OrderService(OrderRepository orderRepository, ShoppingCartService shoppingCartService, ProductService productService, ShoppingCartItemRepository shoppingCartItemRepository) {
+    @Autowired
+    public OrderService(OrderRepository orderRepository, ProductService productService, ShoppingCartItemRepository shoppingCartItemRepository, TransactionLogRepository transactionLogRepository, UserRepository userRepository) {
         this.orderRepository = orderRepository;
-        this.shoppingCartService = shoppingCartService;
         this.productService = productService;
         this.shoppingCartItemRepository = shoppingCartItemRepository;
-//        this.shoppingCartRepository = shoppingCartRepository;
-//        this.cart = cart;
+        this.transactionLogRepository = transactionLogRepository;
+        this.userRepository = userRepository;
     }
 
 
@@ -55,31 +55,45 @@ public class OrderService implements IOrderService {
     }
 
 
+    //Tạo order dựa trên userID của người dùng
     @Override
     @Transactional
-    public Order createOrder(OrderDTO orderDTO) {
-        Status status = orderDTO.getStatus();
-
-        if (status == Status.PAID) {
-            Order order = new Order();
-            order.setUserId(orderDTO.getUserId());
-            order.setOrderStatus(orderDTO.getStatus());
-            order.setTotalPrice(orderDTO.getTotalPrice());
-            order.setOrderDate(orderDTO.getOrderDate());
-            order.setShippingAddress(orderDTO.getShippingAddress());
-            return orderRepository.save(order);
-        } else if (status == Status.IN_CHECKOUT) {
-            throw new RuntimeException(PaymentStatus.PendingPayment + "In payment time");
-        } else {
-            throw new RuntimeException(PaymentStatus.Failed + "Payment not complete");
+    public Order createOrder(int userID, CreateOrderRequest orderDTO) {
+        User user = userRepository.findByUserId(userID);
+        if (user == null) {
+            throw new RuntimeException("User not found");
         }
+        Order order = new Order();
+        UUID id = UUID.randomUUID();
+        order.setId(id.toString());
+        order.setUserId(userID);
+        order.setOrderStatus(Status.IN_CART);
+        order.setTotalPrice(orderDTO.getTotalPrice());
+        order.setOrderDate(LocalDateTime.now());
+        order.setShippingAddress(orderDTO.getShippingAddress());
+        return orderRepository.save(order);
     }
 
+    //Status status = orderDTO.getStatus();
+    //        if (status == Status.PAID) {
+    //            Order order = new Order();
+    //            order.setUserId(orderDTO.getUserId());
+    //            order.setOrderStatus(orderDTO.getStatus());
+    //            order.setTotalPrice(orderDTO.getTotalPrice());
+    //            order.setOrderDate(orderDTO.getOrderDate());
+    //            order.setShippingAddress(orderDTO.getShippingAddress());
+    //            return orderRepository.save(order);
+    //        } else if (orderDTO.getStatus() == Status.IN_CHECKOUT) {
+    //            throw new RuntimeException(PaymentStatus.PendingPayment + "In payment time");
+    //        } else {
+    //            throw new RuntimeException(PaymentStatus.Failed + "Payment not complete");
+    //        }
+
 
     @Override
     @Transactional
-    public Order updateOrder(long orderId, OrderDTO orderDTO) {
-        Order findOrder = orderRepository.findById(orderId).orElseThrow(()-> new RuntimeException("Order not found"));
+    public Order updateOrder(String orderId, OrderDTO orderDTO) {
+        Order findOrder = orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
         findOrder.setUserId(orderDTO.getUserId());
         findOrder.setOrderDate(orderDTO.getOrderDate());
 
@@ -90,36 +104,47 @@ public class OrderService implements IOrderService {
 
     @Override
     @Transactional
-    public void deleteOrder(long orderId) {
+    public void deleteOrder(String orderId) {
         orderRepository.deleteById(orderId);
     }
 
     @Override
-    @Transactional
-    public OrderDTO updateOrderStatus(long orderId, Status status) {
-        Order order = orderRepository.findById(orderId).orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
-        order.setOrderStatus(status);
-        order = orderRepository.save(order);
-
-        // Reduce product quantity when order status is set
-        if (status == Status.PAID) {
-            reduceProductQuantity(order.getId());
+    public Order updateOrderStatus(String orderID) {
+        Optional<Order> findOrder = orderRepository.findById(orderID);
+        if (findOrder.isEmpty()) {
+            return null;
         }
-
-        // Check Delivery Status
-        if (status == Status.IN_DELIVERY) {
-
-        } else {
-            throw new RuntimeException(Status.CANNOT_DELIVER + "Reason");
+        Order order = findOrder.get();
+        String statusCode = transactionLogRepository.findTransactionNoByTxnRef(orderID);
+        if ("00".equals(statusCode)) {
+            order.setOrderStatus(Status.PAID);
         }
-
-        return toOrderDTO(order);
+        orderRepository.save(order);
+        return order;
     }
+
+
+    //Order order = orderRepository.findById(orderId).orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
+    //        order.setOrderStatus(status);
+    //        order = orderRepository.save(order);
+    //
+    //        // Reduce product quantity when order status is set
+    //        if (status == Status.PAID) {
+    //            reduceProductQuantity(order.getUserId());
+    //        }
+    //
+    //        // Check Delivery Status
+    //        if (status == Status.IN_DELIVERY) {
+    //
+    //        } else {
+    //            throw new RuntimeException(Status.CANNOT_DELIVER + "Reason");
+    //        }
 
     @Override
     public List<Order> getAll() {
         return orderRepository.findAll();
     }
+
 
     // Reduce product quantity for a given order
     private void reduceProductQuantity(long orderId) {
@@ -131,11 +156,9 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public Order getOrderById(long orderId) {
-        return  orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
+    public Order getOrderById(String id) {
+        return orderRepository.findById(id).orElseThrow(() -> new RuntimeException("Order not found"));
     }
-
-
 
 
     // Convert Order Entity to OrderDTO

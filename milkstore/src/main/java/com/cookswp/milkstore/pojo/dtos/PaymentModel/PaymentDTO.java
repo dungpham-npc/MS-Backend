@@ -1,12 +1,14 @@
 package com.cookswp.milkstore.pojo.dtos.PaymentModel;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 
-public abstract class PaymentDTO {
-    @Builder
-    public static class VNPayResponse {
-        public String code;
-        public String message;
-        public String paymentUrl;
-    }
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@Builder
+public class PaymentDTO {
+    public String code;
+    public String message;
+    public int userID;
+    public String paymentUrl;
 }

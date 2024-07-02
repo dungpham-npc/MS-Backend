@@ -1,6 +1,7 @@
 package com.cookswp.milkstore.service.vnpay;
 
 import com.cookswp.milkstore.pojo.dtos.PaymentModel.PaymentDTO;
+import com.cookswp.milkstore.pojo.dtos.PaymentModel.RequestPayment;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
 
@@ -8,9 +9,7 @@ import java.text.ParseException;
 
 public interface VNPayService {
 
-    public PaymentDTO.VNPayResponse createVNPayPayment(HttpServletRequest request);
+    public PaymentDTO createVNPayPayment(RequestPayment requestPayment, String orderID) throws ParseException;
 
-    public void saveBillVNPayPayment(HttpServletRequest request) throws ParseException;
-
-    public PaymentDTO.VNPayResponse responseVNPay(HttpServletRequest request);
+    public PaymentDTO saveBillVNPayPayment(HttpServletRequest request) throws ParseException;
 }

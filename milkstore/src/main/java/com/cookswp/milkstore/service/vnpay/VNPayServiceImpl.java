@@ -2,97 +2,117 @@ package com.cookswp.milkstore.service.vnpay;
 
 import com.cookswp.milkstore.configuration.VNPayConfig;
 import com.cookswp.milkstore.pojo.dtos.PaymentModel.PaymentDTO;
-import com.cookswp.milkstore.pojo.entities.Order;
+import com.cookswp.milkstore.pojo.dtos.PaymentModel.RequestPayment;
 import com.cookswp.milkstore.pojo.entities.TransactionLog;
+import com.cookswp.milkstore.pojo.entities.User;
 import com.cookswp.milkstore.repository.transactionLog.TransactionLogRepository;
-import com.cookswp.milkstore.service.order.IOrderService;
 import com.cookswp.milkstore.service.order.OrderService;
+import com.cookswp.milkstore.service.user.UserService;
 import com.cookswp.milkstore.utils.VNPayUtil;
-
-import java.text.SimpleDateFormat;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.text.DateFormat;
-import java.util.Date;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Service
 public class VNPayServiceImpl implements VNPayService {
 
-    private final VNPayConfig vnPayConfig;
+    @Value("${payment.vnPay.url}")
+    private String vnp_PayUrl;
+
+    @Value("${payment.vnPay.returnUrl}")
+    private String vnp_ReturnUrl;
+
+    @Value("${payment.vnPay.tmnCode}")
+    private String vnp_TmnCode;
+
+    @Value("${payment.vnPay.secretKey}")
+    private String secretKey;
+
+    @Value("${payment.vnPay.version}")
+    private String vnp_Version;
+
+    @Value("${payment.vnPay.command}")
+    private String vnp_Command;
+
+    @Value("${payment.vnPay.orderType}")
+    private String orderType;
 
     private final TransactionLogRepository transactionLogRepository;
+    private final OrderService orderService;
+
 
     @Autowired
-    public VNPayServiceImpl(VNPayConfig vnPayConfig, TransactionLogRepository transactionLogRepository) {
-        this.vnPayConfig = vnPayConfig;
+    public VNPayServiceImpl(TransactionLogRepository transactionLogRepository, OrderService orderService) {
         this.transactionLogRepository = transactionLogRepository;
+        this.orderService = orderService;
     }
 
-    public PaymentDTO.VNPayResponse createVNPayPayment(HttpServletRequest request) {
-        long amount = Integer.parseInt(request.getParameter("amount")) * 100L;
-        String bankCode = request.getParameter("bankCode");
-        Map<String, String> vnpParamsMap = vnPayConfig.getVNPayConfig();
+    @Override
+    public PaymentDTO createVNPayPayment(RequestPayment requestPayment, String orderID) {
+        long amount = requestPayment.getAmount() * 100L;
+        Map<String, String> vnpParamsMap = new HashMap<>();
+        vnpParamsMap.put("vnp_Version", this.vnp_Version);
+        vnpParamsMap.put("vnp_Command", this.vnp_Command);
+        vnpParamsMap.put("vnp_TmnCode", this.vnp_TmnCode);
+        vnpParamsMap.put("vnp_CurrCode", "VND");
+        vnpParamsMap.put("vnp_TxnRef", orderID);
+        vnpParamsMap.put("vnp_OrderInfo", "Thanh toan don hang:" + VNPayUtil.getRandomNumber(8));
+        vnpParamsMap.put("vnp_OrderType", this.orderType);
+        vnpParamsMap.put("vnp_Locale", "vn");
+        vnpParamsMap.put("vnp_ReturnUrl", this.vnp_ReturnUrl);
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+        String vnpCreateDate = formatter.format(calendar.getTime());
+        vnpParamsMap.put("vnp_CreateDate", vnpCreateDate);
+        calendar.add(Calendar.MINUTE, 15);
+        String vnp_ExpireDate = formatter.format(calendar.getTime());
+        vnpParamsMap.put("vnp_ExpireDate", vnp_ExpireDate);
         vnpParamsMap.put("vnp_Amount", String.valueOf(amount));
+        String bankCode = requestPayment.getBankCode();
         if (bankCode != null && !bankCode.isEmpty()) {
             vnpParamsMap.put("vnp_BankCode", bankCode);
         }
-        vnpParamsMap.put("vnp_IpAddr", VNPayUtil.getIpAddress(request));
+        vnpParamsMap.put("vnp_IpAddr", "0:0:0:0:0:0:0:1");
         //build query url
         String queryUrl = VNPayUtil.getPaymentURL(vnpParamsMap, true);
         String hashData = VNPayUtil.getPaymentURL(vnpParamsMap, false);
-        String vnpSecureHash = VNPayUtil.hmacSHA512(vnPayConfig.getSecretKey(), hashData);
+        String vnpSecureHash = VNPayUtil.hmacSHA512(secretKey, hashData);
         queryUrl += "&vnp_SecureHash=" + vnpSecureHash;
-        String paymentUrl = vnPayConfig.getVnp_PayUrl() + "?" + queryUrl;
-        return PaymentDTO.VNPayResponse.builder()
+        String paymentURL = vnp_PayUrl + "?" + queryUrl;
+        return PaymentDTO.builder()
                 .code("ok")
                 .message("success")
-                .paymentUrl(paymentUrl)
+                .paymentUrl(paymentURL)
                 .build();
     }
 
-    public PaymentDTO.VNPayResponse responseVNPay(HttpServletRequest request) {
-        String responseCode = request.getParameter("vnp_ResponseCode");
-        PaymentDTO.VNPayResponse callBack = null;
-        if (responseCode.equals("00")) {
-            callBack = PaymentDTO.VNPayResponse.builder()
-                    .code("00")
-                    .message("Giao dịch thành công")
-                    .paymentUrl("")
-                    .build();
-        }
-        return callBack;
-    }
-
-    public void saveBillVNPayPayment(HttpServletRequest request) {
+    @Override
+    public PaymentDTO saveBillVNPayPayment(HttpServletRequest request) {
         TransactionLog trans = TransactionLog.builder()
-                .order_id(1)
-                .amount(Long.valueOf(request.getParameter("vnp_Amount")))
+                .txnRef(request.getParameter("vnp_TxnRef"))
+                .amount(Long.parseLong(request.getParameter("vnp_Amount")))
                 .bankCode(request.getParameter("vnp_BankCode"))
                 .bankTranNo(request.getParameter("vnp_BankTranNo"))
                 .cardType(request.getParameter("vnp_CardType"))
                 .orderInfo(request.getParameter("vnp_OrderInfo"))
                 .responseCode(request.getParameter("vnp_ResponseCode"))
-                .payDate(convertPayDate(request.getParameter("vnp_PayDate")))
+                .payDate(VNPayUtil.convertPayDate(request.getParameter("vnp_PayDate")))
                 .transactionNo(request.getParameter("vnp_TransactionNo"))
                 .transactionStatus(request.getParameter("vnp_TransactionStatus"))
                 .build();
         transactionLogRepository.save(trans);
+        String responseCode = request.getParameter("vnp_ResponseCode");
+        String message = responseCode.equals("00") ? "Giao dịch thành công" : "Giao dịch thất bại";
+        orderService.updateOrderStatus(trans.getTxnRef());
+        return PaymentDTO.builder()
+                .code(responseCode)
+                .message(message)
+                .build();
     }
 
-    private String convertPayDate(String payDate) {
-        try {
-            DateFormat originalFormat = new SimpleDateFormat("yyyyMMddHHmmss");
-            Date date = originalFormat.parse(payDate);
-
-            DateFormat targetFormat = new SimpleDateFormat("dd-MM-yyyy");
-            return targetFormat.format(date);
-        } catch (Exception e) {
-            System.out.println("Error at convertPayDate");
-            return null;
-        }
-    }
 }

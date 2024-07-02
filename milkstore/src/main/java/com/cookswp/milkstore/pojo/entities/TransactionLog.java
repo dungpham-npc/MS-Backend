@@ -5,40 +5,51 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
-@FieldDefaults(level = AccessLevel.PRIVATE)
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
 @Builder
+@Entity
 @Table(name = "transaction_log")
 public class TransactionLog {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "transaction_id")
-    Long transaction_id;
-    @Column(name = "order_id", nullable = false)
-    int order_id;
+    private Long transactionId;
+
     @Column(name = "amount", nullable = false)
-    Long amount;
+    private long amount;
+
     @Column(name = "bank_code", nullable = false)
-    String bankCode;
+    private String bankCode;
+
     @Column(name = "bank_tran_no", nullable = false)
-    String bankTranNo;
+    private String bankTranNo;
+
     @Column(name = "cart_type", nullable = false)
-    String cardType;
+    private String cardType;
+
     @Column(name = "order_info", nullable = false)
-    String orderInfo;
+    private String orderInfo;
+
     @Column(name = "response_code", nullable = false)
-    String responseCode;
-    @Column(name= "pay_date", nullable = false)
-    String payDate;
+    private String responseCode;
+
+    @Column(name = "pay_date", nullable = false)
+    private String payDate;
+
     @Column(name = "transaction_no", nullable = false)
-    String transactionNo;
+    private String transactionNo;
+
     @Column(name = "transaction_status", nullable = false)
-    String transactionStatus;
+    private String transactionStatus;
 
+    @Column(name = "txn_ref", nullable = false, unique = true)
+    private String txnRef;
 
+    // Constructors, getters, setters, etc.
 }

@@ -29,7 +29,4 @@ public class ShoppingCart implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private Status status; // Add this line to keep track of the cart status
-
-
-
 }

@@ -18,11 +18,11 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Order implements  Serializable {
+public class Order implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    @Column(name = "id")
+    private String id;
 
     @Column(name = "user_id", nullable = false)
     private int userId;
