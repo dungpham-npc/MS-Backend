@@ -11,7 +11,8 @@ import java.util.List;
 
 public interface UserRepository extends JpaRepository<User, Integer> {
     User findByUsername(String username);
-    User findByEmailAddress(String emailAddress);
+    @Query("SELECT u FROM User u WHERE u.visibilityStatus = true AND u.emailAddress = :emailAddress")
+    User findByEmailAddress(@Param("emailAddress") String emailAddress);
     User findByPhoneNumber(String phoneNumber);
     User findByUserId(int userId);
     @Query("SELECT u FROM User u WHERE u.visibilityStatus = true AND u.role.roleId IN (2, 3, 4, 5)")
