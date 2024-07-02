@@ -49,6 +49,7 @@ public class OrderController {
         return new ResponseData<>(HttpStatus.NO_CONTENT.value(), "DELETE ORDER", null);
     }
 
+    //This line create to Update Status with button of Staff on the UI to set Status for Order
     @PutMapping("/{id}/status")
     public ResponseEntity<OrderDTO> updateOrderStatus(@PathVariable long id, @RequestBody Status status) {
         OrderDTO updatedOrder = orderService.updateOrderStatus(id, status);

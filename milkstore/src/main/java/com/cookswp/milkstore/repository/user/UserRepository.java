@@ -33,4 +33,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 //
 //    @Query("SELECT u.visibilityStatus FROM User u WHERE u.emailAddress = :email")
 //    boolean isVisible(@Param("email") String email);
+
+
+
 }

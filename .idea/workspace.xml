@@ -49,6 +49,13 @@
     "nodejs_package_manager_path": "npm",
     "settings.editor.selected.configurable": "vcs.Git",
     "vue.rearranger.settings.migration": "true"
+  },
+  "keyToStringList": {
+    "GitStage.ChangesTree.GroupingKeys": [
+      "directory",
+      "module",
+      "repository"
+    ]
   }
 }]]></component>
   <component name="RunManager">
@@ -80,31 +87,23 @@
       <workItem from="1719395141955" duration="3268000" />
       <workItem from="1719406395266" duration="2940000" />
     </task>
+    <task id="LOCAL-00001" summary="update addToCart function can show the product info in the first time add not become a bug like before">
+      <option name="closed" value="true" />
+      <created>1719892743958</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1719892743958</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/milkstore/src/main/java/com/cookswp/milkstore/api/CartController.java</url>
-          <line>31</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/milkstore/src/main/java/com/cookswp/milkstore/api/CartController.java</url>
-          <line>30</line>
-          <option name="timeStamp" value="2" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/milkstore/src/main/java/com/cookswp/milkstore/api/CartController.java</url>
-          <line>32</line>
-          <option name="timeStamp" value="3" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="update addToCart function can show the product info in the first time add not become a bug like before" />
+    <option name="LAST_COMMIT_MESSAGE" value="update addToCart function can show the product info in the first time add not become a bug like before" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
