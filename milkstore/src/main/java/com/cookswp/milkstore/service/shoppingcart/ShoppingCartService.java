@@ -70,6 +70,16 @@ public class ShoppingCartService implements IShoppingCartService {
         Product product = productRepository.findById(addToCartDTO.getProduct_id())
                 .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
 
+        int quantityInStock = product.getQuantity();
+        int requestedQuantity = addToCartDTO.getQuantity();
+
+        //Check quantity from customer and in stock
+        if (requestedQuantity <= 0) {
+            throw new AppException(ErrorCode.INVALID_QUANTITY);
+        }
+        if (quantityInStock <= 10){
+            throw new AppException(ErrorCode.PRODUCT_NOT_AVAILABLE);
+        }
 
         Optional<ShoppingCartItem> existingItemOpt = cart.getItems().stream()
                 .filter(item -> item.getProduct().getProductID() == product.getProductID())
@@ -77,19 +87,27 @@ public class ShoppingCartService implements IShoppingCartService {
 
         if (existingItemOpt.isPresent()) {
             ShoppingCartItem existingItem = existingItemOpt.get();
-            existingItem.setQuantity(existingItem.getQuantity() + addToCartDTO.getQuantity());
+            int newQuantity = existingItem.getQuantity() + requestedQuantity;
+            if (newQuantity > quantityInStock) {
+                throw new AppException(ErrorCode.INSUFFICIENT_STOCK);
+            }
+            existingItem.setQuantity(newQuantity);
             shoppingCartItemRepository.save(existingItem);
         } else {
+            if (requestedQuantity > quantityInStock) {
+                throw new AppException(ErrorCode.INSUFFICIENT_STOCK);
+            }
             ShoppingCartItem newItem = new ShoppingCartItem();
             newItem.setShoppingCart(cart);
             newItem.setProduct(product);
-            newItem.setQuantity(addToCartDTO.getQuantity());
+            newItem.setQuantity(requestedQuantity);
             shoppingCartItemRepository.save(newItem);
             cart.getItems().add(newItem);
         }
 
         return shoppingCartRepository.save(cart);
     }
+
 
 
 //    @Override
@@ -197,8 +215,17 @@ public class ShoppingCartService implements IShoppingCartService {
         int requestedQuantity = updateToCartDTO.getQuantity();
         int availableQuantity = product.getQuantity();
 
+        //Check quantity from user greater than in stock
         if (requestedQuantity > availableQuantity) {
             throw new AppException(ErrorCode.INSUFFICIENT_STOCK);
+        }
+
+        if (requestedQuantity <= 0) {
+            throw new AppException(ErrorCode.INVALID_QUANTITY);
+        }
+
+        if (availableQuantity <= 10) {
+            throw new AppException(ErrorCode.PRODUCT_NOT_AVAILABLE);
         }
 
         foundItem.setQuantity(requestedQuantity);
