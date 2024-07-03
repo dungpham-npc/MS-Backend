@@ -39,12 +39,7 @@ public class UserService {
     }
 
     public User getUserByEmail(String email) throws UserInvisibilityException, DataIntegrityViolationException, UserNotFoundException {
-        User user = userRepository.findByEmailAddress(email);
-        if (user == null)
-            throw new UserNotFoundException();
-        if (user.isProhibitStatus())
-            throw new UserInvisibilityException("User is banned!");
-        return user;
+        return userRepository.findByEmailAddress(email);
     }
 
     public User getUserById(int id){
