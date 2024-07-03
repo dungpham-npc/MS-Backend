@@ -1,6 +1,8 @@
 package com.cookswp.milkstore.exception;
 
-public class UserInvisibilityException extends RuntimeException {
+import org.springframework.security.core.AuthenticationException;
+
+public class UserInvisibilityException extends AuthenticationException {
     public UserInvisibilityException(String msg) {
         super(msg);
     }

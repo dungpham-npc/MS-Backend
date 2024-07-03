@@ -8,7 +8,6 @@ import com.cookswp.milkstore.response.ResponseData;
 import com.cookswp.milkstore.service.shoppingcart.ShoppingCartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,23 +26,21 @@ public class CartController {
     }
 
     @PostMapping("/{userId}/items")
-    public ResponseEntity<ResponseData<ShoppingCart>> addItemToCart(@PathVariable int userId, @RequestBody AddToCartDTO addToCartDTO) {
+    public ResponseData<ShoppingCart> addItemToCart(@PathVariable int userId, @RequestBody AddToCartDTO addToCartDTO) {
         ShoppingCart cart = shoppingCartService.addToCart(addToCartDTO, userId);
-        ResponseData<ShoppingCart> responseData = new ResponseData<>(HttpStatus.OK.value(), "Add Item To Cart", cart);
-        return ResponseEntity.ok(responseData);
+        return new ResponseData<>(HttpStatus.OK.value(), "Add Item To Cart Successful", cart);
     }
 
     @PutMapping("/{cartId}/items")
-    public ResponseEntity<ShoppingCart> updateItemInCart(@PathVariable int cartId, @RequestParam int userId, @RequestBody UpdateToCartDTO updateToCartDTO) {
+    public ResponseData<ShoppingCart> updateItemInCart(@PathVariable int cartId, @RequestParam int userId, @RequestBody UpdateToCartDTO updateToCartDTO) {
         ShoppingCart cart = shoppingCartService.updateItem(updateToCartDTO, cartId, userId);
-        return ResponseEntity.ok(cart);
+        return new ResponseData<>(HttpStatus.OK.value(), "Update Item In Cart Successful", cart);
     }
 
     @DeleteMapping("/{cartId}")
-    public ResponseEntity<ShoppingCart> deleteCart(@PathVariable int cartId,  @RequestParam int userId) {
-        ShoppingCart cart = shoppingCartService.deleteToCart(cartId, userId);
-        return ResponseEntity.ok(cart);
-
+    public ResponseData<ShoppingCart> deleteCart(@PathVariable int cartId, @RequestParam int userId, @RequestParam int itemId) {
+        ShoppingCart cart = shoppingCartService.deleteItemFromCart(cartId, userId, itemId);
+        return new ResponseData<>(HttpStatus.OK.value(), "Delete Item From Cart Successful", cart);
     }
 
 //    @PostMapping("/{userId}/checkout")

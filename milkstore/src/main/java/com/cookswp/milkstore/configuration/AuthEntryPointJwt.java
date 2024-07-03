@@ -21,7 +21,7 @@ public class AuthEntryPointJwt implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
         logger.error("Unauthorized error: {}", authException.getMessage());
-        String errorMessage = "Phiên đăng nhập kết thúc, vui lòng đăng nhập lại";
+        String errorMessage = "Có lỗi xảy ra khi xác minh người dùng, vui lòng đăng nhập lại";
 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

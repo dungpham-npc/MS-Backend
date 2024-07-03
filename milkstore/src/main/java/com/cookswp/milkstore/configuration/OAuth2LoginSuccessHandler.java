@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -39,7 +40,6 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
         DefaultOAuth2User principal = (DefaultOAuth2User) authentication.getPrincipal();
         Map<String, Object> attributes = principal.getAttributes();
         String email = attributes.getOrDefault("email", "").toString();
-        String name = attributes.getOrDefault("name", "").toString();
 
         User user = userService.getUserByEmail(email);
 
@@ -47,11 +47,11 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
 
             if (!user.isEnabled() || !user.isAccountNonLocked()) {
                 response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                response.getWriter().write("{\"error\": \" Tài khoản này có thể đã bị xóa hoặc bị hạn chế, vui lòng liên hệ quản trị viên để biết thông tin chi tiết.\"}");
+                response.getWriter().write("{\"message\": \" Tài khoản này có thể đã bị xóa hoặc bị hạn chế, vui lòng liên hệ quản trị viên để biết thông tin chi tiết.\"}");
                 return;
             }
 
-            String jwt = jwtUtils.generateJwtToken(authentication);
+            String jwt = jwtUtils.generateJwtToken(getAuthentication(user, attributes));
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             Map<String, Object> userMap = new HashMap<>();
             userMap.put("id", user.getUserId());
@@ -61,27 +61,19 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
             userMap.put("phone", user.getPhoneNumber());
             response.getWriter().write(String.format("{\"token\": \"%s\", \"user\": %s}", jwt, new ObjectMapper().writeValueAsString(userMap)));
             response.getWriter().flush();
-            SecurityContextHolder.getContext().setAuthentication(getAuthentication(user, attributes));
 
         } else {
 
             User newUser = new User();
             newUser.setEmailAddress(email);
-            newUser.setRole(roleService.getRoleByRoleName("CUSTOMER"));
-            newUser.setPassword("test");    //delete this
             userService.registerUser(newUser);
 
-            SecurityContextHolder.getContext().setAuthentication(getAuthentication(newUser, attributes));
-            String redirectUrl = "http://localhost:3000/?email="
-                    + URLEncoder.encode(email, StandardCharsets.UTF_8) + "&username="
-                    + URLEncoder.encode(name, StandardCharsets.UTF_8);
-            response.sendRedirect(redirectUrl);
-            return;
+            response.getWriter().write("{\"email\": " + "\"" + email + "\"}");
+            response.getWriter().flush();
+
+
         }
 
-        this.setAlwaysUseDefaultTargetUrl(true);
-        this.setDefaultTargetUrl("http://localhost:8080/test");
-        super.onAuthenticationSuccess(request, response, authentication);
     }
 
     private static Authentication getAuthentication(User user, Map<String, Object> attributes) {

@@ -1,5 +1,6 @@
 package com.cookswp.milkstore.configuration;
 
+import com.cookswp.milkstore.exception.UserInvisibilityException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -26,7 +27,7 @@ public class CustomFormLoginFailureHandler extends SimpleUrlAuthenticationFailur
             statusCode = HttpServletResponse.SC_NOT_FOUND;
         } else if (exception instanceof BadCredentialsException) {
             errorMessage = "Invalid username or password!";
-        } else if (exception != null) {
+        } else if (exception instanceof UserInvisibilityException) {
             errorMessage = exception.getMessage();
         } else {
             errorMessage = "Login failed!";
