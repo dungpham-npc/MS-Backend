@@ -49,6 +49,7 @@ public class ShoppingCartService implements IShoppingCartService {
                 .collect(Collectors.toList());
 
         ShowCartModelDTO showCartModelDTO = new ShowCartModelDTO();
+        showCartModelDTO.setCartId(shoppingCart.getId());
         showCartModelDTO.setUserId(userId);
         showCartModelDTO.setItems(items);
 

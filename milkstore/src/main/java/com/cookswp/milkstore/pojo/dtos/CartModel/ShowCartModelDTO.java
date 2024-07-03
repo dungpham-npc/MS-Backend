@@ -17,6 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 public class ShowCartModelDTO implements Serializable {
     private int userId;
+    private int cartId;
     private List<CartItemModel> items;
 
 
