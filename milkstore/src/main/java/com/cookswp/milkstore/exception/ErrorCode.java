@@ -37,7 +37,8 @@ public enum ErrorCode {
     PRODUCT_NOT_AVAILABLE(28, "Product does not enough quantity"),
     //Checkout to Order Code
     ORDER_NOT_FOUND(29, "Order not found"),
-    ORDER_NOT_COMPLETE_TRANSFER(30, "Oder is not complete purchase or checkout");
+    INVALID_ORDER_STATUS(30, "Order does not have a correct status to define ");
+
 
 
 

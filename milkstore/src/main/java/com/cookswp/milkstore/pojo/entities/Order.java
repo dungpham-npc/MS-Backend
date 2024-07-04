@@ -40,5 +40,10 @@ public class Order implements Serializable {
     @Column(name = "shipping_address", nullable = false)
     private String shippingAddress;
 
+    @Column(name = "failure_reason_note", nullable = true)
+    private String failureReasonNote;
+
+    @Column(name = "failure_reason", nullable = true)
+    private Status failureReason;
 
 }

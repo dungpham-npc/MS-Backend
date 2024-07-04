@@ -1,21 +1,16 @@
 package com.cookswp.milkstore.service.order;
 
-import com.cookswp.milkstore.enums.PaymentStatus;
 import com.cookswp.milkstore.enums.Status;
 import com.cookswp.milkstore.exception.AppException;
 import com.cookswp.milkstore.exception.ErrorCode;
 import com.cookswp.milkstore.pojo.dtos.OrderModel.CreateOrderRequest;
 import com.cookswp.milkstore.pojo.dtos.OrderModel.OrderDTO;
-import com.cookswp.milkstore.pojo.dtos.PaymentModel.PaymentDTO;
 import com.cookswp.milkstore.pojo.entities.*;
 import com.cookswp.milkstore.repository.order.OrderRepository;
-import com.cookswp.milkstore.repository.shoppingCart.ShoppingCartRepository;
 import com.cookswp.milkstore.repository.shoppingCartItem.ShoppingCartItemRepository;
 import com.cookswp.milkstore.repository.transactionLog.TransactionLogRepository;
 import com.cookswp.milkstore.repository.user.UserRepository;
 import com.cookswp.milkstore.service.product.ProductService;
-import com.cookswp.milkstore.service.shoppingcart.ShoppingCartService;
-import com.cookswp.milkstore.service.transactionLog.TransactionLogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +19,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class OrderService implements IOrderService {
@@ -119,6 +113,7 @@ public class OrderService implements IOrderService {
         if ("00".equals(statusCode)) {
             order.setOrderStatus(Status.PAID);
         }
+
         orderRepository.save(order);
         return order;
     }
@@ -159,6 +154,32 @@ public class OrderService implements IOrderService {
     public Order getOrderById(String id) {
         return orderRepository.findById(id).orElseThrow(() -> new RuntimeException("Order not found"));
     }
+
+    //Method to Confirm Order
+    @Transactional
+    public void confirmOrderToShipping(String OrderId) {
+        Order order = getOrderById(OrderId);
+        if (order.getOrderStatus() == Status.PAID) {
+            order.setOrderStatus(Status.IN_DELIVERY);
+            orderRepository.save(order);
+        } else {
+            throw new AppException(ErrorCode.INVALID_ORDER_STATUS);
+        }
+    }
+
+    //Method to Cancel Order with Reason
+    public void cancelOrder(String OrderId, String reason) {
+        Order order = getOrderById(OrderId);
+        order.setOrderStatus(Status.CANNOT_DELIVER);
+        order.setFailureReasonNote(reason);
+        orderRepository.save(order);
+    }
+
+    //Method to get all order from an User
+    public List<Order> getOrderByAnUserId(int userId) {
+        return orderRepository.findByUserId(userId);
+    }
+
 
 
     // Convert Order Entity to OrderDTO

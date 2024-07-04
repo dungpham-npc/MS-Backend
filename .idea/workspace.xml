@@ -111,7 +111,15 @@
       <option name="project" value="LOCAL" />
       <updated>1719906727065</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Validate in AddItemToCart in Update and change name of API deleteCart">
+      <option name="closed" value="true" />
+      <created>1720027845298</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1720027845298</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -120,7 +128,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="update addToCart function can show the product info in the first time add not become a bug like before" />
     <MESSAGE value="fix deleteToCart Function with add new param is itemId in the nutshell and comple delete the product by productId in Cart with all its quantity" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix deleteToCart Function with add new param is itemId in the nutshell and comple delete the product by productId in Cart with all its quantity" />
+    <MESSAGE value="Validate in AddItemToCart in Update and change name of API deleteCart" />
+    <option name="LAST_COMMIT_MESSAGE" value="Validate in AddItemToCart in Update and change name of API deleteCart" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

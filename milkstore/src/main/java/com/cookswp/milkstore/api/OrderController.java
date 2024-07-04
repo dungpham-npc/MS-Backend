@@ -51,8 +51,20 @@ public class OrderController {
         return new ResponseData<>(HttpStatus.NO_CONTENT.value(), "DELETE ORDER", null);
     }
 
+    //This API use to update the status in the slide can not interact
     @PutMapping("/{orderID}")
     public ResponseData<Order> updateOrderStatus(@PathVariable String orderID) {
         return new ResponseData<>(HttpStatus.OK.value(), "Update successfully", orderService.updateOrderStatus(orderID));
     }
+
+    //This API use to get Order Status for customer in Order tag
+    @GetMapping("/user/{userId}")
+    public ResponseData<List<Order>> getOrderByUserId(@PathVariable int userId) {
+        return new ResponseData<>(HttpStatus.OK.value(), "Get Order By User Id successfully", orderService.getOrderByAnUserId(userId));
+    }
+
+//    @PutMapping("/{orderID}/confirm-shipping")
+//    public ResponseData<> confirmOrderToShipping (@PathVariable String orderId) {
+//
+//    }
 }
