@@ -1,6 +1,7 @@
 package com.cookswp.milkstore.api;
 
 import com.cookswp.milkstore.pojo.dtos.PaymentModel.PaymentDTO;
+import com.cookswp.milkstore.pojo.dtos.PaymentModel.RequestCallBack;
 import com.cookswp.milkstore.pojo.dtos.PaymentModel.RequestPayment;
 import com.cookswp.milkstore.response.ResponseData;
 import com.cookswp.milkstore.service.vnpay.VNPayServiceImpl;
@@ -20,16 +21,16 @@ public class VNPayController {
         this.vnpayService = vnpayService;
     }
 
-    @GetMapping("/pay/{orderID}")
+    @PostMapping("/pay/{orderID}")
     public ResponseData<PaymentDTO> pay(@RequestBody RequestPayment requestPayment, @PathVariable String orderID) {
         return new ResponseData<>(HttpStatus.OK.value(), "Success", vnpayService.createVNPayPayment(requestPayment, orderID));
     }
 
-    @GetMapping("/vnpay-callback")
-    public ResponseData<PaymentDTO> callback(HttpServletRequest request) {
-        String responseCode = request.getParameter("vnp_ResponseCode");
+    @PostMapping("/vnpay-callback")
+    public ResponseData<PaymentDTO> callback(@RequestBody RequestCallBack requestCallBack) {
+        String responseCode = requestCallBack.getResponseCode();
         if (responseCode.equals("00")) {
-            return new ResponseData<>(HttpStatus.OK.value(), "Success", vnpayService.saveBillVNPayPayment(request));
+            return new ResponseData<>(HttpStatus.OK.value(), "Success", vnpayService.saveBillVNPayPayment(requestCallBack));
         } else {
             return new ResponseData<>(HttpStatus.BAD_REQUEST.value(), "Failed", null);
         }
