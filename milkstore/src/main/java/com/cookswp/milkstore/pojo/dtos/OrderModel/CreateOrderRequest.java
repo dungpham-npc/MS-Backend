@@ -9,6 +9,8 @@ import java.math.BigDecimal;
 @Setter
 public class CreateOrderRequest {
 
+    private String receiverName;
+    private String receiverPhoneNumber;
     private BigDecimal totalPrice;
     private String shippingAddress;
 

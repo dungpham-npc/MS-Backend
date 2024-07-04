@@ -67,6 +67,8 @@ public class OrderService implements IOrderService {
         UUID id = UUID.randomUUID();
         order.setId(id.toString());
         order.setUserId(userID);
+        order.setReceiverName(orderDTO.getReceiverName());
+        order.setReceiverPhone(orderDTO.getReceiverPhoneNumber());
         order.setOrderStatus(Status.IN_CART);
         order.setTotalPrice(orderDTO.getTotalPrice());
         order.setOrderDate(LocalDateTime.now());

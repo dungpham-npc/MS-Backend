@@ -2,6 +2,7 @@ package com.cookswp.milkstore.service.vnpay;
 
 import com.cookswp.milkstore.configuration.VNPayConfig;
 import com.cookswp.milkstore.pojo.dtos.PaymentModel.PaymentDTO;
+import com.cookswp.milkstore.pojo.dtos.PaymentModel.RequestCallBack;
 import com.cookswp.milkstore.pojo.dtos.PaymentModel.RequestPayment;
 import com.cookswp.milkstore.pojo.entities.TransactionLog;
 import com.cookswp.milkstore.pojo.entities.User;
@@ -92,21 +93,21 @@ public class VNPayServiceImpl implements VNPayService {
     }
 
     @Override
-    public PaymentDTO saveBillVNPayPayment(HttpServletRequest request) {
+    public PaymentDTO saveBillVNPayPayment(RequestCallBack requestCallBack) {
         TransactionLog trans = TransactionLog.builder()
-                .txnRef(request.getParameter("vnp_TxnRef"))
-                .amount(Long.parseLong(request.getParameter("vnp_Amount")))
-                .bankCode(request.getParameter("vnp_BankCode"))
-                .bankTranNo(request.getParameter("vnp_BankTranNo"))
-                .cardType(request.getParameter("vnp_CardType"))
-                .orderInfo(request.getParameter("vnp_OrderInfo"))
-                .responseCode(request.getParameter("vnp_ResponseCode"))
-                .payDate(VNPayUtil.convertPayDate(request.getParameter("vnp_PayDate")))
-                .transactionNo(request.getParameter("vnp_TransactionNo"))
-                .transactionStatus(request.getParameter("vnp_TransactionStatus"))
+                .txnRef(requestCallBack.getTxnRef())
+                .amount(Long.parseLong(String.valueOf(requestCallBack.getAmount())))
+                .bankCode(requestCallBack.getBankCode())
+                .bankTranNo(requestCallBack.getBankTranNo())
+                .cardType(requestCallBack.getCardType())
+                .orderInfo(requestCallBack.getOrderInfo())
+                .responseCode(requestCallBack.getResponseCode())
+                .payDate(VNPayUtil.convertPayDate(requestCallBack.getPayDate()))
+                .transactionNo(requestCallBack.getTransactionNo())
+                .transactionStatus(requestCallBack.getTransactionStatus())
                 .build();
         transactionLogRepository.save(trans);
-        String responseCode = request.getParameter("vnp_ResponseCode");
+        String responseCode = requestCallBack.getResponseCode();
         String message = responseCode.equals("00") ? "Giao dịch thành công" : "Giao dịch thất bại";
         orderService.updateOrderStatus(trans.getTxnRef());
         return PaymentDTO.builder()
