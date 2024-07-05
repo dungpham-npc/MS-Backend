@@ -13,5 +13,5 @@ public class CreateOrderRequest {
     private String receiverPhoneNumber;
     private BigDecimal totalPrice;
     private String shippingAddress;
-
+    //Add dto
 }
