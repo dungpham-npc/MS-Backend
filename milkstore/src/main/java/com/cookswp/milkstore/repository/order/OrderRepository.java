@@ -33,7 +33,4 @@ public interface OrderRepository extends JpaRepository <Order, Long> {
     @Query("SELECT MONTH(o.orderDate), COUNT(o.id) FROM Order o WHERE YEAR(o.orderDate) = :year GROUP BY MONTH(o.orderDate)")
     List<Object[]> getOrderCountsByMonth(@Param("year") int year);
 
-    @Query("SELECT p.productName FROM Order o JOIN o.cart s JOIN s.items i JOIN i.product p WHERE o.orderStatus = 'PAID' GROUP BY p.productName ORDER BY COUNT(p.productName) DESC")
-    List<Object[]> getTop5Products();
-
 }
