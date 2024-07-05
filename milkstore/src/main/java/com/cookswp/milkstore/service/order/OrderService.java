@@ -75,6 +75,7 @@ public class OrderService implements IOrderService {
         return orderRepository.save(order);
     }
 
+    //This method use to update Order
     @Override
     @Transactional
     public Order updateOrder(String orderId, OrderDTO orderDTO) {
@@ -87,12 +88,14 @@ public class OrderService implements IOrderService {
         return orderRepository.save(findOrder);
     }
 
+    //This method use to Delete Order
     @Override
     @Transactional
     public void deleteOrder(String orderId) {
         orderRepository.deleteById(orderId);
     }
 
+    //This method use update Order status with Order Id
     @Override
     public Order updateOrderStatus(String orderID) {
         Optional<Order> findOrder = orderRepository.findById(orderID);
@@ -103,18 +106,21 @@ public class OrderService implements IOrderService {
         String statusCode = transactionLogRepository.findTransactionNoByTxnRef(orderID);
         if ("00".equals(statusCode)) {
             order.setOrderStatus(Status.PAID);
+            reduceProductQuantity(orderID);
         }
 
         orderRepository.save(order);
         return order;
     }
 
+    //This method use to get all order with list
     @Override
     public List<Order> getAll() {
         return orderRepository.findAll();
     }
 
-    private void reduceProductQuantity(long orderId) {
+    //This method use to reduce quantity in stock when Order change status InCart -> Paid
+    private void reduceProductQuantity(String orderId) {
         List<ShoppingCartItem> cartItems = shoppingCartItemRepository.findById(orderId);
 
         for (ShoppingCartItem item : cartItems) {
@@ -142,10 +148,11 @@ public class OrderService implements IOrderService {
     //Method to Cancel Order with Reason
     @Transactional
     public Order cancelOrder(String OrderId, String reason) {
-        Order order = getOrderById(OrderId);
-        order.setOrderStatus(Status.CANNOT_DELIVER);
-        order.setFailureReasonNote(reason);
-        return orderRepository.save(order);
+        Order orderCancel = getOrderById(OrderId);
+        orderCancel.setOrderStatus(Status.CANNOT_DELIVER);
+        orderCancel.setFailureReason(orderCancel.getOrderStatus());
+        orderCancel.setFailureReasonNote(reason);
+        return orderRepository.save(orderCancel);
     }
 
     //Method to Transfer InDelivery to CompleteTransaction Status
