@@ -1,6 +1,5 @@
 package com.cookswp.milkstore.api;
 
-import com.cookswp.milkstore.enums.Status;
 import com.cookswp.milkstore.pojo.dtos.OrderModel.CreateOrderRequest;
 import com.cookswp.milkstore.pojo.dtos.OrderModel.OrderDTO;
 import com.cookswp.milkstore.pojo.entities.Order;
@@ -8,7 +7,6 @@ import com.cookswp.milkstore.response.ResponseData;
 import com.cookswp.milkstore.service.order.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
