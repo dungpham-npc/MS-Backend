@@ -2,6 +2,8 @@
 package com.cookswp.milkstore.api;
 
 import com.cookswp.milkstore.exception.MissingRequiredFieldException;
+import com.cookswp.milkstore.exception.RoleNotFoundException;
+import com.cookswp.milkstore.exception.UnauthorizedAccessException;
 import com.cookswp.milkstore.pojo.dtos.UserModel.UserDTO;
 import com.cookswp.milkstore.pojo.dtos.UserModel.UserRegistrationDTO;
 import com.cookswp.milkstore.pojo.entities.User;
@@ -65,15 +67,34 @@ public class RegisterController {
                 mapper.map(user, UserDTO.class));
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ResponseData<UserRegistrationDTO> handleEmailDuplicationException(DataIntegrityViolationException e){
-        return new ResponseData<>(HttpStatus.CONFLICT.value(), e.getMessage(), null);
-    }
     @ExceptionHandler(MissingRequiredFieldException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseData<UserRegistrationDTO> handleNullFieldsException(MissingRequiredFieldException e){
         return new ResponseData<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
+    }
+
+    @ExceptionHandler(RoleNotFoundException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseData<UserRegistrationDTO> handleRoleNotFoundException(RoleNotFoundException e){
+        return new ResponseData<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
+    }
+
+    @ExceptionHandler(UnauthorizedAccessException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ResponseData<String> handleUnauthorizedAccessException(UnauthorizedAccessException e){
+        return new ResponseData<>(HttpStatus.FORBIDDEN.value(), e.getMessage(), null);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ResponseData<String> handleIllegalArgumentException(IllegalArgumentException e){
+        return new ResponseData<>(HttpStatus.CONFLICT.value(), e.getMessage(), null);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ResponseData<String> handleDataIntegrityViolationException(DataIntegrityViolationException e){
+        return new ResponseData<>(HttpStatus.CONFLICT.value(), e.getMessage(), null);
     }
 }
 

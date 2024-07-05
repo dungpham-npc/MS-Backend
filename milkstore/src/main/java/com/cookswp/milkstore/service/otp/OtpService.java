@@ -1,8 +1,8 @@
-package com.cookswp.milkstore.service;
+package com.cookswp.milkstore.service.otp;
 
 import com.cookswp.milkstore.pojo.entities.TemporaryUser;
 import com.cookswp.milkstore.pojo.entities.User;
-import com.cookswp.milkstore.repository.UserRepository.TemporaryUserRepository;
+import com.cookswp.milkstore.repository.user.TemporaryUserRepository;
 import com.cookswp.milkstore.repository.user.UserRepository;
 import com.cookswp.milkstore.service.email.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;

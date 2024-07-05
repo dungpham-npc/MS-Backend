@@ -2,7 +2,7 @@ package com.cookswp.milkstore.api;
 
 import com.cookswp.milkstore.pojo.dtos.UserModel.TemporaryUserDTO;
 import com.cookswp.milkstore.response.ResponseData;
-import com.cookswp.milkstore.service.OtpService;
+import com.cookswp.milkstore.service.otp.OtpService;
 import com.cookswp.milkstore.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -65,15 +65,4 @@ public class OtpController {
 
 
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ResponseData<String> handleIllegalArgumentException(IllegalArgumentException e){
-        return new ResponseData<>(HttpStatus.CONFLICT.value(), e.getMessage(), null);
-    }
-
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ResponseData<String> handleDataIntegrityViolationException(DataIntegrityViolationException e){
-        return new ResponseData<>(HttpStatus.CONFLICT.value(), e.getMessage(), null);
-    }
 }
