@@ -111,8 +111,7 @@ public class OrderService implements IOrderService {
             String statusCode = transactionLogRepository.findTransactionNoByTxnRef(orderID);
             if ("00".equals(statusCode)) {
                 order.setOrderStatus(Status.PAID);
-                List<ShowCartModelDTO> listCarItem = shoppingCartService.getCartByUserId(order.getUserId());
-                listCarItem.clear();
+                shoppingCartService.clearCartByUserId(order.getUserId());
             }//add new
             orderRepository.save(order);
             return order;

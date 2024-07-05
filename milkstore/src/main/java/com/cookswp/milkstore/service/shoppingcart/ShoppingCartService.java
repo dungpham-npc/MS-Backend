@@ -141,6 +141,18 @@ public class ShoppingCartService implements IShoppingCartService {
         return shoppingCartRepository.save(cart);
     }
 
+    @Transactional
+    public void clearCartByUserId(int userId) {
+        ShoppingCart cart = shoppingCartRepository.findByUserId(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.CART_NOT_FOUND));
+
+        // Xóa tất cả các mục trong giỏ hàng
+        shoppingCartItemRepository.deleteAll(cart.getItems());
+
+        // Xóa giỏ hàng
+        shoppingCartRepository.delete(cart);
+    }
+
     @Override
     @Transactional
     public ShoppingCart updateItem(UpdateToCartDTO updateToCartDTO, int cartId, int userId) {

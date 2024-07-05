@@ -19,5 +19,6 @@ public interface ShoppingCartItemRepository extends JpaRepository<ShoppingCartIt
     @Query("select p from ShoppingCartItem p where p.product.productName =:value")
     List<ShoppingCartItem> searchItemFromCart(@Param("value") String value);
 
+    void deleteAll(List<ShoppingCartItem> items);
 
 }
