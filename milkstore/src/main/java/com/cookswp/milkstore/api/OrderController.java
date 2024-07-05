@@ -63,8 +63,16 @@ public class OrderController {
         return new ResponseData<>(HttpStatus.OK.value(), "Get Order By User Id successfully", orderService.getOrderByAnUserId(userId));
     }
 
-//    @PutMapping("/{orderID}/confirm-shipping")
-//    public ResponseData<> confirmOrderToShipping (@PathVariable String orderId) {
-//
-//    }
+    @PutMapping("/confirm-shipping/{orderId}")
+    public ResponseData<String> confirmOrderToShipping (@PathVariable String orderId) {
+        orderService.confirmOrderToShipping(orderId);
+        return new ResponseData<>(HttpStatus.OK.value(), "Confirm successfully", null);
+    }
+
+    @PutMapping("/cancel/{orderId}")
+    public ResponseData<String> cancelOrderToShipping (@PathVariable String orderId, @RequestParam String reason) {
+        orderService.cancelOrder(orderId, reason);
+        return new ResponseData<>(HttpStatus.OK.value(), "Cancel successfully", null);
+    }
+
 }

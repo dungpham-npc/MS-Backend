@@ -56,9 +56,9 @@ public class SecurityConfig {
                     auth.anyRequest().authenticated();
                 })
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
-                .exceptionHandling(exception -> {
-                    exception.authenticationEntryPoint(authEntryPointJwt);
-                })
+//                .exceptionHandling(exception -> {
+//                    exception.authenticationEntryPoint(authEntryPointJwt);
+//                })
                 .formLogin(form -> {
                     form.failureHandler(customFormLoginFailureHandler);
                     form.successHandler(customFormLoginSuccessHandler);

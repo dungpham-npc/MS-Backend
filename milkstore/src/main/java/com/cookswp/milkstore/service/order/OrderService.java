@@ -170,6 +170,7 @@ public class OrderService implements IOrderService {
     }
 
     //Method to Cancel Order with Reason
+    @Transactional
     public void cancelOrder(String OrderId, String reason) {
         Order order = getOrderById(OrderId);
         order.setOrderStatus(Status.CANNOT_DELIVER);
