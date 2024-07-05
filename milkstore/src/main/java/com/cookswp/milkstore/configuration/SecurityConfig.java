@@ -56,7 +56,9 @@ public class SecurityConfig {
                     auth.anyRequest().authenticated();
                 })
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
-
+                .exceptionHandling(exception -> {
+                    exception.authenticationEntryPoint(authEntryPointJwt);
+                })
                 .formLogin(form -> {
                     form.failureHandler(customFormLoginFailureHandler);
                     form.successHandler(customFormLoginSuccessHandler);
@@ -64,12 +66,7 @@ public class SecurityConfig {
                 .oauth2Login(oauth2 ->{
                     oauth2.successHandler(oAuth2LoginSuccessHandler);
                 })
-                .cors(cors ->
-                        cors.configurationSource(corsConfigurationSource())
-                )
-//                .exceptionHandling(exception -> {
-//                    exception.authenticationEntryPoint(authEntryPointJwt);
-//                })
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .addFilterBefore(
                         authenticationJwtTokenFilter(),
                         UsernamePasswordAuthenticationFilter.class
