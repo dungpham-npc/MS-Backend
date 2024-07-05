@@ -113,7 +113,7 @@ public class OrderService implements IOrderService {
                 order.setOrderStatus(Status.PAID);
                 List<ShowCartModelDTO> listCarItem = shoppingCartService.getCartByUserId(order.getUserId());
                 listCarItem.clear();
-            }
+            }//add new
             orderRepository.save(order);
             return order;
         }
