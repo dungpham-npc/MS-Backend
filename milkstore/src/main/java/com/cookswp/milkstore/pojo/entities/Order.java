@@ -43,6 +43,12 @@ public class Order implements Serializable {
     @Column(name = "failure_reason_note", nullable = true)
     private String failureReasonNote;
 
+    @Column(name = "receiver_name", nullable = false)
+    private String receiverName;
+
+    @Column(name = "receiver_phone", nullable = false)
+    private String receiverPhone;
+
     @Column(name = "failure_reason", nullable = true)
     private Status failureReason;
 
