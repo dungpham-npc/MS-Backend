@@ -6,6 +6,7 @@ import com.cookswp.milkstore.repository.productCategory.ProductCategoryRepositor
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -41,5 +42,10 @@ public class ProductCategoryService implements IProductCategoryService{
     @Override
     public ProductCategory findProductCategory(ProductCategoryDTO requestCategory) {
         return null;
+    }
+
+    @Override
+    public List<ProductCategory> findAllProductCategories() {
+        return productCategoryRepository.findAll();
     }
 }
