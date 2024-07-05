@@ -10,10 +10,12 @@ import com.cookswp.milkstore.repository.order.OrderRepository;
 import com.cookswp.milkstore.repository.shoppingCartItem.ShoppingCartItemRepository;
 import com.cookswp.milkstore.repository.transactionLog.TransactionLogRepository;
 import com.cookswp.milkstore.repository.user.UserRepository;
+import com.cookswp.milkstore.service.firebase.FirebaseService;
 import com.cookswp.milkstore.service.product.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,13 +35,16 @@ public class OrderService implements IOrderService {
 
     private final UserRepository userRepository;
 
+    private final FirebaseService firebaseService;
+
     @Autowired
-    public OrderService(OrderRepository orderRepository, ProductService productService, ShoppingCartItemRepository shoppingCartItemRepository, TransactionLogRepository transactionLogRepository, UserRepository userRepository) {
+    public OrderService(OrderRepository orderRepository, ProductService productService, ShoppingCartItemRepository shoppingCartItemRepository, TransactionLogRepository transactionLogRepository, UserRepository userRepository, FirebaseService firebaseService) {
         this.orderRepository = orderRepository;
         this.productService = productService;
         this.shoppingCartItemRepository = shoppingCartItemRepository;
         this.transactionLogRepository = transactionLogRepository;
         this.userRepository = userRepository;
+        this.firebaseService = firebaseService;
     }
 
 
@@ -140,6 +145,20 @@ public class OrderService implements IOrderService {
         Order order = getOrderById(OrderId);
         order.setOrderStatus(Status.CANNOT_DELIVER);
         order.setFailureReasonNote(reason);
+        return orderRepository.save(order);
+    }
+
+    //Method to Transfer InDelivery to CompleteTransaction Status
+    @Transactional
+    public Order completeOrderTransaction (String OrderId, MultipartFile EvidenceImage) {
+        Order order = getOrderById(OrderId);
+        String imageURL = firebaseService.upload(EvidenceImage);
+        if(order.getOrderStatus() == Status.IN_DELIVERY && EvidenceImage != null) {
+            order.setOrderStatus(Status.COMPLETE_EXCHANGE);
+            order.setImage(imageURL);
+        } else {
+            throw new AppException(ErrorCode.INVALID_ORDER_STATUS);
+        }
         return orderRepository.save(order);
     }
 
