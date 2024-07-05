@@ -70,22 +70,6 @@ public class OrderService implements IOrderService {
         return orderRepository.save(order);
     }
 
-    //Status status = orderDTO.getStatus();
-    //        if (status == Status.PAID) {
-    //            Order order = new Order();
-    //            order.setUserId(orderDTO.getUserId());
-    //            order.setOrderStatus(orderDTO.getStatus());
-    //            order.setTotalPrice(orderDTO.getTotalPrice());
-    //            order.setOrderDate(orderDTO.getOrderDate());
-    //            order.setShippingAddress(orderDTO.getShippingAddress());
-    //            return orderRepository.save(order);
-    //        } else if (orderDTO.getStatus() == Status.IN_CHECKOUT) {
-    //            throw new RuntimeException(PaymentStatus.PendingPayment + "In payment time");
-    //        } else {
-    //            throw new RuntimeException(PaymentStatus.Failed + "Payment not complete");
-    //        }
-
-
     @Override
     @Transactional
     public Order updateOrder(String orderId, OrderDTO orderDTO) {
@@ -120,30 +104,11 @@ public class OrderService implements IOrderService {
         return order;
     }
 
-
-    //Order order = orderRepository.findById(orderId).orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
-    //        order.setOrderStatus(status);
-    //        order = orderRepository.save(order);
-    //
-    //        // Reduce product quantity when order status is set
-    //        if (status == Status.PAID) {
-    //            reduceProductQuantity(order.getUserId());
-    //        }
-    //
-    //        // Check Delivery Status
-    //        if (status == Status.IN_DELIVERY) {
-    //
-    //        } else {
-    //            throw new RuntimeException(Status.CANNOT_DELIVER + "Reason");
-    //        }
-
     @Override
     public List<Order> getAll() {
         return orderRepository.findAll();
     }
 
-
-    // Reduce product quantity for a given order
     private void reduceProductQuantity(long orderId) {
         List<ShoppingCartItem> cartItems = shoppingCartItemRepository.findById(orderId);
 
