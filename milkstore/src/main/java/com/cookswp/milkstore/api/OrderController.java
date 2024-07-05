@@ -77,7 +77,7 @@ public class OrderController {
     public ResponseData<Order> cancelOrderToShipping (@PathVariable String orderId, @RequestParam String reason) {
         return new ResponseData<>(HttpStatus.OK.value(), "Cancel successfully", orderService.cancelOrder(orderId, reason));
     }
-
+        //Add new
     //This API use to confirm the exchange is complete with the image evidence
     @PutMapping("/complete-order/{orderId}")
     public ResponseData<Order> completeOrder (@PathVariable String orderId, @RequestParam("EvidenceImage") MultipartFile evidenceImage) {
