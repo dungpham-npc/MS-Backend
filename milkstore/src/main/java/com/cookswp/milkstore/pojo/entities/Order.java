@@ -52,6 +52,9 @@ public class Order implements Serializable {
     @Column(name = "failure_reason", nullable = true)
     private Status failureReason;
 
+    @Column(name = "image", nullable = false)
+    private String image;
+
     //And new field
 
 }
