@@ -159,11 +159,11 @@ public class OrderService implements IOrderService {
 
     //Method to Confirm Order
     @Transactional
-    public void confirmOrderToShipping(String OrderId) {
+    public Order confirmOrderToShipping(String OrderId) {
         Order order = getOrderById(OrderId);
         if (order.getOrderStatus() == Status.PAID) {
             order.setOrderStatus(Status.IN_DELIVERY);
-            orderRepository.save(order);
+            return orderRepository.save(order);
         } else {
             throw new AppException(ErrorCode.INVALID_ORDER_STATUS);
         }
@@ -171,18 +171,17 @@ public class OrderService implements IOrderService {
 
     //Method to Cancel Order with Reason
     @Transactional
-    public void cancelOrder(String OrderId, String reason) {
+    public Order cancelOrder(String OrderId, String reason) {
         Order order = getOrderById(OrderId);
         order.setOrderStatus(Status.CANNOT_DELIVER);
         order.setFailureReasonNote(reason);
-        orderRepository.save(order);
+        return orderRepository.save(order);
     }
 
     //Method to get all order from an User
     public List<Order> getOrderByAnUserId(int userId) {
         return orderRepository.findByUserId(userId);
     }
-
 
 
     // Convert Order Entity to OrderDTO
