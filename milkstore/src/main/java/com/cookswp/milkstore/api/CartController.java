@@ -43,9 +43,5 @@ public class CartController {
         return new ResponseData<>(HttpStatus.OK.value(), "Delete Item From Cart Successful", cart);
     }
 
-//    @PostMapping("/{userId}/checkout")
-//    public ResponseEntity<String> checkoutCart(@PathVariable int userId) {
-//        shoppingCartService.processCheckout(userId);
-//        return ResponseEntity.ok("Checkout successful and order placed.");
-//    }
+
 }

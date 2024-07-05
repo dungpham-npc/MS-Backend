@@ -3,15 +3,18 @@ package com.cookswp.milkstore.service.order;
 import com.cookswp.milkstore.enums.Status;
 import com.cookswp.milkstore.exception.AppException;
 import com.cookswp.milkstore.exception.ErrorCode;
+import com.cookswp.milkstore.pojo.dtos.CartModel.ShowCartModelDTO;
 import com.cookswp.milkstore.pojo.dtos.OrderModel.CreateOrderRequest;
 import com.cookswp.milkstore.pojo.dtos.OrderModel.OrderDTO;
 import com.cookswp.milkstore.pojo.entities.*;
 import com.cookswp.milkstore.repository.order.OrderRepository;
+import com.cookswp.milkstore.repository.shoppingCart.ShoppingCartRepository;
 import com.cookswp.milkstore.repository.shoppingCartItem.ShoppingCartItemRepository;
 import com.cookswp.milkstore.repository.transactionLog.TransactionLogRepository;
 import com.cookswp.milkstore.repository.user.UserRepository;
 import com.cookswp.milkstore.service.firebase.FirebaseService;
 import com.cookswp.milkstore.service.product.ProductService;
+import com.cookswp.milkstore.service.shoppingcart.ShoppingCartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,15 +39,19 @@ public class OrderService implements IOrderService {
     private final UserRepository userRepository;
 
     private final FirebaseService firebaseService;
+    private final ShoppingCartService shoppingCartService;
+    private final ShoppingCartRepository shoppingCartRepository;
 
     @Autowired
-    public OrderService(OrderRepository orderRepository, ProductService productService, ShoppingCartItemRepository shoppingCartItemRepository, TransactionLogRepository transactionLogRepository, UserRepository userRepository, FirebaseService firebaseService) {
+    public OrderService(OrderRepository orderRepository, ProductService productService, ShoppingCartItemRepository shoppingCartItemRepository, TransactionLogRepository transactionLogRepository, UserRepository userRepository, FirebaseService firebaseService, ShoppingCartService shoppingCartService, ShoppingCartRepository shoppingCartRepository) {
         this.orderRepository = orderRepository;
         this.productService = productService;
         this.shoppingCartItemRepository = shoppingCartItemRepository;
         this.transactionLogRepository = transactionLogRepository;
         this.userRepository = userRepository;
         this.firebaseService = firebaseService;
+        this.shoppingCartService = shoppingCartService;
+        this.shoppingCartRepository = shoppingCartRepository;
     }
 
 
@@ -66,6 +73,7 @@ public class OrderService implements IOrderService {
         UUID id = UUID.randomUUID();
         order.setId(id.toString());
         order.setUserId(userID);
+        //order.setCarID(orderDTO.getCartID());
         order.setReceiverName(orderDTO.getReceiverName());
         order.setReceiverPhone(orderDTO.getReceiverPhoneNumber());
         order.setOrderStatus(Status.IN_CART);
@@ -93,21 +101,22 @@ public class OrderService implements IOrderService {
         orderRepository.deleteById(orderId);
     }
 
-    @Override
-    public Order updateOrderStatus(String orderID) {
-        Optional<Order> findOrder = orderRepository.findById(orderID);
-        if (findOrder.isEmpty()) {
-            return null;
+        @Override
+        public Order updateOrderStatus(String orderID) {
+            Optional<Order> findOrder = orderRepository.findById(orderID);
+            if (findOrder.isEmpty()) {
+                return null;
+            }
+            Order order = findOrder.get();
+            String statusCode = transactionLogRepository.findTransactionNoByTxnRef(orderID);
+            if ("00".equals(statusCode)) {
+                order.setOrderStatus(Status.PAID);
+                List<ShowCartModelDTO> listCarItem = shoppingCartService.getCartByUserId(order.getUserId());
+                listCarItem.clear();
+            }
+            orderRepository.save(order);
+            return order;
         }
-        Order order = findOrder.get();
-        String statusCode = transactionLogRepository.findTransactionNoByTxnRef(orderID);
-        if ("00".equals(statusCode)) {
-            order.setOrderStatus(Status.PAID);
-        }
-
-        orderRepository.save(order);
-        return order;
-    }
 
     @Override
     public List<Order> getAll() {
@@ -150,10 +159,10 @@ public class OrderService implements IOrderService {
 
     //Method to Transfer InDelivery to CompleteTransaction Status
     @Transactional
-    public Order completeOrderTransaction (String OrderId, MultipartFile EvidenceImage) {
+    public Order completeOrderTransaction(String OrderId, MultipartFile EvidenceImage) {
         Order order = getOrderById(OrderId);
         String imageURL = firebaseService.upload(EvidenceImage);
-        if(order.getOrderStatus() == Status.IN_DELIVERY && EvidenceImage != null) {
+        if (order.getOrderStatus() == Status.IN_DELIVERY && EvidenceImage != null) {
             order.setOrderStatus(Status.COMPLETE_EXCHANGE);
             order.setImage(imageURL);
         } else {

@@ -11,6 +11,7 @@ import lombok.Setter;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "`order`")
@@ -55,6 +56,16 @@ public class Order implements Serializable {
     @Column(name = "image", nullable = false)
     private String image;
 
+    @Column(name = "milk_product_id", nullable = false)
+    private int productID;
+
+    @Column(name = "quantity", nullable = false)
+    private int quantity;
+
+    @Column(name = "price", nullable = false)
+    private BigDecimal unitPrice;
+
+    private int carID;
     //And new field
 
 }
