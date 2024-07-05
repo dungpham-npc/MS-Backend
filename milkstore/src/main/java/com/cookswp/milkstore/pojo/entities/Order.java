@@ -46,4 +46,6 @@ public class Order implements Serializable {
     @Column(name = "failure_reason", nullable = true)
     private Status failureReason;
 
+    //And new field
+
 }
