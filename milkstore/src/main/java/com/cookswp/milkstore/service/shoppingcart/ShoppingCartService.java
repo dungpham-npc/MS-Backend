@@ -111,65 +111,6 @@ public class ShoppingCartService implements IShoppingCartService {
     }
 
 
-
-//    @Override
-//    @Transactional
-//    public ShoppingCart addToCart(AddToCartDTO addToCartDTO, int userId) {
-//        ShoppingCart cart = shoppingCartRepository.findByUserId(userId)
-//                .orElseGet(() -> {
-//                    ShoppingCart newCart = new ShoppingCart();
-//                    newCart.setUserId(userId);
-//                    return shoppingCartRepository.save(newCart);
-//                });
-//
-//        Product product = productRepository.findById(addToCartDTO.getProduct_id())
-//                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
-//
-//        Optional<ShoppingCartItem> existingItemOpt = cart.getItems().stream()
-//                .filter(item -> item.getProduct().getProductID() == product.getProductID())
-//                .findFirst();
-//
-//        ShoppingCartItem existingItem;
-//        if (existingItemOpt.isPresent()) {
-//            existingItem = existingItemOpt.get();
-//            existingItem.setQuantity(existingItem.getQuantity() + addToCartDTO.getQuantity());
-//            shoppingCartItemRepository.save(existingItem);
-//        } else {
-//            ShoppingCartItem newItem = new ShoppingCartItem();
-//            newItem.setShoppingCart(cart);
-//            newItem.setProduct(product);
-//            newItem.setQuantity(addToCartDTO.getQuantity());
-//            shoppingCartItemRepository.save(newItem);
-//            shoppingCartItemRepository.save(newItem);
-//            }
-//        return cart;
-//        }
-
-
-//    @Override
-//    @Transactional
-//    public ShoppingCart deleteToCart(int cartId, int userId, int itemId) {
-//        // Tìm giỏ hàng theo ID và UserID, nếu không tìm thấy thì ném ra ngoại lệ
-//        ShoppingCart cart = shoppingCartRepository.findByIdAndUserId(cartId, userId)
-//                .orElseThrow(() -> new AppException(ErrorCode.CART_NOT_FOUND));
-//
-//        // Tìm mục trong giỏ hàng theo itemId, nếu không tìm thấy thì ném ra ngoại lệ
-//        ShoppingCartItem item = cart.getItems().stream()
-//                .filter(i -> i.getId() == itemId)
-//                .findFirst()
-//                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
-//
-//        // Loại bỏ mục khỏi giỏ hàng
-//        cart.getItems().remove(item);
-//
-//        // Xóa mục khỏi repository
-//        shoppingCartItemRepository.delete(item);
-//
-//        // Lưu lại giỏ hàng sau khi đã xóa mục
-//        return shoppingCartRepository.save(cart);
-//    }
-
-
     @Override
     @Transactional
     public ShoppingCart deleteItemFromCart(int cartId, int userId, int itemId) {
@@ -200,7 +141,16 @@ public class ShoppingCartService implements IShoppingCartService {
         return shoppingCartRepository.save(cart);
     }
 
+    public void clearCartByUserId(int userId) {
+        ShoppingCart cart = shoppingCartRepository.findByUserId(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.CART_NOT_FOUND));
 
+        // Xóa tất cả các mục trong giỏ hàng
+        shoppingCartItemRepository.deleteAllInBatch(cart.getItems());
+
+        // Xóa giỏ hàng
+        shoppingCartRepository.delete(cart);
+    }
 
     @Override
     @Transactional
@@ -235,40 +185,6 @@ public class ShoppingCartService implements IShoppingCartService {
 
         return shoppingCartRepository.save(cart);
     }
-
-
-
-
-
-// hàm này dùng để test khi ghi log
-//    @Override
-//    @Transactional
-//    public ShoppingCart updateItem(UpdateToCartDTO updateToCartDTO, int cartId, int userId) {
-//        ShoppingCart cart = shoppingCartRepository.findByIdAndUserId(cartId, userId)
-//                .orElseThrow(() -> new AppException(ErrorCode.CART_NOT_FOUND));
-//
-//        ShoppingCartItem foundItem = cart.getItems().stream()
-//                .peek(item -> {
-//                    // Log product IDs for debugging
-//                    System.out.println("Item Product ID: " + item.getProduct().getProductID());
-//                    System.out.println("UpdateToCartDTO Product ID: " + updateToCartDTO.getProduct_id());
-//                })
-//                .filter(item -> item.getProduct().getProductID() == updateToCartDTO.getProduct_id())
-//                .findFirst()
-//                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND_IN_CART));
-//
-//        foundItem.setQuantity(updateToCartDTO.getQuantity());
-//        shoppingCartItemRepository.save(foundItem);
-//
-//        return shoppingCartRepository.save(cart);
-//    }
-
-
-
-
-
-
-
 
 
 }

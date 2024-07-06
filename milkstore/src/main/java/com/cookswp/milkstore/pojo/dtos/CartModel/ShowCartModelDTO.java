@@ -20,8 +20,6 @@ public class ShowCartModelDTO implements Serializable {
     private int cartId;
     private List<CartItemModel> items;
 
-
-
     @Getter
     @Setter
     public static class CartItemModel {
@@ -29,9 +27,5 @@ public class ShowCartModelDTO implements Serializable {
         private String productName;
         private int quantity;
         private BigDecimal price;
-
-
-
-
     }
 }

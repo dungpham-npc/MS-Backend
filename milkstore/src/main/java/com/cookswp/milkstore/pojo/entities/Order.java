@@ -2,6 +2,7 @@ package com.cookswp.milkstore.pojo.entities;
 
 import com.cookswp.milkstore.enums.FailureReason;
 import com.cookswp.milkstore.enums.Status;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,6 +12,7 @@ import lombok.Setter;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "`order`")
@@ -55,6 +57,8 @@ public class Order implements Serializable {
     @Column(name = "image", nullable = false)
     private String image;
 
-    //And new field
-
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Column(name = "cart_id", unique = true, nullable = false)
+    @JsonManagedReference
+    private List<OrderItem> cart;
 }

@@ -3,15 +3,18 @@ package com.cookswp.milkstore.service.order;
 import com.cookswp.milkstore.enums.Status;
 import com.cookswp.milkstore.exception.AppException;
 import com.cookswp.milkstore.exception.ErrorCode;
+import com.cookswp.milkstore.pojo.dtos.CartModel.ShowCartModelDTO;
 import com.cookswp.milkstore.pojo.dtos.OrderModel.CreateOrderRequest;
 import com.cookswp.milkstore.pojo.dtos.OrderModel.OrderDTO;
 import com.cookswp.milkstore.pojo.entities.*;
 import com.cookswp.milkstore.repository.order.OrderRepository;
+import com.cookswp.milkstore.repository.shoppingCart.ShoppingCartRepository;
 import com.cookswp.milkstore.repository.shoppingCartItem.ShoppingCartItemRepository;
 import com.cookswp.milkstore.repository.transactionLog.TransactionLogRepository;
 import com.cookswp.milkstore.repository.user.UserRepository;
 import com.cookswp.milkstore.service.firebase.FirebaseService;
 import com.cookswp.milkstore.service.product.ProductService;
+import com.cookswp.milkstore.service.shoppingcart.ShoppingCartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,15 +39,19 @@ public class OrderService implements IOrderService {
     private final UserRepository userRepository;
 
     private final FirebaseService firebaseService;
+    private final ShoppingCartService shoppingCartService;
+    private final ShoppingCartRepository shoppingCartRepository;
 
     @Autowired
-    public OrderService(OrderRepository orderRepository, ProductService productService, ShoppingCartItemRepository shoppingCartItemRepository, TransactionLogRepository transactionLogRepository, UserRepository userRepository, FirebaseService firebaseService) {
+    public OrderService(OrderRepository orderRepository, ProductService productService, ShoppingCartItemRepository shoppingCartItemRepository, TransactionLogRepository transactionLogRepository, UserRepository userRepository, FirebaseService firebaseService, ShoppingCartService shoppingCartService, ShoppingCartRepository shoppingCartRepository) {
         this.orderRepository = orderRepository;
         this.productService = productService;
         this.shoppingCartItemRepository = shoppingCartItemRepository;
         this.transactionLogRepository = transactionLogRepository;
         this.userRepository = userRepository;
         this.firebaseService = firebaseService;
+        this.shoppingCartService = shoppingCartService;
+        this.shoppingCartRepository = shoppingCartRepository;
     }
 
 
@@ -66,16 +73,17 @@ public class OrderService implements IOrderService {
         UUID id = UUID.randomUUID();
         order.setId(id.toString());
         order.setUserId(userID);
+        //order.setCarID(orderDTO.getCartID());
         order.setReceiverName(orderDTO.getReceiverName());
         order.setReceiverPhone(orderDTO.getReceiverPhoneNumber());
         order.setOrderStatus(Status.IN_CART);
         order.setTotalPrice(orderDTO.getTotalPrice());
         order.setOrderDate(LocalDateTime.now());
         order.setShippingAddress(orderDTO.getShippingAddress());
+       // order.setCart(orderDTO.);
         return orderRepository.save(order);
     }
 
-    //This method use to update Order
     @Override
     @Transactional
     public Order updateOrder(String orderId, OrderDTO orderDTO) {
@@ -88,39 +96,34 @@ public class OrderService implements IOrderService {
         return orderRepository.save(findOrder);
     }
 
-    //This method use to Delete Order
     @Override
     @Transactional
     public void deleteOrder(String orderId) {
         orderRepository.deleteById(orderId);
     }
 
-    //This method use update Order status with Order Id
-    @Override
-    public Order updateOrderStatus(String orderID) {
-        Optional<Order> findOrder = orderRepository.findById(orderID);
-        if (findOrder.isEmpty()) {
-            return null;
-        }
-        Order order = findOrder.get();
-        String statusCode = transactionLogRepository.findTransactionNoByTxnRef(orderID);
-        if ("00".equals(statusCode)) {
-            order.setOrderStatus(Status.PAID);
-            reduceProductQuantity(orderID);
+        @Override
+        public Order updateOrderStatus(String orderID) {
+            Optional<Order> findOrder = orderRepository.findById(orderID);
+            if (findOrder.isEmpty()) {
+                return null;
+            }
+            Order order = findOrder.get();
+            String statusCode = transactionLogRepository.findTransactionNoByTxnRef(orderID);
+            if ("00".equals(statusCode)) {
+                order.setOrderStatus(Status.PAID);
+                shoppingCartService.clearCartByUserId(order.getUserId());
+            }//add new
+            orderRepository.save(order);
+            return order;
         }
 
-        orderRepository.save(order);
-        return order;
-    }
-
-    //This method use to get all order with list
     @Override
     public List<Order> getAll() {
         return orderRepository.findAll();
     }
 
-    //This method use to reduce quantity in stock when Order change status InCart -> Paid
-    private void reduceProductQuantity(String orderId) {
+    private void reduceProductQuantity(long orderId) {
         List<ShoppingCartItem> cartItems = shoppingCartItemRepository.findById(orderId);
 
         for (ShoppingCartItem item : cartItems) {
@@ -148,25 +151,34 @@ public class OrderService implements IOrderService {
     //Method to Cancel Order with Reason
     @Transactional
     public Order cancelOrder(String OrderId, String reason) {
-        Order orderCancel = getOrderById(OrderId);
-        orderCancel.setOrderStatus(Status.CANNOT_DELIVER);
-        orderCancel.setFailureReason(orderCancel.getOrderStatus());
-        orderCancel.setFailureReasonNote(reason);
-        return orderRepository.save(orderCancel);
+        Order order = getOrderById(OrderId);
+        order.setOrderStatus(Status.CANNOT_DELIVER);
+        order.setFailureReasonNote(reason);
+        return orderRepository.save(order);
     }
 
     //Method to Transfer InDelivery to CompleteTransaction Status
     @Transactional
-    public Order completeOrderTransaction (String OrderId, MultipartFile EvidenceImage) {
+    public Order completeOrderTransaction(String OrderId, MultipartFile EvidenceImage) {
         Order order = getOrderById(OrderId);
         String imageURL = firebaseService.upload(EvidenceImage);
-        if(order.getOrderStatus() == Status.IN_DELIVERY && EvidenceImage != null) {
+        if (order.getOrderStatus() == Status.IN_DELIVERY && EvidenceImage != null) {
             order.setOrderStatus(Status.COMPLETE_EXCHANGE);
             order.setImage(imageURL);
         } else {
             throw new AppException(ErrorCode.INVALID_ORDER_STATUS);
         }
         return orderRepository.save(order);
+    }
+
+    public Order cannotOrderInDelivery(String OrderId) {
+        Order order = getOrderById(OrderId);
+        if (order.getOrderStatus() == Status.CANNOT_DELIVER) {
+            order.setOrderStatus(Status.IN_DELIVERY);
+            return orderRepository.save(order);
+        } else{
+            throw new AppException(ErrorCode.INVALID_ORDER_STATUS);
+        }
     }
 
     //Method to get all order from an User
