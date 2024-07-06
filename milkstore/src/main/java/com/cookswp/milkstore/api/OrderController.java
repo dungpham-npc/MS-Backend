@@ -84,4 +84,10 @@ public class OrderController {
         return new ResponseData<>(HttpStatus.OK.value(), "Complete Exchange successfully", orderService.completeOrderTransaction(orderId, evidenceImage));
     }
 
+    @PutMapping("/change-status/{orderID}")
+    public ResponseData<Order> changeOrderStatus(@PathVariable String orderID) {
+        return new ResponseData<>(HttpStatus.OK.value(), "Change status from CANNOT DELIVERY to DELIVERY successfully", orderService.cannotOrderInDelivery(orderID));
+    }
+
+
 }

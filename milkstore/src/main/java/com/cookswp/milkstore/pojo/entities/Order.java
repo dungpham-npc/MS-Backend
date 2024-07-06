@@ -2,6 +2,7 @@ package com.cookswp.milkstore.pojo.entities;
 
 import com.cookswp.milkstore.enums.FailureReason;
 import com.cookswp.milkstore.enums.Status;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -56,16 +57,8 @@ public class Order implements Serializable {
     @Column(name = "image", nullable = false)
     private String image;
 
-    @Column(name = "milk_product_id", nullable = false)
-    private int productID;
-
-    @Column(name = "quantity", nullable = false)
-    private int quantity;
-
-    @Column(name = "price", nullable = false)
-    private BigDecimal unitPrice;
-
-    private int carID;
-    //And new field
-
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Column(name = "cart_id", unique = true, nullable = false)
+    @JsonManagedReference
+    private List<OrderItem> cart;
 }

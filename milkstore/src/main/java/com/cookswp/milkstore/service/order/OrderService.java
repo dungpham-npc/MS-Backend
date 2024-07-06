@@ -80,6 +80,7 @@ public class OrderService implements IOrderService {
         order.setTotalPrice(orderDTO.getTotalPrice());
         order.setOrderDate(LocalDateTime.now());
         order.setShippingAddress(orderDTO.getShippingAddress());
+       // order.setCart(orderDTO.);
         return orderRepository.save(order);
     }
 
@@ -168,6 +169,16 @@ public class OrderService implements IOrderService {
             throw new AppException(ErrorCode.INVALID_ORDER_STATUS);
         }
         return orderRepository.save(order);
+    }
+
+    public Order cannotOrderInDelivery(String OrderId) {
+        Order order = getOrderById(OrderId);
+        if (order.getOrderStatus() == Status.CANNOT_DELIVER) {
+            order.setOrderStatus(Status.IN_DELIVERY);
+            return orderRepository.save(order);
+        } else{
+            throw new AppException(ErrorCode.INVALID_ORDER_STATUS);
+        }
     }
 
     //Method to get all order from an User
