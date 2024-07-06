@@ -3,10 +3,12 @@ package com.cookswp.milkstore.api;
 import com.cookswp.milkstore.pojo.dtos.OrderModel.CreateOrderRequest;
 import com.cookswp.milkstore.pojo.dtos.OrderModel.OrderDTO;
 import com.cookswp.milkstore.pojo.entities.Order;
+import com.cookswp.milkstore.pojo.entities.OrderItem;
 import com.cookswp.milkstore.response.ResponseData;
 import com.cookswp.milkstore.service.order.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,9 +32,10 @@ public class OrderController {
     }
 
     //This API use to get order with an order Id
-    @GetMapping("/{id}")
-    public ResponseData<Order> getOrderById(@PathVariable String id) {
-        return new ResponseData<>(HttpStatus.OK.value(), "GET ORDER BY ID", orderService.getOrderById(id));
+    @GetMapping("/{orderId}")
+    public ResponseData<List<OrderItem>> getOrderItemsByOrderId(@PathVariable String orderId) {
+        List<OrderItem> orderItems = orderService.getOrderItemsByOrderId(orderId);
+        return new ResponseData<>(HttpStatus.OK.value(), "Retrieve order items successfully", orderItems);
     }
 
     //This API use to create Order
@@ -72,7 +75,7 @@ public class OrderController {
         return new ResponseData<>(HttpStatus.OK.value(), "Confirm successfully", orderService.confirmOrderToShipping(orderId));
     }
 
-    //This API use to cancel Order to Shipping and update Status for this
+    //This API use to cancel Order to Shipping and update Status for     this
     @PutMapping("/cancel/{orderId}")
     public ResponseData<Order> cancelOrderToShipping (@PathVariable String orderId, @RequestParam String reason) {
         return new ResponseData<>(HttpStatus.OK.value(), "Cancel successfully", orderService.cancelOrder(orderId, reason));
@@ -88,6 +91,8 @@ public class OrderController {
     public ResponseData<Order> changeOrderStatus(@PathVariable String orderID) {
         return new ResponseData<>(HttpStatus.OK.value(), "Change status from CANNOT DELIVERY to DELIVERY successfully", orderService.cannotOrderInDelivery(orderID));
     }
+
+
 
 
 }

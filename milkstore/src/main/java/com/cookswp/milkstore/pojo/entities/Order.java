@@ -57,8 +57,9 @@ public class Order implements Serializable {
     @Column(name = "image", nullable = false)
     private String image;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Column(name = "cart_id", unique = true, nullable = false)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "order_id", referencedColumnName = "id")
     @JsonManagedReference
     private List<OrderItem> cart;
+
 }

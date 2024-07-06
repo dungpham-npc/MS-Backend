@@ -1,4 +1,4 @@
-package com.cookswp.milkstore.pojo.dtos.OrderItem;
+package com.cookswp.milkstore.pojo.dtos.OrderModel;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

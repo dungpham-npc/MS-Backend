@@ -17,6 +17,7 @@ public class CreateOrderRequest {
     private BigDecimal totalPrice;
     private String shippingAddress;
     private List<OrderModel> cartID;
+    private List<OrderItemDTO> items;
 
     @Getter
     @Setter

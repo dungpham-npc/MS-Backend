@@ -6,8 +6,10 @@ import com.cookswp.milkstore.exception.ErrorCode;
 import com.cookswp.milkstore.pojo.dtos.CartModel.ShowCartModelDTO;
 import com.cookswp.milkstore.pojo.dtos.OrderModel.CreateOrderRequest;
 import com.cookswp.milkstore.pojo.dtos.OrderModel.OrderDTO;
+import com.cookswp.milkstore.pojo.dtos.OrderModel.OrderItemDTO;
 import com.cookswp.milkstore.pojo.entities.*;
 import com.cookswp.milkstore.repository.order.OrderRepository;
+import com.cookswp.milkstore.repository.orderItem.OrderItemRepository;
 import com.cookswp.milkstore.repository.shoppingCart.ShoppingCartRepository;
 import com.cookswp.milkstore.repository.shoppingCartItem.ShoppingCartItemRepository;
 import com.cookswp.milkstore.repository.transactionLog.TransactionLogRepository;
@@ -21,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -38,17 +41,21 @@ public class OrderService implements IOrderService {
 
     private final UserRepository userRepository;
 
+    private final OrderItemRepository orderItemRepository;
+
+
     private final FirebaseService firebaseService;
     private final ShoppingCartService shoppingCartService;
     private final ShoppingCartRepository shoppingCartRepository;
 
     @Autowired
-    public OrderService(OrderRepository orderRepository, ProductService productService, ShoppingCartItemRepository shoppingCartItemRepository, TransactionLogRepository transactionLogRepository, UserRepository userRepository, FirebaseService firebaseService, ShoppingCartService shoppingCartService, ShoppingCartRepository shoppingCartRepository) {
+    public OrderService(OrderRepository orderRepository, ProductService productService, ShoppingCartItemRepository shoppingCartItemRepository, TransactionLogRepository transactionLogRepository, UserRepository userRepository, OrderItemRepository orderItemRepository,  FirebaseService firebaseService, ShoppingCartService shoppingCartService, ShoppingCartRepository shoppingCartRepository) {
         this.orderRepository = orderRepository;
         this.productService = productService;
         this.shoppingCartItemRepository = shoppingCartItemRepository;
         this.transactionLogRepository = transactionLogRepository;
         this.userRepository = userRepository;
+        this.orderItemRepository = orderItemRepository;
         this.firebaseService = firebaseService;
         this.shoppingCartService = shoppingCartService;
         this.shoppingCartRepository = shoppingCartRepository;
@@ -81,6 +88,12 @@ public class OrderService implements IOrderService {
         order.setOrderDate(LocalDateTime.now());
         order.setShippingAddress(orderDTO.getShippingAddress());
        // order.setCart(orderDTO.);
+
+        //Save Cart Information before clear Cart
+        saveOrderItems(order, orderDTO.getItems());
+
+
+
         return orderRepository.save(order);
     }
 
@@ -112,7 +125,9 @@ public class OrderService implements IOrderService {
             String statusCode = transactionLogRepository.findTransactionNoByTxnRef(orderID);
             if ("00".equals(statusCode)) {
                 order.setOrderStatus(Status.PAID);
+                reduceProductQuantity(order.getId());
                 shoppingCartService.clearCartByUserId(order.getUserId());
+
             }//add new
             orderRepository.save(order);
             return order;
@@ -123,8 +138,8 @@ public class OrderService implements IOrderService {
         return orderRepository.findAll();
     }
 
-    private void reduceProductQuantity(long orderId) {
-        List<ShoppingCartItem> cartItems = shoppingCartItemRepository.findById(orderId);
+    private void reduceProductQuantity(String orderId) {
+        List<ShoppingCartItem> cartItems = shoppingCartItemRepository.findById(String.valueOf(orderId));
 
         for (ShoppingCartItem item : cartItems) {
             productService.reduceQuantityProduct(item.getProduct().getProductID(), item.getQuantity());
@@ -134,6 +149,10 @@ public class OrderService implements IOrderService {
     @Override
     public Order getOrderById(String id) {
         return orderRepository.findById(id).orElseThrow(() -> new RuntimeException("Order not found"));
+    }
+
+    public List<OrderItem> getOrderItemsByOrderId(String orderId) {
+        return orderItemRepository.findByOrderId(orderId);
     }
 
     //Method to Confirm Order
@@ -184,6 +203,22 @@ public class OrderService implements IOrderService {
     //Method to get all order from an User
     public List<Order> getOrderByAnUserId(int userId) {
         return orderRepository.findByUserId(userId);
+    }
+
+
+    // Phương thức riêng để lưu thông tin sản phẩm từ giỏ hàng vào OrderItem
+    private void saveOrderItems(Order order, List<OrderItemDTO> items) {
+        List<OrderItem> orderItems = new ArrayList<>();
+        for (OrderItemDTO item : items) {
+            OrderItem orderItem = new OrderItem();
+            orderItem.setOrderId(order.getId());
+            orderItem.setProductId(item.getProductId());
+            orderItem.setProductName(item.getProductName());
+            orderItem.setQuantity(item.getQuantity());
+            orderItem.setPrice(item.getPrice());
+            orderItems.add(orderItem);
+        }
+        order.setCart(orderItems);
     }
 
 
