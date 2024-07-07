@@ -138,12 +138,20 @@ public class UserController {
         return new ResponseData<>(HttpStatus.OK.value(), "Staff deleted successfully!", null);
     }
 
-    @PutMapping("/members/ban")
+    @PutMapping("/members/ban/{email}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseData<String> banMember(String email){
+    public ResponseData<String> banMember(@PathVariable String email){
         AuthorizationUtils.checkAuthorization("ADMIN");
         userService.banMemberUser(userService.getUserByEmail(email).getUserId());
         return new ResponseData<>(HttpStatus.OK.value(), "Member banned successfully!", null);
+    }
+
+    @PutMapping("/members/unban/{email}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseData<String> unbanMember(@PathVariable String email){
+        AuthorizationUtils.checkAuthorization("ADMIN");
+        userService.unbanMemberUser(userService.getUserByEmail(email).getUserId());
+        return new ResponseData<>(HttpStatus.OK.value(), "Member unbanned successfully!", null);
     }
 
 
