@@ -218,7 +218,7 @@ public class OrderService implements IOrderService {
             orderItem.setPrice(item.getPrice());
             orderItems.add(orderItem);
         }
-        order.setCart(orderItems);
+        orderItemRepository.saveAll(orderItems);
     }
 
 
