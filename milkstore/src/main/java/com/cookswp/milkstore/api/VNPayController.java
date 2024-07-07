@@ -8,6 +8,7 @@ import com.cookswp.milkstore.service.vnpay.VNPayServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -26,6 +27,7 @@ public class VNPayController {
         return new ResponseData<>(HttpStatus.OK.value(), "Success", vnpayService.createVNPayPayment(requestPayment, orderID));
     }
 
+    @Transactional
     @PostMapping("/vnpay-callback")
     public ResponseData<PaymentDTO> callback(@RequestBody RequestCallBack requestCallBack) {
         String responseCode = requestCallBack.getResponseCode();

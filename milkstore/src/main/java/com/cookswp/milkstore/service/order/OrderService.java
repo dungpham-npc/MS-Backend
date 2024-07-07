@@ -3,7 +3,6 @@ package com.cookswp.milkstore.service.order;
 import com.cookswp.milkstore.enums.Status;
 import com.cookswp.milkstore.exception.AppException;
 import com.cookswp.milkstore.exception.ErrorCode;
-import com.cookswp.milkstore.pojo.dtos.CartModel.ShowCartModelDTO;
 import com.cookswp.milkstore.pojo.dtos.OrderModel.CreateOrderRequest;
 import com.cookswp.milkstore.pojo.dtos.OrderModel.OrderDTO;
 import com.cookswp.milkstore.pojo.dtos.OrderModel.OrderItemDTO;
@@ -17,16 +16,15 @@ import com.cookswp.milkstore.repository.user.UserRepository;
 import com.cookswp.milkstore.service.firebase.FirebaseService;
 import com.cookswp.milkstore.service.product.ProductService;
 import com.cookswp.milkstore.service.shoppingcart.ShoppingCartService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class OrderService implements IOrderService {
@@ -49,7 +47,7 @@ public class OrderService implements IOrderService {
     private final ShoppingCartRepository shoppingCartRepository;
 
     @Autowired
-    public OrderService(OrderRepository orderRepository, ProductService productService, ShoppingCartItemRepository shoppingCartItemRepository, TransactionLogRepository transactionLogRepository, UserRepository userRepository, OrderItemRepository orderItemRepository,  FirebaseService firebaseService, ShoppingCartService shoppingCartService, ShoppingCartRepository shoppingCartRepository) {
+    public OrderService(OrderRepository orderRepository, ProductService productService, ShoppingCartItemRepository shoppingCartItemRepository, TransactionLogRepository transactionLogRepository, UserRepository userRepository, OrderItemRepository orderItemRepository, FirebaseService firebaseService, ShoppingCartService shoppingCartService, ShoppingCartRepository shoppingCartRepository) {
         this.orderRepository = orderRepository;
         this.productService = productService;
         this.shoppingCartItemRepository = shoppingCartItemRepository;
@@ -87,11 +85,12 @@ public class OrderService implements IOrderService {
         order.setTotalPrice(orderDTO.getTotalPrice());
         order.setOrderDate(LocalDateTime.now());
         order.setShippingAddress(orderDTO.getShippingAddress());
-       // order.setCart(orderDTO.);
+        // order.setCart(orderDTO.);
 
         //Save Cart Information before clear Cart
-        saveOrderItems(order, orderDTO.getItems());
-
+        if (orderDTO.getItems() != null && !orderDTO.getItems().isEmpty()) {
+            saveOrderItems(order, orderDTO.getItems());
+        }
 
 
         return orderRepository.save(order);
@@ -115,23 +114,28 @@ public class OrderService implements IOrderService {
         orderRepository.deleteById(orderId);
     }
 
-        @Override
-        public Order updateOrderStatus(String orderID) {
-            Optional<Order> findOrder = orderRepository.findById(orderID);
-            if (findOrder.isEmpty()) {
-                return null;
-            }
-            Order order = findOrder.get();
-            String statusCode = transactionLogRepository.findTransactionNoByTxnRef(orderID);
-            if ("00".equals(statusCode)) {
-                order.setOrderStatus(Status.PAID);
-                reduceProductQuantity(order.getId());
-                shoppingCartService.clearCartByUserId(order.getUserId());
-
-            }//add new
-            orderRepository.save(order);
-            return order;
+    @Transactional
+    @Override
+    public Order updateOrderStatus(String orderID) {
+        Optional<Order> findOrder = orderRepository.findById(orderID);
+        if (findOrder.isEmpty()) {
+            return null;
         }
+        Order order = findOrder.get();
+        String statusCode = transactionLogRepository.findTransactionNoByTxnRef(orderID);
+        if ("00".equals(statusCode)) {
+            order.setOrderStatus(Status.PAID);
+            reduceProductQuantity(order.getId());
+            Optional<ShoppingCart> cartOptional = shoppingCartRepository.findByUserId(order.getUserId());
+            if(cartOptional.isPresent()) {
+                ShoppingCart shoppingCart = cartOptional.get();
+                shoppingCart.getItems().clear();
+                shoppingCartRepository.save(shoppingCart);
+            }
+        }
+        return orderRepository.save(order);
+    }
+
 
     @Override
     public List<Order> getAll() {
@@ -195,7 +199,7 @@ public class OrderService implements IOrderService {
         if (order.getOrderStatus() == Status.CANNOT_DELIVER) {
             order.setOrderStatus(Status.IN_DELIVERY);
             return orderRepository.save(order);
-        } else{
+        } else {
             throw new AppException(ErrorCode.INVALID_ORDER_STATUS);
         }
     }
@@ -243,4 +247,6 @@ public class OrderService implements IOrderService {
         order.setShippingAddress(orderDTO.getShippingAddress());
         return order;
     }
-}
+
+
+ }

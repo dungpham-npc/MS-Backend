@@ -27,5 +27,6 @@ public class CreateOrderRequest {
         private int quantity;
         private BigDecimal unitPrice;
     }
-    //Add dto
+
+    // Getters and setters
 }

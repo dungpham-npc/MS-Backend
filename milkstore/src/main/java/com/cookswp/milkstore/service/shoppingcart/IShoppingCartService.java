@@ -16,6 +16,7 @@ public interface IShoppingCartService {
 
     ShoppingCart updateItem(UpdateToCartDTO updateToCartDTO, int cartId, int userId);
 
+    ShoppingCart findCartByUserID(int cartId);
 
 
 }
