@@ -119,7 +119,7 @@ public class UserController {
             throw new RoleNotFoundException();
         }
 
-        if (userRegistrationDTO.getPassword().matches(userService.getUserByEmail(userRegistrationDTO.getEmailAddress()).getPassword()))
+        if (userRegistrationDTO.getPassword().equals(userService.getUserByEmail(userRegistrationDTO.getEmailAddress()).getPassword()))
             userService.updateUserBasicInformation(id, mapper.map(userRegistrationDTO, User.class));
         else {
             userService.updateUserBasicInformation(id, mapper.map(userRegistrationDTO, User.class));
