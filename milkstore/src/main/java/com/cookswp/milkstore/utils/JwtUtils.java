@@ -53,10 +53,13 @@ public class JwtUtils {
     }
 
     private String buildToken(String email, List<String> roles){
+        Date date = new Date();
+        Date issuedAtTime = new Date(date.getTime());
+        Date expTime = new Date(date.getTime() + jwtExpirationMs);
         return Jwts.builder()
                 .subject(email)
-                .issuedAt(new Date())
-                .expiration(new Date((new Date()).getTime() + jwtExpirationMs))
+                .issuedAt(issuedAtTime)
+                .expiration(expTime)
                 .claim("scope", roles)
                 .signWith(getSigningKey())
                 .compact();
