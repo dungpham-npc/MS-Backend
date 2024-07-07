@@ -46,6 +46,7 @@ public class UserService {
         return userRepository.findByUserId(id);
     }
 
+
     public User registerUser(User user){
         if (userRepository.findByEmailAddress(user.getEmailAddress()) != null)
             throw new DataIntegrityViolationException("Email existed!");

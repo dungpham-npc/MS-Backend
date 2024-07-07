@@ -6,11 +6,30 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
 
 public class VNPayUtil {
+
+    private static final Map<Integer, String> paymentMap = new HashMap<>();
+
+    public static void addTxnRef(int userID, String txnRef){
+        paymentMap.put(userID, txnRef);
+    }
+
+    public String getTxnRef(int userId) {
+        return paymentMap.get(userId);
+    }
+
+    public boolean hasPaid(int userId) {
+        String txnRef = paymentMap.get(userId);
+        return txnRef != null && !txnRef.isEmpty();
+    }
 
     public static String hmacSHA512(final String key, final String data) {
         try {
@@ -31,6 +50,19 @@ public class VNPayUtil {
 
         } catch (Exception ex) {
             return "";
+        }
+    }
+
+    public static String convertPayDate(String payDate) {
+        try {
+            DateFormat originalFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+            Date date = originalFormat.parse(payDate);
+
+            DateFormat targetFormat = new SimpleDateFormat("dd-MM-yyyy");
+            return targetFormat.format(date);
+        } catch (Exception e) {
+            System.out.println("Error at convertPayDate");
+            return null;
         }
     }
 

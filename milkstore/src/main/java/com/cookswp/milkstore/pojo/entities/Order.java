@@ -2,6 +2,7 @@ package com.cookswp.milkstore.pojo.entities;
 
 import com.cookswp.milkstore.enums.FailureReason;
 import com.cookswp.milkstore.enums.Status;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,6 +12,7 @@ import lombok.Setter;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "`order`")
@@ -18,11 +20,11 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Order implements  Serializable {
+public class Order implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    @Column(name = "id")
+    private String id;
 
     @Column(name = "user_id", nullable = false)
     private int userId;
@@ -40,5 +42,24 @@ public class Order implements  Serializable {
     @Column(name = "shipping_address", nullable = false)
     private String shippingAddress;
 
+    @Column(name = "failure_reason_note", nullable = true)
+    private String failureReasonNote;
+
+    @Column(name = "receiver_name", nullable = false)
+    private String receiverName;
+
+    @Column(name = "receiver_phone", nullable = false)
+    private String receiverPhone;
+
+    @Column(name = "failure_reason", nullable = true)
+    private Status failureReason;
+
+    @Column(name = "image", nullable = false)
+    private String image;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "order_id", referencedColumnName = "id")
+    @JsonManagedReference
+    private List<OrderItem> cart;
 
 }

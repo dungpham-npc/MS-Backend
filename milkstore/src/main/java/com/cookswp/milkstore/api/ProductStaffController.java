@@ -29,6 +29,11 @@ public class ProductStaffController {
         return new ResponseData<>(HttpStatus.CREATED.value(), "New product category create successfully", productCategoryService.createProductCategory(productCategoryRequest));
     }
 
+    @GetMapping("/list-category")
+    public ResponseData<List<ProductCategory>> listProductCategory() {
+        return new ResponseData<>(HttpStatus.OK.value(), "List of product category", productCategoryService.findAllProductCategories());
+    }
+
     @PostMapping("/")
     public ResponseData<Product> createProduct(@ModelAttribute ProductDTO productRequest, @RequestParam("productImage") MultipartFile productImage) {
         return new ResponseData<>(HttpStatus.CREATED.value(), "New Milk Product create successfully", productService.createProduct(productRequest, productImage));

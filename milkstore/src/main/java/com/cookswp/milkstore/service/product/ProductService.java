@@ -32,7 +32,7 @@ public class ProductService implements IProductService {
     @Override
     public Product createProduct(ProductDTO productRequest, MultipartFile productImageFile) {
         String imageURL = firebaseService.upload(productImageFile);
-        validProductRequest(productRequest);
+        validProductRequest(productRequest, true);
         Product product = Product.builder()
                 .categoryID(productRequest.getCategoryID())
                 .postID(productRequest.getPostID())
@@ -57,6 +57,7 @@ public class ProductService implements IProductService {
 
         String imageURL = firebaseService.upload(productImage);
 
+        validProductRequest(productRequest, false);
         product.setCategoryID(productRequest.getCategoryID());
         product.setPostID(productRequest.getPostID());
         product.setProductName(productRequest.getProductName());
@@ -67,6 +68,7 @@ public class ProductService implements IProductService {
         product.setManuDate(productRequest.getManuDate());
         product.setExpiDate(productRequest.getExpiDate());
         product.setStatus(true);
+
         return productRepository.save(product);
     }
 
@@ -111,7 +113,7 @@ public class ProductService implements IProductService {
         //add
     }
 
-    private void validProductRequest(ProductDTO productRequest) {
+    private void validProductRequest(ProductDTO productRequest, boolean checkDuplicateName) {
         if (!productRepository.existsByCategoryID(productRequest.getCategoryID())) {
             throw new AppException(ErrorCode.CATEGORY_NOT_EXISTED);
         }
@@ -124,7 +126,7 @@ public class ProductService implements IProductService {
         if (productRequest.getProductDescription() == null || productRequest.getProductDescription().isEmpty()) {
             throw new AppException(ErrorCode.PRODUCT_DESCRIPTION_IS_NULL);
         }
-        if (productRepository.existsByProductName(productRequest.getProductName())) {
+        if (checkDuplicateName && productRepository.existsByProductName(productRequest.getProductName())) {
             throw new AppException(ErrorCode.PRODUCT_NAME_EXISTS);
         }
         boolean checkDate = product.dateBefore(productRequest.getManuDate(), productRequest.getExpiDate());

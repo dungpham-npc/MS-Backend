@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -64,12 +65,23 @@ public class ShoppingCartService implements IShoppingCartService {
                 .orElseGet(() -> {
                     ShoppingCart newCart = new ShoppingCart();
                     newCart.setUserId(userId);
+                    newCart.setItems(new ArrayList<>()); //Ensure not null
                     return shoppingCartRepository.save(newCart);
                 });
 
         Product product = productRepository.findById(addToCartDTO.getProduct_id())
                 .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
 
+        int quantityInStock = product.getQuantity();
+        int requestedQuantity = addToCartDTO.getQuantity();
+
+        //Check quantity from customer and in stock
+        if (requestedQuantity <= 0) {
+            throw new AppException(ErrorCode.INVALID_QUANTITY);
+        }
+        if (quantityInStock <= 10){
+            throw new AppException(ErrorCode.PRODUCT_NOT_AVAILABLE);
+        }
 
         Optional<ShoppingCartItem> existingItemOpt = cart.getItems().stream()
                 .filter(item -> item.getProduct().getProductID() == product.getProductID())
@@ -77,77 +89,26 @@ public class ShoppingCartService implements IShoppingCartService {
 
         if (existingItemOpt.isPresent()) {
             ShoppingCartItem existingItem = existingItemOpt.get();
-            existingItem.setQuantity(existingItem.getQuantity() + addToCartDTO.getQuantity());
+            int newQuantity = existingItem.getQuantity() + requestedQuantity;
+            if (newQuantity > quantityInStock) {
+                throw new AppException(ErrorCode.INSUFFICIENT_STOCK);
+            }
+            existingItem.setQuantity(newQuantity);
             shoppingCartItemRepository.save(existingItem);
         } else {
+            if (requestedQuantity > quantityInStock) {
+                throw new AppException(ErrorCode.INSUFFICIENT_STOCK);
+            }
             ShoppingCartItem newItem = new ShoppingCartItem();
             newItem.setShoppingCart(cart);
             newItem.setProduct(product);
-            newItem.setQuantity(addToCartDTO.getQuantity());
+            newItem.setQuantity(requestedQuantity);
             shoppingCartItemRepository.save(newItem);
             cart.getItems().add(newItem);
         }
 
         return shoppingCartRepository.save(cart);
     }
-
-
-//    @Override
-//    @Transactional
-//    public ShoppingCart addToCart(AddToCartDTO addToCartDTO, int userId) {
-//        ShoppingCart cart = shoppingCartRepository.findByUserId(userId)
-//                .orElseGet(() -> {
-//                    ShoppingCart newCart = new ShoppingCart();
-//                    newCart.setUserId(userId);
-//                    return shoppingCartRepository.save(newCart);
-//                });
-//
-//        Product product = productRepository.findById(addToCartDTO.getProduct_id())
-//                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
-//
-//        Optional<ShoppingCartItem> existingItemOpt = cart.getItems().stream()
-//                .filter(item -> item.getProduct().getProductID() == product.getProductID())
-//                .findFirst();
-//
-//        ShoppingCartItem existingItem;
-//        if (existingItemOpt.isPresent()) {
-//            existingItem = existingItemOpt.get();
-//            existingItem.setQuantity(existingItem.getQuantity() + addToCartDTO.getQuantity());
-//            shoppingCartItemRepository.save(existingItem);
-//        } else {
-//            ShoppingCartItem newItem = new ShoppingCartItem();
-//            newItem.setShoppingCart(cart);
-//            newItem.setProduct(product);
-//            newItem.setQuantity(addToCartDTO.getQuantity());
-//            shoppingCartItemRepository.save(newItem);
-//            shoppingCartItemRepository.save(newItem);
-//            }
-//        return cart;
-//        }
-
-
-//    @Override
-//    @Transactional
-//    public ShoppingCart deleteToCart(int cartId, int userId, int itemId) {
-//        // Tìm giỏ hàng theo ID và UserID, nếu không tìm thấy thì ném ra ngoại lệ
-//        ShoppingCart cart = shoppingCartRepository.findByIdAndUserId(cartId, userId)
-//                .orElseThrow(() -> new AppException(ErrorCode.CART_NOT_FOUND));
-//
-//        // Tìm mục trong giỏ hàng theo itemId, nếu không tìm thấy thì ném ra ngoại lệ
-//        ShoppingCartItem item = cart.getItems().stream()
-//                .filter(i -> i.getId() == itemId)
-//                .findFirst()
-//                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
-//
-//        // Loại bỏ mục khỏi giỏ hàng
-//        cart.getItems().remove(item);
-//
-//        // Xóa mục khỏi repository
-//        shoppingCartItemRepository.delete(item);
-//
-//        // Lưu lại giỏ hàng sau khi đã xóa mục
-//        return shoppingCartRepository.save(cart);
-//    }
 
 
     @Override
@@ -180,7 +141,16 @@ public class ShoppingCartService implements IShoppingCartService {
         return shoppingCartRepository.save(cart);
     }
 
+    public void clearCartByUserId(int userId) {
+        ShoppingCart cart = shoppingCartRepository.findByUserId(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.CART_NOT_FOUND));
 
+        // Xóa tất cả các mục trong giỏ hàng
+        shoppingCartItemRepository.deleteAllInBatch(cart.getItems());
+
+        // Xóa giỏ hàng
+        shoppingCartRepository.delete(cart);
+    }
 
     @Override
     @Transactional
@@ -197,8 +167,17 @@ public class ShoppingCartService implements IShoppingCartService {
         int requestedQuantity = updateToCartDTO.getQuantity();
         int availableQuantity = product.getQuantity();
 
+        //Check quantity from user greater than in stock
         if (requestedQuantity > availableQuantity) {
             throw new AppException(ErrorCode.INSUFFICIENT_STOCK);
+        }
+
+        if (requestedQuantity <= 0) {
+            throw new AppException(ErrorCode.INVALID_QUANTITY);
+        }
+
+        if (availableQuantity <= 10) {
+            throw new AppException(ErrorCode.PRODUCT_NOT_AVAILABLE);
         }
 
         foundItem.setQuantity(requestedQuantity);
@@ -206,40 +185,6 @@ public class ShoppingCartService implements IShoppingCartService {
 
         return shoppingCartRepository.save(cart);
     }
-
-
-
-
-
-// hàm này dùng để test khi ghi log
-//    @Override
-//    @Transactional
-//    public ShoppingCart updateItem(UpdateToCartDTO updateToCartDTO, int cartId, int userId) {
-//        ShoppingCart cart = shoppingCartRepository.findByIdAndUserId(cartId, userId)
-//                .orElseThrow(() -> new AppException(ErrorCode.CART_NOT_FOUND));
-//
-//        ShoppingCartItem foundItem = cart.getItems().stream()
-//                .peek(item -> {
-//                    // Log product IDs for debugging
-//                    System.out.println("Item Product ID: " + item.getProduct().getProductID());
-//                    System.out.println("UpdateToCartDTO Product ID: " + updateToCartDTO.getProduct_id());
-//                })
-//                .filter(item -> item.getProduct().getProductID() == updateToCartDTO.getProduct_id())
-//                .findFirst()
-//                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND_IN_CART));
-//
-//        foundItem.setQuantity(updateToCartDTO.getQuantity());
-//        shoppingCartItemRepository.save(foundItem);
-//
-//        return shoppingCartRepository.save(cart);
-//    }
-
-
-
-
-
-
-
 
 
 }
