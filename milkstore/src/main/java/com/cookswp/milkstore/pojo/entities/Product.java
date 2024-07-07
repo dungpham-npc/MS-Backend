@@ -27,9 +27,6 @@ public class Product implements Serializable {
     @Column(name ="category_id", nullable = false)
     private int categoryID;
 
-    @Column(name = "post_id")
-    private int postID;
-
     @Column(name = "product_name", nullable = false, unique = true)
     private String productName;
 

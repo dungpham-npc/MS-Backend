@@ -7,6 +7,7 @@ import com.cookswp.milkstore.pojo.dtos.UserModel.UserRegistrationDTO;
 import com.cookswp.milkstore.pojo.dtos.UserModel.UserDTO;
 import com.cookswp.milkstore.pojo.entities.User;
 import com.cookswp.milkstore.response.ResponseData;
+import com.cookswp.milkstore.service.role.RoleService;
 import com.cookswp.milkstore.service.user.UserService;
 import com.cookswp.milkstore.utils.AuthorizationUtils;
 import org.modelmapper.ModelMapper;
@@ -28,10 +29,13 @@ public class UserController {
     private final UserService userService;
     private final ModelMapper mapper;
 
+    private final RoleService roleService;
+
     @Autowired
-    public UserController(UserService userService, ModelMapper mapper){
+    public UserController(UserService userService, ModelMapper mapper, RoleService roleService){
         this.userService = userService;
         this.mapper = mapper;
+        this.roleService = roleService;
     }
 
     @GetMapping("/staffs")
@@ -90,12 +94,14 @@ public class UserController {
         if (!allowedRoles.contains(userRegistrationDTO.getRoleName())) {
             throw new RoleNotFoundException();
         }
+        User userToAdd = mapper.map(userRegistrationDTO, User.class);
+        userToAdd.setRole(roleService.getRoleByRoleName(userRegistrationDTO.getRoleName()));
 
-        User user = userService.registerStaff(mapper.map(userRegistrationDTO, User.class));
+        userService.registerStaff(userToAdd);
 
         return new ResponseData<>(HttpStatus.CREATED.value(),
                 "User created successfully!",
-                mapper.map(user, UserDTO.class));
+                null);
 
     }
 
