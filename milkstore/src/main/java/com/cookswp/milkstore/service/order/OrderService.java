@@ -127,7 +127,7 @@ public class OrderService implements IOrderService {
             Optional<ShoppingCart> cartOptional = shoppingCartRepository.findByUserId(order.getUserId());
             if(cartOptional.isPresent()) {
                 ShoppingCart shoppingCart = cartOptional.get();
-
+                //ADd new
                 //Save shoppingCart into OrderItem
                 List<OrderItem> orderItems = new ArrayList<>();
                 for(ShoppingCartItem cartItem : shoppingCart.getItems()){
