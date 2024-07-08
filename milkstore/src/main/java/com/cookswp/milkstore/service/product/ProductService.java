@@ -99,13 +99,15 @@ public class ProductService implements IProductService {
     public List<Product> searchProduct(String value) {
         List<Product> searchList = productRepository.searchProduct(value);
         if (searchList == null) throw new AppException(ErrorCode.PRODUCT_NOT_FOUND);
-        return searchList;
+        else{
+            return searchList;
+        }
     }
 
     @Override
     public void reduceQuantityProduct(int productId, int quantity) {
         Product product = productRepository.findById(productId).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
-        if(product.getQuantity() < quantity) {
+        if (product.getQuantity() < quantity) {
             throw new AppException(ErrorCode.PRODUCT_QUANTITY_INVALID);
         }
         product.setQuantity(product.getQuantity() - quantity);
