@@ -6,6 +6,7 @@ import com.cookswp.milkstore.pojo.dtos.ProductModel.ProductDTO;
 import com.cookswp.milkstore.pojo.entities.Product;
 import com.cookswp.milkstore.repository.post.PostRepository;
 import com.cookswp.milkstore.repository.product.ProductRepository;
+import com.cookswp.milkstore.repository.productCategory.ProductCategoryRepository;
 import com.cookswp.milkstore.service.firebase.FirebaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,12 +22,14 @@ public class ProductService implements IProductService {
     private final PostRepository postRepository;
     private final FirebaseService firebaseService;
     private final Product product = new Product();
+    private final ProductCategoryRepository productCategoryRepository;
 
     @Autowired
-    public ProductService(ProductRepository productRepository, PostRepository postRepository, FirebaseService firebaseService) {
+    public ProductService(ProductRepository productRepository, PostRepository postRepository, FirebaseService firebaseService, ProductCategoryRepository productCategoryRepository) {
         this.productRepository = productRepository;
         this.postRepository = postRepository;
         this.firebaseService = firebaseService;
+        this.productCategoryRepository = productCategoryRepository;
     }
 
     @Override
@@ -114,7 +117,7 @@ public class ProductService implements IProductService {
     }
 
     private void validProductRequest(ProductDTO productRequest, boolean checkDuplicateName) {
-        if (!productRepository.existsByCategoryID(productRequest.getCategoryID())) {
+        if (!productCategoryRepository.existsById(productRequest.getCategoryID())) {
             throw new AppException(ErrorCode.CATEGORY_NOT_EXISTED);
         }
         if (productRequest.getPrice() == null || productRequest.getPrice().compareTo(BigDecimal.ZERO) < 0) {
