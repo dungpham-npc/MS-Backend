@@ -16,8 +16,6 @@ import com.cookswp.milkstore.repository.user.UserRepository;
 import com.cookswp.milkstore.service.firebase.FirebaseService;
 import com.cookswp.milkstore.service.product.ProductService;
 import com.cookswp.milkstore.service.shoppingcart.ShoppingCartService;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -116,26 +114,39 @@ public class OrderService implements IOrderService {
 
     @Transactional
     @Override
-    public Order updateOrderStatus(String orderID) {
-        Optional<Order> findOrder = orderRepository.findById(orderID);
+    public Order updateOrderStatus(String id) {
+        Optional<Order> findOrder = orderRepository.findById(id);
         if (findOrder.isEmpty()) {
             return null;
         }
         Order order = findOrder.get();
-        String statusCode = transactionLogRepository.findTransactionNoByTxnRef(orderID);
+        String statusCode = transactionLogRepository.findTransactionNoByTxnRef(id);
         if ("00".equals(statusCode)) {
             order.setOrderStatus(Status.PAID);
             reduceProductQuantity(order.getId());
             Optional<ShoppingCart> cartOptional = shoppingCartRepository.findByUserId(order.getUserId());
             if(cartOptional.isPresent()) {
                 ShoppingCart shoppingCart = cartOptional.get();
+
+                //Save shoppingCart into OrderItem
+                List<OrderItem> orderItems = new ArrayList<>();
+                for(ShoppingCartItem cartItem : shoppingCart.getItems()){
+                    OrderItem orderItem = new OrderItem();
+                    orderItem.setOrderId(order.getId());
+                    orderItem.setProductId(cartItem.getProduct().getProductID());
+                    orderItem.setQuantity(cartItem.getQuantity());
+                    orderItem.setProductName(cartItem.getProduct().getProductName());
+                    orderItem.setPrice(cartItem.getProduct().getPrice());
+                    orderItems.add(orderItem);
+                }
+                orderItemRepository.saveAll(orderItems);
+
                 shoppingCart.getItems().clear();
                 shoppingCartRepository.save(shoppingCart);
             }
         }
         return orderRepository.save(order);
     }
-
 
     @Override
     public List<Order> getAll() {
@@ -152,8 +163,9 @@ public class OrderService implements IOrderService {
 
     @Override
     public Order getOrderById(String id) {
-        return orderRepository.findById(id).orElseThrow(() -> new RuntimeException("Order not found"));
+        return orderRepository.findById(id).orElse(null);
     }
+
 
     public List<OrderItem> getOrderItemsByOrderId(String orderId) {
         return orderItemRepository.findByOrderId(orderId);
@@ -247,6 +259,4 @@ public class OrderService implements IOrderService {
         order.setShippingAddress(orderDTO.getShippingAddress());
         return order;
     }
-
-
  }

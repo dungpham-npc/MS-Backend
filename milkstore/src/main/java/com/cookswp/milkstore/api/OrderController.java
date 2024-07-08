@@ -19,7 +19,7 @@ public class OrderController {
     private final OrderService orderService;
 
     @Autowired
-    public OrderController(OrderService orderService){
+    public OrderController(OrderService orderService) {
         this.orderService = orderService;
     }
 
@@ -30,9 +30,9 @@ public class OrderController {
     }
 
     //This API use to get order with an order Id
-    @GetMapping("/{orderId}")
-    public ResponseData<Order> getOrderItemsByOrderId(@PathVariable String orderId) {
-        return new ResponseData<>(HttpStatus.OK.value(), "Retrieve order items successfully", orderService.getOrderById(orderId));
+    @GetMapping("/{orderID}")
+    public ResponseData<Order> getOrderItemsByOrderId(@PathVariable String orderID) {
+        return new ResponseData<>(HttpStatus.OK.value(), "Retrieve order items successfully", orderService.getOrderById(orderID));
     }
 
     //This API use to create Order
@@ -68,19 +68,20 @@ public class OrderController {
 
     //This API use to confirm Order Status to change Shipping Status
     @PutMapping("/confirm-shipping/{orderId}")
-    public ResponseData<Order> confirmOrderToShipping (@PathVariable String orderId) {
+    public ResponseData<Order> confirmOrderToShipping(@PathVariable String orderId) {
         return new ResponseData<>(HttpStatus.OK.value(), "Confirm successfully", orderService.confirmOrderToShipping(orderId));
     }
 
     //This API use to cancel Order to Shipping and update Status for     this
     @PutMapping("/cancel/{orderId}")
-    public ResponseData<Order> cancelOrderToShipping (@PathVariable String orderId, @RequestParam String reason) {
+    public ResponseData<Order> cancelOrderToShipping(@PathVariable String orderId, @RequestParam String reason) {
         return new ResponseData<>(HttpStatus.OK.value(), "Cancel successfully", orderService.cancelOrder(orderId, reason));
     }
-        //Add new
+
+    //Add new
     //This API use to confirm the exchange is complete with the image evidence
     @PutMapping("/complete-order/{orderId}")
-    public ResponseData<Order> completeOrder (@PathVariable String orderId, @RequestParam("EvidenceImage") MultipartFile evidenceImage) {
+    public ResponseData<Order> completeOrder(@PathVariable String orderId, @RequestParam("EvidenceImage") MultipartFile evidenceImage) {
         return new ResponseData<>(HttpStatus.OK.value(), "Complete Exchange successfully", orderService.completeOrderTransaction(orderId, evidenceImage));
     }
 
@@ -88,8 +89,5 @@ public class OrderController {
     public ResponseData<Order> changeOrderStatus(@PathVariable String orderID) {
         return new ResponseData<>(HttpStatus.OK.value(), "Change status from CANNOT DELIVERY to DELIVERY successfully", orderService.cannotOrderInDelivery(orderID));
     }
-
-
-
 
 }
