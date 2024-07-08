@@ -55,6 +55,7 @@ public class FirebaseService {
             File file = this.convertToFile(multipartFile, fileName);                      // to convert multipartFile to File
             String URL = this.uploadFile(file, fileName);                                   // to get uploaded file link
             file.delete();
+            System.out.println(URL);
             return URL;
         } catch (Exception e) {
             e.printStackTrace();
