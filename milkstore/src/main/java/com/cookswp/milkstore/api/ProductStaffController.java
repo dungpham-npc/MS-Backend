@@ -8,6 +8,7 @@ import com.cookswp.milkstore.pojo.entities.Product;
 import com.cookswp.milkstore.response.ResponseData;
 import com.cookswp.milkstore.service.product.ProductService;
 import com.cookswp.milkstore.service.productCategory.ProductCategoryService;
+import com.cookswp.milkstore.utils.AuthorizationUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -34,14 +35,16 @@ public class ProductStaffController {
         return new ResponseData<>(HttpStatus.OK.value(), "List of product category", productCategoryService.findAllProductCategories());
     }
 
-    @PostMapping("/")
+    @PostMapping
     public ResponseData<Product> createProduct(@ModelAttribute ProductDTO productRequest, @RequestParam("productImage") MultipartFile productImage) {
+        AuthorizationUtils.checkAuthorization("POST_STAFF", "PRODUCT_STAFF", "SELLER");
         return new ResponseData<>(HttpStatus.CREATED.value(), "New Milk Product create successfully", productService.createProduct(productRequest, productImage));
     }
 
     //Delete Product
     @PatchMapping("/{ID}/delete")
     public ResponseData<Post> deleteProduct(@PathVariable int ID) {
+        AuthorizationUtils.checkAuthorization("POST_STAFF", "PRODUCT_STAFF", "SELLER");
         productService.deleteProduct(ID);
         return new ResponseData<>(HttpStatus.OK.value(), "Product deleted successfully", null);
     }
@@ -49,6 +52,7 @@ public class ProductStaffController {
     //Update Product
     @PatchMapping("/{productId}")
     public ResponseData<Product> updateProduct(@PathVariable int productId, @ModelAttribute ProductDTO productRequest, @RequestParam("productImage") MultipartFile productImage) {
+        AuthorizationUtils.checkAuthorization("POST_STAFF", "PRODUCT_STAFF", "SELLER");
         return new ResponseData<>(HttpStatus.OK.value(), "Product update successfully", productService.updateProduct(productId, productRequest, productImage));
     }
 

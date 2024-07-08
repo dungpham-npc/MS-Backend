@@ -65,15 +65,4 @@ public class OtpController {
 
 
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ResponseData<String> handleIllegalArgumentException(IllegalArgumentException e){
-        return new ResponseData<>(HttpStatus.CONFLICT.value(), e.getMessage(), null);
-    }
-
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ResponseData<String> handleDataIntegrityViolationException(DataIntegrityViolationException e){
-        return new ResponseData<>(HttpStatus.CONFLICT.value(), e.getMessage(), null);
-    }
 }

@@ -20,8 +20,6 @@ public class ProductDTO {
     @NotNull(message = "Product category can not be null")
     private int categoryID;
 
-    private int postID;
-
     //validate product name unique
     @NotNull(message = "Product name can not be null")
     private String productName;

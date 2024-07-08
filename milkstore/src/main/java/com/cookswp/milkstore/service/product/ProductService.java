@@ -35,7 +35,6 @@ public class ProductService implements IProductService {
         validProductRequest(productRequest, true);
         Product product = Product.builder()
                 .categoryID(productRequest.getCategoryID())
-                .postID(productRequest.getPostID())
                 .productName(productRequest.getProductName())
                 .productDescription(productRequest.getProductDescription())
                 .productImage(imageURL)
@@ -59,7 +58,6 @@ public class ProductService implements IProductService {
 
         validProductRequest(productRequest, false);
         product.setCategoryID(productRequest.getCategoryID());
-        product.setPostID(productRequest.getPostID());
         product.setProductName(productRequest.getProductName());
         product.setProductDescription(productRequest.getProductDescription());
         product.setQuantity(productRequest.getQuantity());
@@ -118,9 +116,6 @@ public class ProductService implements IProductService {
     private void validProductRequest(ProductDTO productRequest, boolean checkDuplicateName) {
         if (!productRepository.existsByCategoryID(productRequest.getCategoryID())) {
             throw new AppException(ErrorCode.CATEGORY_NOT_EXISTED);
-        }
-        if (!postRepository.existsById(productRequest.getPostID())) {
-            throw new AppException(ErrorCode.POST_ID_NOT_FOUND);
         }
         if (productRequest.getPrice() == null || productRequest.getPrice().compareTo(BigDecimal.ZERO) < 0) {
             throw new AppException(ErrorCode.INVALID_PRICE);

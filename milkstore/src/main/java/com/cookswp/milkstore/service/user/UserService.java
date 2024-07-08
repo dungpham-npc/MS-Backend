@@ -143,5 +143,13 @@ public class UserService {
         }
     }
 
+    public void unbanMemberUser(int id){
+        User user = userRepository.findByUserId(id);
+        if (user != null) {
+            user.setProhibitStatus(false);
+            userRepository.save(user);
+        }
+    }
+
 
 }
