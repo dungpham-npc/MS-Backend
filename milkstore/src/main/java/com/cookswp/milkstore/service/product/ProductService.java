@@ -35,7 +35,7 @@ public class ProductService implements IProductService {
     @Override
     public Product createProduct(ProductDTO productRequest, MultipartFile productImageFile) {
         String imageURL = firebaseService.upload(productImageFile);
-        validProductRequest(productRequest, true);
+       // validProductRequest(productRequest, true);
         Product product = Product.builder()
                 .categoryID(productRequest.getCategoryID())
                 .productName(productRequest.getProductName())

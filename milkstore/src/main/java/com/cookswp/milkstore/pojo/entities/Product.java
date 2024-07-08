@@ -21,8 +21,8 @@ public class Product implements Serializable {
     @Column(name = "product_id")
     private int productID;
 
-    @Column(name = "orderID")
-    private String orderID;
+//    @Column(name = "orderID", nullable = true)
+//    private String orderID;
 
     @Column(name ="category_id", nullable = false)
     private int categoryID;
