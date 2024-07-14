@@ -12,7 +12,9 @@ public interface IProductService {
 
     Product createProduct(ProductDTO product, MultipartFile productImageFile);
 
-    Product updateProduct(int productID, ProductDTO product, MultipartFile productImageFile);
+    Product updateProduct(int productID, ProductDTO product, boolean checkDuplicateName);
+
+    Product updateProductImage(int productID, MultipartFile productImage);
 
     void deleteProduct(int id);
 
@@ -23,5 +25,6 @@ public interface IProductService {
     List<Product> searchProduct(String keyword);
 
     void reduceQuantityProduct(int productId, int quantity);
+
 
 }

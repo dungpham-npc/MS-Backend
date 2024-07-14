@@ -8,6 +8,7 @@ import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
 
 @NoArgsConstructor
@@ -28,14 +29,14 @@ public class ProductDTO {
     private String productDescription;
 
     @NotNull(message = "Manufacturing date can not be null")
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
-    @JsonFormat(pattern = "dd-MM-yyyy")
-    private Date manuDate;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate manuDate;
 
     @NotNull(message = "Expiration date can not be null")
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
-    @JsonFormat(pattern = "dd-MM-yyyy")
-    private Date expiDate;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate expiDate;
 
     @NotNull(message = "Quantity can not be null")
     @Size(min = 1, message = "Quantity can not lower than 1")
@@ -44,5 +45,7 @@ public class ProductDTO {
     @NotNull(message = "Price can not be null")
     @Size(min = 1, message = "Price can not lower than 1")
     private BigDecimal price;
+
+    private boolean visibilityStatus;
 
 }

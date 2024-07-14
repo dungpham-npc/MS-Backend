@@ -6,6 +6,7 @@ import lombok.*;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
 
 @NoArgsConstructor
@@ -43,18 +44,21 @@ public class Product implements Serializable {
     private BigDecimal price;
 
     @Column(name = "manu_date", nullable = false)
-    @JsonFormat(pattern = "dd-MM-yyyy")
-    private Date manuDate;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate manuDate;
 
     @Column(name = "expi_date", nullable = false)
-    @JsonFormat(pattern = "dd-MM-yyyy")
-    private Date expiDate;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate expiDate;
 
-    @Column(name = "status")
-    private boolean status = true;
+    @Column(name = "delete_status")
+    private boolean deleteStatus = false;
+
+    @Column(name = "visibility_status")
+    private boolean visibilityStatus = true;
 
     //return true if manu date is before expi date
-    public boolean dateBefore(Date manuDate, Date expiDate){
-        return manuDate.before(expiDate);
+    public boolean dateBefore(LocalDate manuDate, LocalDate expiDate){
+        return manuDate.isBefore(expiDate);
     }
 }
