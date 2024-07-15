@@ -23,10 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 public class OrderService implements IOrderService {
@@ -90,7 +89,9 @@ public class OrderService implements IOrderService {
        // order.setCart(orderDTO.);
 
         //Save Cart Information before clear Cart
-        saveOrderItems(order, orderDTO.getItems());
+        if(orderDTO.getItems() != null){
+            saveOrderItems(order, orderDTO.getItems());
+        }
 
 
 
@@ -126,7 +127,28 @@ public class OrderService implements IOrderService {
             if ("00".equals(statusCode)) {
                 order.setOrderStatus(Status.PAID);
                 reduceProductQuantity(order.getId());
-                shoppingCartService.clearCartByUserId(order.getUserId());
+
+                Optional<ShoppingCart> cartOptional = shoppingCartRepository.findByUserId(order.getUserId());
+                if (cartOptional.isPresent()) {
+                    ShoppingCart shoppingCart = cartOptional.get();
+                    //Get cart
+                    // Lưu các mục giỏ hàng vào bảng OrderItem
+                    List<OrderItem> orderItems = new ArrayList<>();
+                    for (ShoppingCartItem cartItem : shoppingCart.getItems()) {
+                        OrderItem orderItem = new OrderItem();
+                        orderItem.setOrderId(order.getId()); // Thiết lập orderId từ đối tượng Order
+                        orderItem.setProductId(cartItem.getProduct().getProductID());
+                        orderItem.setProductName(cartItem.getProduct().getProductName());
+                        orderItem.setQuantity(cartItem.getQuantity());
+                        orderItem.setPrice(cartItem.getProduct().getPrice());
+                        orderItems.add(orderItem);
+                    }
+                    orderItemRepository.saveAll(orderItems);
+
+                    // Xóa các mục giỏ hàng trong ShoppingCart
+                    shoppingCart.getItems().clear();
+                    shoppingCartRepository.save(shoppingCart);
+                }
 
             }//add new
             orderRepository.save(order);
@@ -243,4 +265,56 @@ public class OrderService implements IOrderService {
         order.setShippingAddress(orderDTO.getShippingAddress());
         return order;
     }
+//    @Override
+//    public Long getNumberOfOrdersByStatus(String status) throws IllegalArgumentException{
+//        return orderRepository.getNumberOfOrdersByStatus(Status.valueOf(status));
+//    }
+//
+//    @Override
+//    public Long getTotalOrders() {
+//        return orderRepository.getTotalOrders();
+//    }
+//
+//    @Override
+//    public Double getTotalRevenue() {
+//        return orderRepository.getTotalRevenue();
+//    }
+//
+//    @Override
+//    public Map<Status, Long> getOrderStatusBreakdown() {
+//        List<Object[]> result = orderRepository.getOrderStatusBreakdown();
+//        return result.stream().collect(Collectors.toMap(
+//                row -> (Status) row[0],
+//                row -> (Long) row[1]
+//        ));
+//    }
+//
+//    @Override
+//    public Double getAverageRevenuePerOrder() {
+//        return orderRepository.getAverageRevenuePerOrder();
+//    }
+//
+//    @Override
+//    public Long getOrdersByMonth(int startMonth, int endMonth) {
+//        return orderRepository.getOrdersByMonth(startMonth, endMonth);
+//    }
+//
+//    @Override
+//    public Map<Integer, Long> getOrderCountsForYear(int year) {
+//        List<Integer> months = IntStream.rangeClosed(1, 12).boxed().toList();
+//        List<Object[]> results = orderRepository.getOrderCountsByMonth(year);
+//
+//        Map<Integer, Long> ordersByMonth = new HashMap<>();
+//        for (Integer month : months) {
+//            ordersByMonth.put(month, 0L);
+//        }
+//
+//        for (Object[] result : results) {
+//            Integer month = (Integer) result[0];
+//            Long count = (Long) result[1];
+//            ordersByMonth.put(month, count);
+//        }
+//
+//        return ordersByMonth;
+//    }
 }
