@@ -19,4 +19,8 @@ public interface FeedbackRepository extends JpaRepository<Feedback, Integer> {
 
     @Query("SELECT f FROM Feedback f WHERE f.status = TRUE and f.feedbackID = :feedbackID")
     Feedback findByFeedbackID(@Param("feedbackID") int feedbackID);
+
+    @Query("SELECT f FROM Feedback f WHERE f.status = TRUE and f.orderID = :orderID")
+    Feedback findByOrderID(@Param("orderID") String orderID);
+
 }

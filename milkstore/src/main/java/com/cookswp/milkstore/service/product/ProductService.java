@@ -3,9 +3,14 @@ package com.cookswp.milkstore.service.product;
 import com.cookswp.milkstore.exception.AppException;
 import com.cookswp.milkstore.exception.ErrorCode;
 import com.cookswp.milkstore.pojo.dtos.ProductModel.ProductDTO;
+import com.cookswp.milkstore.pojo.entities.Feedback;
+import com.cookswp.milkstore.pojo.entities.Order;
 import com.cookswp.milkstore.pojo.entities.Product;
+import com.cookswp.milkstore.repository.feedback.FeedbackRepository;
 import com.cookswp.milkstore.repository.post.PostRepository;
 import com.cookswp.milkstore.repository.product.ProductRepository;
+import com.cookswp.milkstore.service.feedback.FeedBackServiceImpl;
+import com.cookswp.milkstore.service.feedback.IFeedBackService;
 import com.cookswp.milkstore.service.firebase.FirebaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,12 +26,14 @@ public class ProductService implements IProductService {
     private final PostRepository postRepository;
     private final FirebaseService firebaseService;
     private final Product product = new Product();
+    private final FeedbackRepository feedbackRepository;
 
     @Autowired
-    public ProductService(ProductRepository productRepository, PostRepository postRepository, FirebaseService firebaseService) {
+    public ProductService(ProductRepository productRepository, PostRepository postRepository, FirebaseService firebaseService, FeedbackRepository feedbackRepository) {
         this.productRepository = productRepository;
         this.postRepository = postRepository;
         this.firebaseService = firebaseService;
+        this.feedbackRepository = feedbackRepository;
     }
 
     @Override
@@ -85,6 +92,9 @@ public class ProductService implements IProductService {
     public Product getProductById(int id) {
         Product product = productRepository.getProductById(id);
         if (product == null) throw new AppException(ErrorCode.PRODUCT_ID_NOT_FOUND);
+        Feedback feedBack = feedbackRepository.findByOrderID(product.getOrderID());
+        if (feedBack == null) throw new AppException(ErrorCode.FEEDBACK_NOT_FOUND);
+        product.setFeedbackID(feedBack.getFeedbackID());
         return product;
     }
 

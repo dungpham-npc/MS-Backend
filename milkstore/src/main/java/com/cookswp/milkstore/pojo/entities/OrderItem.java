@@ -38,10 +38,6 @@ public class OrderItem {
     @Column(name = "price", nullable = false)
     private BigDecimal price;
 
-
-
-
-
 }
 
 

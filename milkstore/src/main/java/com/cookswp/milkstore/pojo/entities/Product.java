@@ -56,6 +56,9 @@ public class Product implements Serializable {
     @Column(name = "visibility_status")
     private boolean status = true;
 
+    @Column(name = "feedback_id")
+    private int feedbackID;
+
     //return true if manu date is before expi date
     public boolean dateBefore(Date manuDate, Date expiDate){
         return manuDate.before(expiDate);

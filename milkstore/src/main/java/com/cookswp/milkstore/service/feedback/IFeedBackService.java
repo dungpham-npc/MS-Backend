@@ -16,4 +16,7 @@ public interface IFeedBackService {
     List<Feedback> getAllFeedback();
 
     Feedback getFeedbackByID(int feedbackID);
+
+    Feedback getFeedbackByOrderID(String orderID);
+
 }

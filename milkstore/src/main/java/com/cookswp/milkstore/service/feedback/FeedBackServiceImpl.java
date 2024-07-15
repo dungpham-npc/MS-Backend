@@ -6,6 +6,7 @@ import com.cookswp.milkstore.exception.ErrorCode;
 import com.cookswp.milkstore.pojo.dtos.FeedbackModel.FeedBackRequest;
 import com.cookswp.milkstore.pojo.entities.Feedback;
 import com.cookswp.milkstore.pojo.entities.Order;
+import com.cookswp.milkstore.pojo.entities.OrderItem;
 import com.cookswp.milkstore.repository.feedback.FeedbackRepository;
 import com.cookswp.milkstore.repository.order.OrderRepository;
 import com.cookswp.milkstore.service.order.OrderService;
@@ -14,17 +15,16 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class FeedBackServiceImpl implements IFeedBackService {
 
     private final FeedbackRepository feedbackRepository;
-    private final OrderRepository orderRepository;
     private final OrderService orderService;
 
-    public FeedBackServiceImpl(FeedbackRepository feedbackRepository, OrderRepository orderRepository, OrderService orderService) {
+    public FeedBackServiceImpl(FeedbackRepository feedbackRepository, OrderService orderService) {
         this.feedbackRepository = feedbackRepository;
-        this.orderRepository = orderRepository;
         this.orderService = orderService;
     }
 
@@ -88,4 +88,10 @@ public class FeedBackServiceImpl implements IFeedBackService {
         }
         return feedback;
     }
+
+    @Override
+    public Feedback getFeedbackByOrderID(String orderID) {
+        return null;
+    }
+
 }

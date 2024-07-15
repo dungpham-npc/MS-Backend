@@ -6,6 +6,7 @@ import com.cookswp.milkstore.pojo.entities.Post;
 import com.cookswp.milkstore.pojo.entities.ProductCategory;
 import com.cookswp.milkstore.pojo.entities.Product;
 import com.cookswp.milkstore.response.ResponseData;
+import com.cookswp.milkstore.service.feedback.FeedBackServiceImpl;
 import com.cookswp.milkstore.service.product.ProductService;
 import com.cookswp.milkstore.service.productCategory.ProductCategoryService;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ public class ProductStaffController {
     private final ProductService productService;
 
     private final ProductCategoryService productCategoryService;
+    private final FeedBackServiceImpl feedBackServiceImpl;
 
     @PostMapping("/category")
     public ResponseData<ProductCategory> createProductCategory(@RequestBody ProductCategoryDTO productCategoryRequest) {
