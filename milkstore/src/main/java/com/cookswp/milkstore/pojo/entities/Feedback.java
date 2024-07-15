@@ -24,11 +24,14 @@ public class Feedback {
     @Column(name = "user_id", nullable = false)
     private int userID;
 
-    @Column(name = "feedback_description")
+    @Column(name = "feedback_description", columnDefinition = "TEXT")
     private String description;
 
     @Column(name = "feedback_time", nullable = false)
     private LocalDateTime feedbackTime;
+
+    @Column(name = "feedback_status")
+    private boolean status;
 
     @Column(name = "feedback_rating", nullable = false)
     private int rating;

@@ -37,9 +37,11 @@ public enum ErrorCode {
     PRODUCT_NOT_AVAILABLE(28, "Product does not enough quantity"),
     //Checkout to Order Code
     ORDER_NOT_FOUND(29, "Order not found"),
-    INVALID_ORDER_STATUS(30, "Order does not have a correct status to define ");
+    INVALID_ORDER_STATUS(30, "Order does not have a correct status to define "),
 
-
+    //Feedback error
+    FEEDBACK_NOT_FOUND(31, "Feedback not found"),
+    FEEDBACK_RATING_ERROR(32, "Rating should from 1 to 5 star");
 
 
 
