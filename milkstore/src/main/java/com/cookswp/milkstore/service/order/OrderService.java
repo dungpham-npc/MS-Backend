@@ -87,7 +87,7 @@ public class OrderService implements IOrderService {
         order.setOrderDate(LocalDateTime.now());
         order.setShippingAddress(orderDTO.getShippingAddress());
         // order.setCart(orderDTO.);
-        //If orderItem is null
+
         //Save Cart Information before clear Cart
         if (orderDTO.getItems() != null) {
             saveOrderItems(order, orderDTO.getItems());
