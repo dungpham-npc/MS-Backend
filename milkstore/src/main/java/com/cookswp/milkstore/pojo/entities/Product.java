@@ -53,7 +53,7 @@ public class Product implements Serializable {
     @JsonFormat(pattern = "dd-MM-yyyy")
     private Date expiDate;
 
-    @Column(name = "status")
+    @Column(name = "visibility_status")
     private boolean status = true;
 
     //return true if manu date is before expi date
