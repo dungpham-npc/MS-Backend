@@ -1,10 +1,14 @@
 package com.cookswp.milkstore.service.feedback;
 
+import com.cookswp.milkstore.enums.Status;
 import com.cookswp.milkstore.exception.AppException;
 import com.cookswp.milkstore.exception.ErrorCode;
 import com.cookswp.milkstore.pojo.dtos.FeedbackModel.FeedBackRequest;
 import com.cookswp.milkstore.pojo.entities.Feedback;
+import com.cookswp.milkstore.pojo.entities.Order;
 import com.cookswp.milkstore.repository.feedback.FeedbackRepository;
+import com.cookswp.milkstore.repository.order.OrderRepository;
+import com.cookswp.milkstore.service.order.OrderService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -15,9 +19,13 @@ import java.util.Optional;
 public class FeedBackServiceImpl implements IFeedBackService {
 
     private final FeedbackRepository feedbackRepository;
+    private final OrderRepository orderRepository;
+    private final OrderService orderService;
 
-    public FeedBackServiceImpl(FeedbackRepository feedbackRepository) {
+    public FeedBackServiceImpl(FeedbackRepository feedbackRepository, OrderRepository orderRepository, OrderService orderService) {
         this.feedbackRepository = feedbackRepository;
+        this.orderRepository = orderRepository;
+        this.orderService = orderService;
     }
 
     @Override
@@ -26,6 +34,10 @@ public class FeedBackServiceImpl implements IFeedBackService {
         int rating = feedBackRequest.getRating();
         if(rating < 1 || rating > 5 ){
             throw new AppException(ErrorCode.FEEDBACK_RATING_ERROR);
+        }
+        Order order = orderService.getOrderById(feedBackRequest.getOrderID());
+        if(order.getOrderStatus() == Status.COMPLETE_EXCHANGE){
+            feedback.setOrderID(feedBackRequest.getOrderID());
         }
         feedback.setRating(rating);
         feedback.setUserID(feedBackRequest.getUserID());

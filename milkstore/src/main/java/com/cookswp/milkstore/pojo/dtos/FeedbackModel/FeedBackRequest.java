@@ -9,6 +9,8 @@ public class FeedBackRequest {
 
     private int userID;
 
+    private String orderID;
+
     private String description;
 
     private int rating;

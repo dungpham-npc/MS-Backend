@@ -21,6 +21,9 @@ public class Feedback {
     @Column(name = "id_of_review")
     private int feedbackID;
 
+    @Column(name = "order_id", nullable = false)
+    private String orderID;
+
     @Column(name = "user_id", nullable = false)
     private int userID;
 
