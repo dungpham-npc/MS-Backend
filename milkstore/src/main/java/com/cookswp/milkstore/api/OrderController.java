@@ -33,9 +33,8 @@ public class OrderController {
 
     //This API use to get order with an order Id
     @GetMapping("/{orderId}")
-    public ResponseData<List<OrderItem>> getOrderItemsByOrderId(@PathVariable String orderId) {
-        List<OrderItem> orderItems = orderService.getOrderItemsByOrderId(orderId);
-        return new ResponseData<>(HttpStatus.OK.value(), "Retrieve order items successfully", orderItems);
+    public ResponseData<Order> getOrderItemsByOrderId(@PathVariable String orderId) {
+        return new ResponseData<>(HttpStatus.OK.value(), "Retrieve order items successfully", orderService.getOrderById(orderId));
     }
 
     //This API use to create Order
