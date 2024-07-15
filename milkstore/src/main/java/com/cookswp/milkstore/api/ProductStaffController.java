@@ -51,9 +51,23 @@ public class ProductStaffController {
 
     //Update Product
     @PatchMapping("/{productId}")
-    public ResponseData<Product> updateProduct(@PathVariable int productId, @ModelAttribute ProductDTO productRequest, @RequestParam("productImage") MultipartFile productImage) {
+    public ResponseData<Product> updateProduct(@PathVariable int productId, @ModelAttribute ProductDTO productRequest, @RequestParam(value = "productImage", required = false) MultipartFile productImage) {
         AuthorizationUtils.checkAuthorization("POST_STAFF", "PRODUCT_STAFF", "SELLER");
-        return new ResponseData<>(HttpStatus.OK.value(), "Product update successfully", productService.updateProduct(productId, productRequest, productImage));
+//        if (productImage == null) {
+//            productService.updateProduct(productId, productRequest, !productRequest.getProductName().equalsIgnoreCase(productService.getProductById(productId).getProductName()));
+//        } else {
+//            productService.updateProductImage(productId, productImage);
+//            productService.updateProduct(productId, productRequest);
+//        }
+        boolean isProductNameChanged = !productRequest.getProductName().equalsIgnoreCase(productService.getProductById(productId).getProductName());
+
+        if (productImage != null) {
+            productService.updateProductImage(productId, productImage);
+        }
+
+        productService.updateProduct(productId, productRequest, isProductNameChanged);
+
+        return new ResponseData<>(HttpStatus.OK.value(), "Product update successfully", null);
     }
 
     //Get all
@@ -75,6 +89,12 @@ public class ProductStaffController {
     public ResponseData<List<Product>> searchProduct(@RequestParam(value = "value") String value) {
         return new ResponseData<>(HttpStatus.OK.value(), "Search product: " + value, productService.searchProduct(value));
     }
+
+//    @PatchMapping("/disable/{id}")
+//    public ResponseData<String> disableProduct(@PathVariable int id){
+//        productService.disableProduct(id);
+//        return new ResponseData<>(HttpStatus.OK.value(), "Product disabled!", null);
+//    }
     //
 
 

@@ -8,12 +8,17 @@ import com.cookswp.milkstore.repository.post.PostRepository;
 import com.cookswp.milkstore.repository.product.ProductRepository;
 import com.cookswp.milkstore.repository.productCategory.ProductCategoryRepository;
 import com.cookswp.milkstore.service.firebase.FirebaseService;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductService implements IProductService {
@@ -45,40 +50,52 @@ public class ProductService implements IProductService {
                 .price(productRequest.getPrice())
                 .manuDate(productRequest.getManuDate())
                 .expiDate(productRequest.getExpiDate())
-                .status(true)
+                .deleteStatus(false)
+                .visibilityStatus(true)
                 .build();
         return productRepository.save(product);
     }
 
     @Override
-    public Product updateProduct(int productID, ProductDTO productRequest, MultipartFile productImage) {
+    public Product updateProduct(int productID, ProductDTO productRequest, boolean checkDuplicateName) {
         Product product = productRepository.getProductById(productID);
         if (product == null) {
             throw new AppException(ErrorCode.PRODUCT_NOT_FOUND);
         }
 
-        String imageURL = firebaseService.upload(productImage);
 
-        validProductRequest(productRequest, false);
+        validProductRequest(productRequest, checkDuplicateName);
         product.setCategoryID(productRequest.getCategoryID());
         product.setProductName(productRequest.getProductName());
         product.setProductDescription(productRequest.getProductDescription());
         product.setQuantity(productRequest.getQuantity());
         product.setPrice(productRequest.getPrice());
-        product.setProductImage(imageURL);
         product.setManuDate(productRequest.getManuDate());
         product.setExpiDate(productRequest.getExpiDate());
-        product.setStatus(true);
+        product.setDeleteStatus(false);
+        product.setVisibilityStatus(true);
 
         return productRepository.save(product);
     }
+
+    @Override
+    public Product updateProductImage(int productID, MultipartFile productImage){
+        Product product = productRepository.getProductById(productID);
+        if (product == null) {
+            throw new AppException(ErrorCode.PRODUCT_NOT_FOUND);
+        }
+        String imageURL = firebaseService.upload(productImage);
+        product.setProductImage(imageURL);
+        return productRepository.save(product);
+    }
+
 
 
     @Override
     public void deleteProduct(int id) {
         Product product = productRepository.getProductById(id);
         if (product == null) throw new AppException(ErrorCode.PRODUCT_NOT_FOUND);
-        product.setStatus(false);
+        product.setDeleteStatus(true);
         productRepository.save(product);
     }
 
@@ -92,9 +109,20 @@ public class ProductService implements IProductService {
     @Override
     public List<Product> getAllProducts() {
         List<Product> list = productRepository.getAll();
-        if (list == null) throw new AppException(ErrorCode.PRODUCT_LIST_NOT_FOUND);
-        return list;
+
+        if (list == null) {
+            throw new AppException(ErrorCode.PRODUCT_LIST_NOT_FOUND);
+        }
+
+        return list.stream()
+                .peek(product -> {
+                    if (product.getExpiDate().isBefore(LocalDate.now()) && product.isVisibilityStatus()) {
+                        disableProduct(product.getProductID());
+                    }
+                })
+                .collect(Collectors.toList());
     }
+
 
     @Override
     public List<Product> searchProduct(String value) {
@@ -136,6 +164,13 @@ public class ProductService implements IProductService {
         if (productRequest.getQuantity() < 0) {
             throw new AppException(ErrorCode.PRODUCT_QUANTITY_INVALID);
         }
+    }
+
+    private void disableProduct(int productId){
+        Product product = productRepository.getProductById(productId);
+        if (product == null) throw new AppException(ErrorCode.PRODUCT_NOT_FOUND);
+        product.setVisibilityStatus(false);
+        productRepository.save(product);
     }
 
 }
