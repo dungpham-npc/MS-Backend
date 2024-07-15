@@ -74,7 +74,7 @@ public class OrderController {
 
     //This API use to cancel Order to Shipping and update Status for     this
     @PutMapping("/cancel/{orderId}")
-    public ResponseData<Order> cancelOrderToShipping(@PathVariable String orderId, @RequestParam String reason) {
+    public ResponseData<Order> cancelOrderWithReason(@PathVariable String orderId, @RequestParam String reason) {
         return new ResponseData<>(HttpStatus.OK.value(), "Cancel successfully", orderService.cancelOrder(orderId, reason));
     }
 

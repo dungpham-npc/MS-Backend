@@ -93,8 +93,6 @@ public class OrderService implements IOrderService {
             saveOrderItems(order, orderDTO.getItems());
         }
 
-
-
         return orderRepository.save(order);
     }
 
@@ -193,8 +191,21 @@ public class OrderService implements IOrderService {
     @Transactional
     public Order cancelOrder(String OrderId, String reason) {
         Order order = getOrderById(OrderId);
-        order.setOrderStatus(Status.CANNOT_DELIVER);
-        order.setFailureReasonNote(reason);
+        String reasons = order.getFailureReasonNote();
+        String[] token = reasons.split(";");
+        List<String> reasonList = Arrays.asList(token);
+
+        if(reasonList.isEmpty()) {
+            order.setFailureReasonNote(reason + "|" + LocalDateTime.now());
+            order.setOrderStatus(Status.CANNOT_DELIVER);
+        } else if (reasonList.size() == 1) {
+            order.setFailureReasonNote(reasonList.get(0)
+            + ";" + reason + "|" + LocalDateTime.now());
+            order.setOrderStatus(Status.CANNOT_CONFRIRM);
+        } else {
+            throw new RuntimeException("Can not cancel order more than 2 times");
+        }
+
         return orderRepository.save(order);
     }
 
