@@ -48,7 +48,7 @@ public class OrderService implements IOrderService {
     private final ShoppingCartRepository shoppingCartRepository;
 
     @Autowired
-    public OrderService(OrderRepository orderRepository, ProductService productService, ShoppingCartItemRepository shoppingCartItemRepository, TransactionLogRepository transactionLogRepository, UserRepository userRepository, OrderItemRepository orderItemRepository,  FirebaseService firebaseService, ShoppingCartService shoppingCartService, ShoppingCartRepository shoppingCartRepository) {
+    public OrderService(OrderRepository orderRepository, ProductService productService, ShoppingCartItemRepository shoppingCartItemRepository, TransactionLogRepository transactionLogRepository, UserRepository userRepository, OrderItemRepository orderItemRepository, FirebaseService firebaseService, ShoppingCartService shoppingCartService, ShoppingCartRepository shoppingCartRepository) {
         this.orderRepository = orderRepository;
         this.productService = productService;
         this.shoppingCartItemRepository = shoppingCartItemRepository;
@@ -86,13 +86,12 @@ public class OrderService implements IOrderService {
         order.setTotalPrice(orderDTO.getTotalPrice());
         order.setOrderDate(LocalDateTime.now());
         order.setShippingAddress(orderDTO.getShippingAddress());
-       // order.setCart(orderDTO.);
-
+        // order.setCart(orderDTO.);
+        //If orderItem is null
         //Save Cart Information before clear Cart
-        if(orderDTO.getItems() != null){
+        if (orderDTO.getItems() != null) {
             saveOrderItems(order, orderDTO.getItems());
         }
-
 
 
         return orderRepository.save(order);
@@ -116,44 +115,44 @@ public class OrderService implements IOrderService {
         orderRepository.deleteById(orderId);
     }
 
-        @Override
-        public Order updateOrderStatus(String orderID) {
-            Optional<Order> findOrder = orderRepository.findById(orderID);
-            if (findOrder.isEmpty()) {
-                return null;
-            }
-            Order order = findOrder.get();
-            String statusCode = transactionLogRepository.findTransactionNoByTxnRef(orderID);
-            if ("00".equals(statusCode)) {
-                order.setOrderStatus(Status.PAID);
-                reduceProductQuantity(order.getId());
-
-                Optional<ShoppingCart> cartOptional = shoppingCartRepository.findByUserId(order.getUserId());
-                if (cartOptional.isPresent()) {
-                    ShoppingCart shoppingCart = cartOptional.get();
-                    //Get cart
-                    // Lưu các mục giỏ hàng vào bảng OrderItem
-                    List<OrderItem> orderItems = new ArrayList<>();
-                    for (ShoppingCartItem cartItem : shoppingCart.getItems()) {
-                        OrderItem orderItem = new OrderItem();
-                        orderItem.setOrderId(order.getId()); // Thiết lập orderId từ đối tượng Order
-                        orderItem.setProductId(cartItem.getProduct().getProductID());
-                        orderItem.setProductName(cartItem.getProduct().getProductName());
-                        orderItem.setQuantity(cartItem.getQuantity());
-                        orderItem.setPrice(cartItem.getProduct().getPrice());
-                        orderItems.add(orderItem);
-                    }
-                    orderItemRepository.saveAll(orderItems);
-
-                    // Xóa các mục giỏ hàng trong ShoppingCart
-                    shoppingCart.getItems().clear();
-                    shoppingCartRepository.save(shoppingCart);
-                }
-
-            }//add new
-            orderRepository.save(order);
-            return order;
+    @Override
+    public Order updateOrderStatus(String orderID) {
+        Optional<Order> findOrder = orderRepository.findById(orderID);
+        if (findOrder.isEmpty()) {
+            return null;
         }
+        Order order = findOrder.get();
+        String statusCode = transactionLogRepository.findTransactionNoByTxnRef(orderID);
+        if ("00".equals(statusCode)) {
+            order.setOrderStatus(Status.PAID);
+            reduceProductQuantity(order.getId());
+
+            Optional<ShoppingCart> cartOptional = shoppingCartRepository.findByUserId(order.getUserId());
+            if (cartOptional.isPresent()) {
+                ShoppingCart shoppingCart = cartOptional.get();
+                //Get cart
+                // Lưu các mục giỏ hàng vào bảng OrderItem
+                List<OrderItem> orderItems = new ArrayList<>();
+                for (ShoppingCartItem cartItem : shoppingCart.getItems()) {
+                    OrderItem orderItem = new OrderItem();
+                    orderItem.setOrderId(order.getId()); // Thiết lập orderId từ đối tượng Order
+                    orderItem.setProductId(cartItem.getProduct().getProductID());
+                    orderItem.setProductName(cartItem.getProduct().getProductName());
+                    orderItem.setQuantity(cartItem.getQuantity());
+                    orderItem.setPrice(cartItem.getProduct().getPrice());
+                    orderItems.add(orderItem);
+                }
+                orderItemRepository.saveAll(orderItems);
+
+                // Xóa các mục giỏ hàng trong ShoppingCart
+                shoppingCart.getItems().clear();
+                shoppingCartRepository.save(shoppingCart);
+            }
+
+        }//add new
+        orderRepository.save(order);
+        return order;
+    }
 
     @Override
     public List<Order> getAll() {
@@ -217,7 +216,7 @@ public class OrderService implements IOrderService {
         if (order.getOrderStatus() == Status.CANNOT_DELIVER) {
             order.setOrderStatus(Status.IN_DELIVERY);
             return orderRepository.save(order);
-        } else{
+        } else {
             throw new AppException(ErrorCode.INVALID_ORDER_STATUS);
         }
     }
