@@ -52,7 +52,7 @@ public class SecurityConfig {
         return httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/register", "/login", "/register/**", "/otp", "/otp/**", "/account", "/account/**", "/api/products").permitAll();
+                    auth.requestMatchers("/register", "/login", "/register/**", "/otp", "/otp/**", "/account", "/account/**", "/api/products", "/api/products/{id}").permitAll();
                     auth.anyRequest().authenticated();
                 })
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))

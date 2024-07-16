@@ -65,6 +65,23 @@ public class JwtUtils {
                 .compact();
     }
 
+    public String buildTempToken(String email) {
+        // Set expiration time to 5 minutes from now (in milliseconds)
+        long fiveMinutesInMs = 5 * 60 * 1000;  // 5 minutes * 60 seconds/minute * 1000 milliseconds/second
+
+        Date date = new Date();
+        Date issuedAtTime = new Date(date.getTime());
+        Date expTime = new Date(date.getTime() + fiveMinutesInMs);
+
+        // Build the JWT with email as subject, expiration time, and omit roles claim
+        return Jwts.builder()
+                .subject(email)
+                .issuedAt(issuedAtTime)
+                .expiration(expTime)
+                .signWith(getSigningKey())
+                .compact();
+    }
+
     public SecretKey getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
         return Keys.hmacShaKeyFor(keyBytes);
