@@ -87,8 +87,9 @@ public class OrderService implements IOrderService {
        // order.setCart(orderDTO.);
 
         //Save Cart Information before clear Cart
-        saveOrderItems(order, orderDTO.getItems());
-
+        if(orderDTO.getItems() != null){
+            saveOrderItems(order, orderDTO.getItems());
+        }
 
 
         return orderRepository.save(order);
