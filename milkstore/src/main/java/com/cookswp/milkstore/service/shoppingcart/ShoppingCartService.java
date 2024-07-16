@@ -35,7 +35,7 @@ public class ShoppingCartService implements IShoppingCartService {
 
     @Override
     public List<ShowCartModelDTO> getCartByUserId(int userId) {
-        Optional<ShoppingCart> shoppingCartOptional = shoppingCartRepository.findById(userId);
+        Optional<ShoppingCart> shoppingCartOptional = shoppingCartRepository.findByUserId(userId);//Fix find by user ID
         if (shoppingCartOptional.isEmpty()) {
             throw new AppException(ErrorCode.CART_NOT_FOUND);//Handle exception in Cart
         }
@@ -47,7 +47,7 @@ public class ShoppingCartService implements IShoppingCartService {
                     cartItemModel.setProductName(item.getProduct().getProductName());
                     cartItemModel.setQuantity(item.getQuantity());
                     cartItemModel.setPrice(item.getProduct().getPrice());
-                    cartItemModel.setProductImage(item.getProduct().getProductImage());//Update image filed in cart
+                    cartItemModel.setProductImage(item.getProduct().getProductImage());
                     return cartItemModel;
                 })
                 .collect(Collectors.toList());
