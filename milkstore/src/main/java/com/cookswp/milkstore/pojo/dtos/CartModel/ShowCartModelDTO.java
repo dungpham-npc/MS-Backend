@@ -27,6 +27,6 @@ public class ShowCartModelDTO implements Serializable {
         private String productName;
         private int quantity;
         private BigDecimal price;
-        private String productImage;
+        private String productImage;//Update productImage in field ShowCartModelDTO
     }
 }
