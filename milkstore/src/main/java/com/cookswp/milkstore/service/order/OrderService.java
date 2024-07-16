@@ -147,7 +147,7 @@ public class OrderService implements IOrderService {
                 shoppingCart.getItems().clear();
                 shoppingCartRepository.save(shoppingCart);
             }
-        //
+        //BAO BEU
         }//add new
         orderRepository.save(order);
         return order;
