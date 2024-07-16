@@ -114,44 +114,44 @@ public class OrderService implements IOrderService {
         orderRepository.deleteById(orderId);
     }
 
-        @Override
-        public Order updateOrderStatus(String orderID) {
-            Optional<Order> findOrder = orderRepository.findById(orderID);
-            if (findOrder.isEmpty()) {
-                return null;
-            }
-            Order order = findOrder.get();
-            String statusCode = transactionLogRepository.findTransactionNoByTxnRef(orderID);
-            if ("00".equals(statusCode)) {
-                order.setOrderStatus(Status.PAID);
-                reduceProductQuantity(order.getId());
-
-                Optional<ShoppingCart> cartOptional = shoppingCartRepository.findByUserId(order.getUserId());
-                if (cartOptional.isPresent()) {
-                    ShoppingCart shoppingCart = cartOptional.get();
-
-                    // Lưu các mục giỏ hàng vào bảng OrderItem
-                    List<OrderItem> orderItems = new ArrayList<>();
-                    for (ShoppingCartItem cartItem : shoppingCart.getItems()) {
-                        OrderItem orderItem = new OrderItem();
-                        orderItem.setOrderId(order.getId()); // Thiết lập orderId từ đối tượng Order
-                        orderItem.setProductId(cartItem.getProduct().getProductID());
-                        orderItem.setProductName(cartItem.getProduct().getProductName());
-                        orderItem.setQuantity(cartItem.getQuantity());
-                        orderItem.setPrice(cartItem.getProduct().getPrice());
-                        orderItems.add(orderItem);
-                    }
-                    orderItemRepository.saveAll(orderItems);
-
-                    // Xóa các mục giỏ hàng trong ShoppingCart
-                    shoppingCart.getItems().clear();
-                    shoppingCartRepository.save(shoppingCart);
-                }
-
-            }//add new
-            orderRepository.save(order);
-            return order;
+    @Override
+    public Order updateOrderStatus(String orderID) {
+        Optional<Order> findOrder = orderRepository.findById(orderID);
+        if (findOrder.isEmpty()) {
+            return null;
         }
+        Order order = findOrder.get();
+        String statusCode = transactionLogRepository.findTransactionNoByTxnRef(orderID);
+        if ("00".equals(statusCode)) {
+            order.setOrderStatus(Status.PAID);
+            reduceProductQuantity(order.getId());
+
+            Optional<ShoppingCart> cartOptional = shoppingCartRepository.findByUserId(order.getUserId());
+            if (cartOptional.isPresent()) {
+                ShoppingCart shoppingCart = cartOptional.get();
+
+                // Lưu các mục giỏ hàng vào bảng OrderItem
+                List<OrderItem> orderItems = new ArrayList<>();
+                for (ShoppingCartItem cartItem : shoppingCart.getItems()) {
+                    OrderItem orderItem = new OrderItem();
+                    orderItem.setOrderId(order.getId()); // Thiết lập orderId từ đối tượng Order
+                    orderItem.setProductId(cartItem.getProduct().getProductID());
+                    orderItem.setProductName(cartItem.getProduct().getProductName());
+                    orderItem.setQuantity(cartItem.getQuantity());
+                    orderItem.setPrice(cartItem.getProduct().getPrice());
+                    orderItems.add(orderItem);
+                }
+                orderItemRepository.saveAll(orderItems);
+
+                // Xóa các mục giỏ hàng trong ShoppingCart
+                shoppingCart.getItems().clear();
+                shoppingCartRepository.save(shoppingCart);
+            }
+        //
+        }//add new
+        orderRepository.save(order);
+        return order;
+    }
 
     @Override
     public List<Order> getAll() {
