@@ -34,10 +34,9 @@ public enum ErrorCode {
     INVALID_QUANTITY(27, "Số lượng phải lớn hơn 0"),
     PRODUCT_NOT_AVAILABLE(28, "Sản phẩm không đủ số lượng"),
     ORDER_NOT_FOUND(29, "Đơn hàng không tìm thấy"),
-    INVALID_ORDER_STATUS(30, "Đơn hàng không có trạng thái đúng để xác định");
-
-
-
+    INVALID_ORDER_STATUS(30, "Đơn hàng không có trạng thái đúng để xác định"),
+    FEEDBACK_NOT_FOUND(31, "Không tìm thấy bài đánh giá"),
+    FEEDBACK_RATING_ERROR(32, "Đánh giá nên từ 1 đến 5 sao");
 
 
 
