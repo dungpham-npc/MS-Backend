@@ -9,6 +9,7 @@ import com.cookswp.milkstore.response.ResponseData;
 import com.cookswp.milkstore.service.feedback.FeedBackServiceImpl;
 import com.cookswp.milkstore.service.product.ProductService;
 import com.cookswp.milkstore.service.productCategory.ProductCategoryService;
+import com.cookswp.milkstore.utils.AuthorizationUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -36,22 +37,39 @@ public class ProductStaffController {
         return new ResponseData<>(HttpStatus.OK.value(), "List of product category", productCategoryService.findAllProductCategories());
     }
 
-    @PostMapping("/")
+    @PostMapping
     public ResponseData<Product> createProduct(@ModelAttribute ProductDTO productRequest, @RequestParam("productImage") MultipartFile productImage) {
+        AuthorizationUtils.checkAuthorization("POST_STAFF", "PRODUCT_STAFF", "SELLER");
         return new ResponseData<>(HttpStatus.CREATED.value(), "New Milk Product create successfully", productService.createProduct(productRequest, productImage));
     }
 
     //Delete Product
     @PatchMapping("/{ID}/delete")
     public ResponseData<Post> deleteProduct(@PathVariable int ID) {
+        AuthorizationUtils.checkAuthorization("POST_STAFF", "PRODUCT_STAFF", "SELLER");
         productService.deleteProduct(ID);
         return new ResponseData<>(HttpStatus.OK.value(), "Product deleted successfully", null);
     }
 
     //Update Product
     @PatchMapping("/{productId}")
-    public ResponseData<Product> updateProduct(@PathVariable int productId, @ModelAttribute ProductDTO productRequest, @RequestParam("productImage") MultipartFile productImage) {
-        return new ResponseData<>(HttpStatus.OK.value(), "Product update successfully", productService.updateProduct(productId, productRequest, productImage));
+    public ResponseData<Product> updateProduct(@PathVariable int productId, @ModelAttribute ProductDTO productRequest, @RequestParam(value = "productImage", required = false) MultipartFile productImage) {
+        AuthorizationUtils.checkAuthorization("POST_STAFF", "PRODUCT_STAFF", "SELLER");
+//        if (productImage == null) {
+//            productService.updateProduct(productId, productRequest, !productRequest.getProductName().equalsIgnoreCase(productService.getProductById(productId).getProductName()));
+//        } else {
+//            productService.updateProductImage(productId, productImage);
+//            productService.updateProduct(productId, productRequest);
+//        }
+        boolean isProductNameChanged = !productRequest.getProductName().equalsIgnoreCase(productService.getProductById(productId).getProductName());
+
+        if (productImage != null) {
+            productService.updateProductImage(productId, productImage);
+        }
+
+        productService.updateProduct(productId, productRequest, isProductNameChanged);
+
+        return new ResponseData<>(HttpStatus.OK.value(), "Product update successfully", null);
     }
 
     //Get all
@@ -73,6 +91,12 @@ public class ProductStaffController {
     public ResponseData<List<Product>> searchProduct(@RequestParam(value = "value") String value) {
         return new ResponseData<>(HttpStatus.OK.value(), "Search product: " + value, productService.searchProduct(value));
     }
+
+//    @PatchMapping("/disable/{id}")
+//    public ResponseData<String> disableProduct(@PathVariable int id){
+//        productService.disableProduct(id);
+//        return new ResponseData<>(HttpStatus.OK.value(), "Product disabled!", null);
+//    }
     //
 
 

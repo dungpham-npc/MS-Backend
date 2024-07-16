@@ -10,7 +10,7 @@ import java.util.List;
 
 @Repository
 public interface ShoppingCartItemRepository extends JpaRepository<ShoppingCartItem, Integer> {
-    @Query("select p from ShoppingCartItem p where p.product.status = true")
+    @Query("select p from ShoppingCartItem p where p.product.deleteStatus = true")
     List<ShoppingCartItem> findById(String orderId);
 
     @Query("select p from ShoppingCartItem p where p.product.productID =: id")

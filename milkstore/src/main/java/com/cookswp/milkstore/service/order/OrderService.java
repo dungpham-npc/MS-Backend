@@ -23,9 +23,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class OrderService implements IOrderService {
@@ -48,7 +49,7 @@ public class OrderService implements IOrderService {
     private final ShoppingCartRepository shoppingCartRepository;
 
     @Autowired
-    public OrderService(OrderRepository orderRepository, ProductService productService, ShoppingCartItemRepository shoppingCartItemRepository, TransactionLogRepository transactionLogRepository, UserRepository userRepository, OrderItemRepository orderItemRepository, FirebaseService firebaseService, ShoppingCartService shoppingCartService, ShoppingCartRepository shoppingCartRepository) {
+    public OrderService(OrderRepository orderRepository, ProductService productService, ShoppingCartItemRepository shoppingCartItemRepository, TransactionLogRepository transactionLogRepository, UserRepository userRepository, OrderItemRepository orderItemRepository,  FirebaseService firebaseService, ShoppingCartService shoppingCartService, ShoppingCartRepository shoppingCartRepository) {
         this.orderRepository = orderRepository;
         this.productService = productService;
         this.shoppingCartItemRepository = shoppingCartItemRepository;
@@ -86,12 +87,11 @@ public class OrderService implements IOrderService {
         order.setTotalPrice(orderDTO.getTotalPrice());
         order.setOrderDate(LocalDateTime.now());
         order.setShippingAddress(orderDTO.getShippingAddress());
-        // order.setCart(orderDTO.);
+       // order.setCart(orderDTO.);
 
         //Save Cart Information before clear Cart
-        if (orderDTO.getItems() != null) {
-            saveOrderItems(order, orderDTO.getItems());
-        }
+        saveOrderItems(order, orderDTO.getItems());
+
 
 
         return orderRepository.save(order);
@@ -115,44 +115,23 @@ public class OrderService implements IOrderService {
         orderRepository.deleteById(orderId);
     }
 
-    @Override
-    public Order updateOrderStatus(String orderID) {
-        Optional<Order> findOrder = orderRepository.findById(orderID);
-        if (findOrder.isEmpty()) {
-            return null;
-        }
-        Order order = findOrder.get();
-        String statusCode = transactionLogRepository.findTransactionNoByTxnRef(orderID);
-        if ("00".equals(statusCode)) {
-            order.setOrderStatus(Status.PAID);
-            reduceProductQuantity(order.getId());
-
-            Optional<ShoppingCart> cartOptional = shoppingCartRepository.findByUserId(order.getUserId());
-            if (cartOptional.isPresent()) {
-                ShoppingCart shoppingCart = cartOptional.get();
-                //Get cart
-                // Lưu các mục giỏ hàng vào bảng OrderItem
-                List<OrderItem> orderItems = new ArrayList<>();
-                for (ShoppingCartItem cartItem : shoppingCart.getItems()) {
-                    OrderItem orderItem = new OrderItem();
-                    orderItem.setOrderId(order.getId()); // Thiết lập orderId từ đối tượng Order
-                    orderItem.setProductId(cartItem.getProduct().getProductID());
-                    orderItem.setProductName(cartItem.getProduct().getProductName());
-                    orderItem.setQuantity(cartItem.getQuantity());
-                    orderItem.setPrice(cartItem.getProduct().getPrice());
-                    orderItems.add(orderItem);
-                }
-                orderItemRepository.saveAll(orderItems);
-
-                // Xóa các mục giỏ hàng trong ShoppingCart
-                shoppingCart.getItems().clear();
-                shoppingCartRepository.save(shoppingCart);
+        @Override
+        public Order updateOrderStatus(String orderID) {
+            Optional<Order> findOrder = orderRepository.findById(orderID);
+            if (findOrder.isEmpty()) {
+                return null;
             }
+            Order order = findOrder.get();
+            String statusCode = transactionLogRepository.findTransactionNoByTxnRef(orderID);
+            if ("00".equals(statusCode)) {
+                order.setOrderStatus(Status.PAID);
+                reduceProductQuantity(order.getId());
+                shoppingCartService.clearCartByUserId(order.getUserId());
 
-        }//add new
-        orderRepository.save(order);
-        return order;
-    }
+            }//add new
+            orderRepository.save(order);
+            return order;
+        }
 
     @Override
     public List<Order> getAll() {
@@ -216,7 +195,7 @@ public class OrderService implements IOrderService {
         if (order.getOrderStatus() == Status.CANNOT_DELIVER) {
             order.setOrderStatus(Status.IN_DELIVERY);
             return orderRepository.save(order);
-        } else {
+        } else{
             throw new AppException(ErrorCode.INVALID_ORDER_STATUS);
         }
     }
@@ -264,56 +243,4 @@ public class OrderService implements IOrderService {
         order.setShippingAddress(orderDTO.getShippingAddress());
         return order;
     }
-//    @Override
-//    public Long getNumberOfOrdersByStatus(String status) throws IllegalArgumentException{
-//        return orderRepository.getNumberOfOrdersByStatus(Status.valueOf(status));
-//    }
-//
-//    @Override
-//    public Long getTotalOrders() {
-//        return orderRepository.getTotalOrders();
-//    }
-//
-//    @Override
-//    public Double getTotalRevenue() {
-//        return orderRepository.getTotalRevenue();
-//    }
-//
-//    @Override
-//    public Map<Status, Long> getOrderStatusBreakdown() {
-//        List<Object[]> result = orderRepository.getOrderStatusBreakdown();
-//        return result.stream().collect(Collectors.toMap(
-//                row -> (Status) row[0],
-//                row -> (Long) row[1]
-//        ));
-//    }
-//
-//    @Override
-//    public Double getAverageRevenuePerOrder() {
-//        return orderRepository.getAverageRevenuePerOrder();
-//    }
-//
-//    @Override
-//    public Long getOrdersByMonth(int startMonth, int endMonth) {
-//        return orderRepository.getOrdersByMonth(startMonth, endMonth);
-//    }
-//
-//    @Override
-//    public Map<Integer, Long> getOrderCountsForYear(int year) {
-//        List<Integer> months = IntStream.rangeClosed(1, 12).boxed().toList();
-//        List<Object[]> results = orderRepository.getOrderCountsByMonth(year);
-//
-//        Map<Integer, Long> ordersByMonth = new HashMap<>();
-//        for (Integer month : months) {
-//            ordersByMonth.put(month, 0L);
-//        }
-//
-//        for (Object[] result : results) {
-//            Integer month = (Integer) result[0];
-//            Long count = (Long) result[1];
-//            ordersByMonth.put(month, count);
-//        }
-//
-//        return ordersByMonth;
-//    }
 }

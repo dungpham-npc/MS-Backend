@@ -6,6 +6,7 @@ import lombok.*;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
 
 @NoArgsConstructor
@@ -21,14 +22,11 @@ public class Product implements Serializable {
     @Column(name = "product_id")
     private int productID;
 
-    @Column(name = "orderID")
-    private String orderID;
+//    @Column(name = "orderID", nullable = true)
+//    private String orderID;
 
     @Column(name ="category_id", nullable = false)
     private int categoryID;
-
-    @Column(name = "post_id")
-    private int postID;
 
     @Column(name = "product_name", nullable = false, unique = true)
     private String productName;
@@ -46,21 +44,21 @@ public class Product implements Serializable {
     private BigDecimal price;
 
     @Column(name = "manu_date", nullable = false)
-    @JsonFormat(pattern = "dd-MM-yyyy")
-    private Date manuDate;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate manuDate;
 
     @Column(name = "expi_date", nullable = false)
-    @JsonFormat(pattern = "dd-MM-yyyy")
-    private Date expiDate;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate expiDate;
+
+    @Column(name = "delete_status")
+    private boolean deleteStatus = false;
 
     @Column(name = "visibility_status")
-    private boolean status = true;
-
-    @Column(name = "feedback_id")
-    private int feedbackID;
+    private boolean visibilityStatus = true;
 
     //return true if manu date is before expi date
-    public boolean dateBefore(Date manuDate, Date expiDate){
-        return manuDate.before(expiDate);
+    public boolean dateBefore(LocalDate manuDate, LocalDate expiDate){
+        return manuDate.isBefore(expiDate);
     }
 }

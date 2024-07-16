@@ -7,6 +7,7 @@ import com.cookswp.milkstore.pojo.dtos.UserModel.UserRegistrationDTO;
 import com.cookswp.milkstore.pojo.dtos.UserModel.UserDTO;
 import com.cookswp.milkstore.pojo.entities.User;
 import com.cookswp.milkstore.response.ResponseData;
+import com.cookswp.milkstore.service.role.RoleService;
 import com.cookswp.milkstore.service.user.UserService;
 import com.cookswp.milkstore.utils.AuthorizationUtils;
 import org.modelmapper.ModelMapper;
@@ -28,10 +29,13 @@ public class UserController {
     private final UserService userService;
     private final ModelMapper mapper;
 
+    private final RoleService roleService;
+
     @Autowired
-    public UserController(UserService userService, ModelMapper mapper){
+    public UserController(UserService userService, ModelMapper mapper, RoleService roleService){
         this.userService = userService;
         this.mapper = mapper;
+        this.roleService = roleService;
     }
 
     @GetMapping("/staffs")
@@ -90,12 +94,14 @@ public class UserController {
         if (!allowedRoles.contains(userRegistrationDTO.getRoleName())) {
             throw new RoleNotFoundException();
         }
+        User userToAdd = mapper.map(userRegistrationDTO, User.class);
+        userToAdd.setRole(roleService.getRoleByRoleName(userRegistrationDTO.getRoleName()));
 
-        User user = userService.registerStaff(mapper.map(userRegistrationDTO, User.class));
+        userService.registerStaff(userToAdd);
 
         return new ResponseData<>(HttpStatus.CREATED.value(),
                 "User created successfully!",
-                mapper.map(user, UserDTO.class));
+                null);
 
     }
 
@@ -113,7 +119,7 @@ public class UserController {
             throw new RoleNotFoundException();
         }
 
-        if (userRegistrationDTO.getPassword().matches(userService.getUserByEmail(userRegistrationDTO.getEmailAddress()).getPassword()))
+        if (userRegistrationDTO.getPassword().equals(userService.getUserByEmail(userRegistrationDTO.getEmailAddress()).getPassword()))
             userService.updateUserBasicInformation(id, mapper.map(userRegistrationDTO, User.class));
         else {
             userService.updateUserBasicInformation(id, mapper.map(userRegistrationDTO, User.class));
@@ -132,36 +138,21 @@ public class UserController {
         return new ResponseData<>(HttpStatus.OK.value(), "Staff deleted successfully!", null);
     }
 
-    @PutMapping("/members/ban")
+    @PutMapping("/members/ban/{email}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseData<String> banMember(String email){
+    public ResponseData<String> banMember(@PathVariable String email){
         AuthorizationUtils.checkAuthorization("ADMIN");
         userService.banMemberUser(userService.getUserByEmail(email).getUserId());
         return new ResponseData<>(HttpStatus.OK.value(), "Member banned successfully!", null);
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ResponseData<UserRegistrationDTO> handleEmailDuplicationException(DataIntegrityViolationException e){
-        return new ResponseData<>(HttpStatus.CONFLICT.value(), e.getMessage(), null);
+    @PutMapping("/members/unban/{email}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseData<String> unbanMember(@PathVariable String email){
+        AuthorizationUtils.checkAuthorization("ADMIN");
+        userService.unbanMemberUser(userService.getUserByEmail(email).getUserId());
+        return new ResponseData<>(HttpStatus.OK.value(), "Member unbanned successfully!", null);
     }
 
-    @ExceptionHandler(MissingRequiredFieldException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseData<UserRegistrationDTO> handleNullFieldsException(MissingRequiredFieldException e){
-        return new ResponseData<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
-    }
-
-    @ExceptionHandler(RoleNotFoundException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseData<UserRegistrationDTO> handleRoleNotFoundException(RoleNotFoundException e){
-        return new ResponseData<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
-    }
-
-    @ExceptionHandler(UnauthorizedAccessException.class)
-    @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ResponseData<String> handleUnauthorizedAccessException(UnauthorizedAccessException e){
-        return new ResponseData<>(HttpStatus.FORBIDDEN.value(), e.getMessage(), null);
-    }
 
 }

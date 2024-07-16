@@ -141,6 +141,7 @@ public class ShoppingCartService implements IShoppingCartService {
         return shoppingCartRepository.save(cart);
     }
 
+    @Transactional
     public void clearCartByUserId(int userId) {
         ShoppingCart cart = shoppingCartRepository.findByUserId(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.CART_NOT_FOUND));
@@ -187,4 +188,8 @@ public class ShoppingCartService implements IShoppingCartService {
     }
 
 
+    @Override
+    public ShoppingCart findCartByUserID(int cartId) {
+        return shoppingCartRepository.findById(cartId).orElseThrow(() -> new AppException(ErrorCode.CART_NOT_FOUND));
+    }
 }
