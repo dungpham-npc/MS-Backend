@@ -22,6 +22,7 @@ import java.util.UUID;
 @Service
 public class FirebaseService {
 
+    //Fix firebase service
     private String uploadFile(File file, String fileName) throws IOException {
         BlobId blobId = BlobId.of("swp-firebase-8e460.appspot.com", fileName);
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("media").build();

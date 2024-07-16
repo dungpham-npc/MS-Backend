@@ -45,7 +45,7 @@ public class PersonalAccountController {
                 user != null ? mapper.map(user, UserRegistrationDTO.class) : null);
     }
 
-    @PutMapping
+    @PutMapping("/update-information")
     @ResponseStatus(HttpStatus.OK)
     public ResponseData<UserDTO> updatePersonalProfileInformation(UserDTO userDTO){
         if (userDTO.getPhoneNumber() == null ||
