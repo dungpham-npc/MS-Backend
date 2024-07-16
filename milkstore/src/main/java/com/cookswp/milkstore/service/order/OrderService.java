@@ -23,10 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class OrderService implements IOrderService {
@@ -242,5 +239,40 @@ public class OrderService implements IOrderService {
         order.setOrderDate(orderDTO.getOrderDate());
         order.setShippingAddress(orderDTO.getShippingAddress());
         return order;
+    }
+
+    @Override
+    public Long getNumberOfOrdersByStatus(String status) {
+        return 0L;
+    }
+
+    @Override
+    public Long getTotalOrders() {
+        return 0L;
+    }
+
+    @Override
+    public Double getTotalRevenue() {
+        return 0.0;
+    }
+
+    @Override
+    public Map<Status, Long> getOrderStatusBreakdown() {
+        return Map.of();
+    }
+
+    @Override
+    public Double getAverageRevenuePerOrder() {
+        return 0.0;
+    }
+
+    @Override
+    public Long getOrdersByMonth(int startMonth, int endMonth) {
+        return 0L;
+    }
+
+    @Override
+    public Map<Integer, Long> getOrderCountsForYear(int year) {
+        return Map.of();
     }
 }

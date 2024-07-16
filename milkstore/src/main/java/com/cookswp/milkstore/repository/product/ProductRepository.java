@@ -21,6 +21,9 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     @Query("SELECT p FROM Product p WHERE p.deleteStatus = FALSE AND p.productName LIKE %:value%")
     List<Product> searchProduct(@Param("value") String value);
 
+//    @Query("SELECT p FROM Product p WHERE p.status = TRUE  AND p.orderID = :orderID")
+//    Product getProductByOrderID(@Param("orderID") String orderID);
+
 
     boolean existsByCategoryID(int categoryID);
 

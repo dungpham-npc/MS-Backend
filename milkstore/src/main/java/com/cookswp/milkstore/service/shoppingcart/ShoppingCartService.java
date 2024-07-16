@@ -45,6 +45,7 @@ public class ShoppingCartService implements IShoppingCartService {
                     cartItemModel.setProductName(item.getProduct().getProductName());
                     cartItemModel.setQuantity(item.getQuantity());
                     cartItemModel.setPrice(item.getProduct().getPrice());
+                    cartItemModel.setProductImage(item.getProduct().getProductImage());
                     return cartItemModel;
                 })
                 .collect(Collectors.toList());

@@ -25,7 +25,6 @@ public class ProductStaffController {
     private final ProductService productService;
 
     private final ProductCategoryService productCategoryService;
-    private final FeedBackServiceImpl feedBackServiceImpl;
 
     @PostMapping("/category")
     public ResponseData<ProductCategory> createProductCategory(@RequestBody ProductCategoryDTO productCategoryRequest) {

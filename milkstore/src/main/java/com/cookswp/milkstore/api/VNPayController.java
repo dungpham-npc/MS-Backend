@@ -5,7 +5,6 @@ import com.cookswp.milkstore.pojo.dtos.PaymentModel.RequestCallBack;
 import com.cookswp.milkstore.pojo.dtos.PaymentModel.RequestPayment;
 import com.cookswp.milkstore.response.ResponseData;
 import com.cookswp.milkstore.service.vnpay.VNPayServiceImpl;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;

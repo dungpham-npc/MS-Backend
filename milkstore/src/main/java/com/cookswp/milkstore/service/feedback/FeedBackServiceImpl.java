@@ -23,7 +23,7 @@ public class FeedBackServiceImpl implements IFeedBackService {
     private final FeedbackRepository feedbackRepository;
     private final OrderService orderService;
 
-    public FeedBackServiceImpl(FeedbackRepository feedbackRepository, OrderService orderService) {
+    public FeedBackServiceImpl(FeedbackRepository feedbackRepository, OrderService orderService, OrderRepository orderRepository) {
         this.feedbackRepository = feedbackRepository;
         this.orderService = orderService;
     }
@@ -32,11 +32,11 @@ public class FeedBackServiceImpl implements IFeedBackService {
     public Feedback addFeedback(FeedBackRequest feedBackRequest) {
         Feedback feedback = new Feedback();
         int rating = feedBackRequest.getRating();
-        if(rating < 1 || rating > 5 ){
+        if (rating < 1 || rating > 5) {
             throw new AppException(ErrorCode.FEEDBACK_RATING_ERROR);
         }
         Order order = orderService.getOrderById(feedBackRequest.getOrderID());
-        if(order.getOrderStatus() == Status.COMPLETE_EXCHANGE){
+        if (order.getOrderStatus() == Status.COMPLETE_EXCHANGE) {
             feedback.setOrderID(feedBackRequest.getOrderID());
         }
         feedback.setRating(rating);
@@ -54,7 +54,7 @@ public class FeedBackServiceImpl implements IFeedBackService {
             throw new AppException(ErrorCode.FEEDBACK_NOT_FOUND);
         }
         int rating = request.getRating();
-        if(rating < 1 || rating > 5 ){
+        if (rating < 1 || rating > 5) {
             throw new AppException(ErrorCode.FEEDBACK_RATING_ERROR);
         }
         feedback.setRating(rating);
@@ -67,7 +67,7 @@ public class FeedBackServiceImpl implements IFeedBackService {
 
     @Override
     public void deleteFeedback(int feedbackID) {
-        Feedback feedback= feedbackRepository.findByFeedbackIDAndAndStatus(feedbackID);
+        Feedback feedback = feedbackRepository.findByFeedbackIDAndAndStatus(feedbackID);
         if (feedback == null) {
             throw new AppException(ErrorCode.FEEDBACK_NOT_FOUND);
         }
@@ -82,7 +82,7 @@ public class FeedBackServiceImpl implements IFeedBackService {
 
     @Override
     public Feedback getFeedbackByID(int feedbackID) {
-        Feedback feedback =  feedbackRepository.findByFeedbackID(feedbackID);
+        Feedback feedback = feedbackRepository.findByFeedbackID(feedbackID);
         if (feedback == null) {
             throw new AppException(ErrorCode.FEEDBACK_NOT_FOUND);
         }
@@ -91,7 +91,7 @@ public class FeedBackServiceImpl implements IFeedBackService {
 
     @Override
     public Feedback getFeedbackByOrderID(String orderID) {
-        return null;
+        return feedbackRepository.findByOrderID(orderID);
     }
 
 }
